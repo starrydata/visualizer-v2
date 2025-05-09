@@ -4,7 +4,7 @@ from bokeh.models import (
     ColumnDataSource, Range1d, CustomJS, AjaxDataSource, LabelSet
 )
 from bokeh.embed import components
-from bokeh. resources import CDN
+from bokeh.resources import CDN
 import requests
 
 
@@ -32,9 +32,7 @@ def make_source(json_path):
 # --- ここでまとめて管理する config 定義 ---
 config = [
     {
-        # ベースデータ（プロパティ名を変えれば該当JSONが取得可能）
         "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Seebeck%20coefficient.json",
-        # xy_data_api の URL (最新20件を取得)
         "highlight_path": (
             "https://www.starrydata2.org/paperlist/xy_data_api/"
             "?date_before=2025-05-09"
@@ -59,40 +57,39 @@ config = [
         "x_range": (1, 1400),
         "y_range": (1e-1, 1e+3),
     },
-    # 他のプロパティ組合せも同様に追加できます
 ]
+
 divs, scripts = [], []
 
-for cfg in config:
+for idx, cfg in enumerate(config):
     # 1) ベースデータ読み込み
     base_src, content = make_source(cfg["json_path"])
 
-    # 2) このグラフ固有の範囲を取得
     x_min, x_max = cfg["x_range"]
     y_min, y_max = cfg["y_range"]
-
-    # 3) ハイライト用 JSON URL
     hl_url = cfg["highlight_path"]
 
-    # 4) ハイライト用 AjaxDataSource／LabelSource を毎回新規生成
-    flatten_adapter = CustomJS(code="""
+    # ハイライト用 AjaxDataSource (flattened)
+    scatter_adapter = CustomJS(code="""
         const resp = cb_data.response;
         const d = resp.data;
-        const x_flat=[], y_flat=[], SID_flat=[], sample_flat=[], curator_flat=[];
+        const x_flat=[], y_flat=[], sid_flat=[], fig_flat=[], sample_flat=[];
         for(let i=0; i<d.x.length; i++){
-            const xs=d.x[i], ys=d.y[i], cur=d.curator[i];
+            const xs=d.x[i], ys=d.y[i];
             for(let j=0; j<xs.length; j++){
                 x_flat.push(xs[j]);
                 y_flat.push(ys[j]);
-                SID_flat.push(d.SID[i]);
+                sid_flat.push(d.SID[i]);
+                fig_flat.push(d.figure_id[i]);
                 sample_flat.push(d.sample_id[i]);
-                curator_flat.push(cur);
             }
         }
         return {
-          x: x_flat, y: y_flat,
-          SID: SID_flat, sample_id: sample_flat,
-          curator: curator_flat
+          x: x_flat,
+          y: y_flat,
+          SID: sid_flat,
+          figure_id: fig_flat,
+          sample_id: sample_flat
         };
     """)
     scatter_src = AjaxDataSource(
@@ -100,21 +97,23 @@ for cfg in config:
         polling_interval=60000,
         mode='replace',
         content_type='application/json',
-        adapter=flatten_adapter,
+        adapter=scatter_adapter,
         method="GET"
     )
 
+    # ラベル用 AjaxDataSource (末端とラベル文字列)
     label_adapter = CustomJS(code="""
         const resp = cb_data.response;
         const d = resp.data;
-        const x_end=[], y_end=[], curator=[];
+        const x_end=[], y_end=[], label=[];
         for(let i=0; i<d.x.length; i++){
             const xs=d.x[i], ys=d.y[i];
+            const sid=d.SID[i], fig=d.figure_id[i], sample=d.sample_id[i];
             x_end.push(xs.length>0 ? xs[xs.length-1] : null);
             y_end.push(ys.length>0 ? ys[ys.length-1] : null);
-            curator.push(d.curator[i]);
+            label.push(`${sid}-${fig}-${sample}`);
         }
-        return { x_end: x_end, y_end: y_end, curator: curator };
+        return { x_end: x_end, y_end: y_end, label: label };
     """)
     label_src = AjaxDataSource(
         data_url=hl_url,
@@ -125,7 +124,7 @@ for cfg in config:
         method="GET"
     )
 
-    # 5) プロット作成
+    # プロット作成
     x_label = f"{content['prop_x']} ({content['unit_x']})"
     y_label = f"{content['prop_y']} ({content['unit_y']})"
     p = figure(
@@ -139,8 +138,6 @@ for cfg in config:
         border_fill_color="black",
         sizing_mode="stretch_both"
     )
-
-    # 軸ラベル／グリッド色の調整（省略できます）
     for axis in (p.xaxis, p.yaxis):
         axis.axis_label_text_color = "white"
         axis.major_label_text_color = "white"
@@ -151,16 +148,14 @@ for cfg in config:
     # ベースラインデータ
     p.scatter('x', 'y', source=base_src,
               fill_color='white', fill_alpha=0.9, line_color=None, size=1)
-
-    # ハイライト
+    # ハイライトデータ
     p.scatter('x', 'y', source=scatter_src,
               fill_color='white', fill_alpha=1,
               line_color='blue', line_alpha=1.0,
               size=5, line_width=1)
-
-    # ラベル
+    # ラベル表示
     labels = LabelSet(
-        x='x_end', y='y_end', text='curator',
+        x='x_end', y='y_end', text='label',
         source=label_src,
         x_offset=5, y_offset=5,
         text_font_size='8pt',
@@ -169,15 +164,12 @@ for cfg in config:
     )
     p.add_layout(labels)
 
-    # 6) components を取得
+    # components
     div, script = components(p)
     divs.append(div)
     scripts.append(script)
 
-# ⇒ あとは以前の HTML 組み立て部分に divs／scripts をはめ込んでください
-
-
-# HTML 生成
+# HTML 組み立て
 html = f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -217,8 +209,8 @@ html = f"""<!DOCTYPE html>
 </html>
 """
 
-# 書き出し
 out_path = './dist/starrydata_animated_with_highlight.html'
+os.makedirs(os.path.dirname(out_path), exist_ok=True)
 with open(out_path, 'w', encoding='utf-8') as f:
     f.write(html)
 print(f"Generated: {out_path}")
