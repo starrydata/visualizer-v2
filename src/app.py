@@ -37,10 +37,10 @@ config = [
         "highlight_path": (
             "https://www.starrydata2.org/paperlist/xy_data_api/"
             "?date_before=2025-05-09"
-            "&date_after=2025-01-01"
+            "&date_after=2024-01-01"
             "&property_x=Temperature"
             "&property_y=Seebeck%20coefficient"
-            "&limit=20"
+            "&limit=100"
         ),
         "x_range": (1, 1400),
         "y_range": (1e-7, 1e-2),
@@ -50,10 +50,10 @@ config = [
         "highlight_path": (
             "https://www.starrydata2.org/paperlist/xy_data_api/"
             "?date_before=2025-05-09"
-            "&date_after=2025-01-01"
+            "&date_after=2024-01-01"
             "&property_x=Temperature"
             "&property_y=Thermal%20conductivity"
-            "&limit=20"
+            "&limit=100"
         ),
         "x_range": (1, 1400),
         "y_range": (1e-1, 1e+3),
@@ -138,7 +138,7 @@ for idx, cfg in enumerate(config):
     x_label = f"{content['prop_x']} ({content['unit_x']})"
     y_label = f"{content['prop_y']} ({content['unit_y']})"
     p = figure(
-        x_axis_type="log",
+        x_axis_type="linear",
         y_axis_type="log",
         x_range=Range1d(x_min, x_max),
         y_range=Range1d(y_min, y_max),
