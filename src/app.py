@@ -12,22 +12,23 @@ import requests
 def make_source(json_path):
     # URL かローカルファイルかで分岐
     if json_path.startswith(("http://", "https://")):
-        # リモート JSON を GET
         resp = requests.get(json_path)
         resp.raise_for_status()
         content = resp.json()
     else:
-        # ローカルファイルを読み込み
         with open(json_path, 'r', encoding='utf-8') as f:
             content = json.load(f)
 
-    # 以降はこれまでと同じ
     d = content['data']
-    x_flat, y_flat = [], []
-    for xs, ys in zip(d['x'], d['y']):
-        x_flat += xs
-        y_flat += ys
-    return ColumnDataSource(data=dict(x=x_flat, y=y_flat)), content
+    x_flat, y_flat, sid_flat = [], [], []
+    for xs, ys, sid in zip(d['x'], d['y'], d['SID']):
+        num_sid = int(sid)
+        for j in range(len(xs)):
+            x_flat.append(xs[j])
+            y_flat.append(ys[j])
+            sid_flat.append(num_sid)
+
+    return ColumnDataSource(data=dict(x=x_flat, y=y_flat, SID=sid_flat)), content
 
 # --- ここでまとめて管理する config 定義 ---
 config = [
@@ -65,9 +66,18 @@ for idx, cfg in enumerate(config):
     # 1) ベースデータ読み込み
     base_src, content = make_source(cfg["json_path"])
 
-    x_min, x_max = cfg["x_range"]
-    y_min, y_max = cfg["y_range"]
-    hl_url = cfg["highlight_path"]
+    # SID に基づく不透明度計算
+    sid_vals = base_src.data['SID']
+    min_sid, max_sid = min(sid_vals), max(sid_vals)
+    if max_sid > min_sid:
+        alpha_vals = [0.1 + (sid - min_sid) / (max_sid - min_sid) * (1 - 0.1) for sid in sid_vals]
+    else:
+        alpha_vals = [1 for _ in sid_vals]
+    base_src.data['alpha'] = alpha_vals
+
+    x_min, x_max = cfg['x_range']
+    y_min, y_max = cfg['y_range']
+    hl_url = cfg['highlight_path']
 
     # ハイライト用 AjaxDataSource (flattened)
     scatter_adapter = CustomJS(code="""
@@ -146,13 +156,13 @@ for idx, cfg in enumerate(config):
     p.outline_line_color = None
 
     # ベースラインデータ
-    p.scatter('x', 'y', source=base_src,
-              fill_color='white', fill_alpha=0.9, line_color=None, size=1)
+    p.circle('x', 'y', source=base_src,
+              fill_color='white', fill_alpha='alpha', size=1, line_width=0.2)
     # ハイライトデータ
     p.scatter('x', 'y', source=scatter_src,
               fill_color='white', fill_alpha=1,
               line_color='blue', line_alpha=1.0,
-              size=5, line_width=1)
+              size=2, line_width=0)
     # ラベル表示
     labels = LabelSet(
         x='x_end', y='y_end', text='label',
