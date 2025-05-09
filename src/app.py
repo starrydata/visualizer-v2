@@ -160,7 +160,8 @@ for idx, cfg in enumerate(config):
         x_offset=5, y_offset=5,
         text_font_size='8pt',
         text_color='white',
-        render_mode='canvas'
+        render_mode='canvas',
+        background_fill_color='black',
     )
     p.add_layout(labels)
 
