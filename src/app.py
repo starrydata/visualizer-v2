@@ -42,8 +42,8 @@ config = [
             "&property_y=Seebeck%20coefficient"
             "&limit=100"
         ),
-        "x_range": (1, 1400),
-        "y_range": (1e-7, 1e-2),
+        "x_range": (-5, 1400),
+        "y_range": (1e-8, 1e-2),
     },
     {
         "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Thermal%20conductivity.json",
@@ -55,8 +55,8 @@ config = [
             "&property_y=Thermal%20conductivity"
             "&limit=100"
         ),
-        "x_range": (1, 1400),
-        "y_range": (1e-1, 1e+3),
+        "x_range": (-5, 1400),
+        "y_range": (1e-2, 1e+3),
     },
 ]
 
@@ -157,12 +157,12 @@ for idx, cfg in enumerate(config):
 
     # ベースラインデータ
     p.circle('x', 'y', source=base_src,
-              fill_color='white', fill_alpha='alpha', size=1, line_width=0.2)
+              fill_color='white', fill_alpha='alpha', size=1, line_width=0.2, line_color="#3288bd")
     # ハイライトデータ
-    p.scatter('x', 'y', source=scatter_src,
+    p.circle('x', 'y', source=scatter_src,
               fill_color='white', fill_alpha=1,
-              line_color='blue', line_alpha=1.0,
-              size=2, line_width=0)
+              line_color='#3288bd', line_alpha=1.0,
+              size=2, line_width=0.2)
     # ラベル表示
     labels = LabelSet(
         x='x_end', y='y_end', text='label',
@@ -172,6 +172,8 @@ for idx, cfg in enumerate(config):
         text_color='white',
         render_mode='canvas',
         background_fill_color='black',
+        border_line_color="black",
+        border_line_width=3
     )
     p.add_layout(labels)
 
