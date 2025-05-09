@@ -97,10 +97,11 @@ for cfg in config:
     """)
     scatter_src = AjaxDataSource(
         data_url=hl_url,
-        polling_interval=1000,
+        polling_interval=60000,
         mode='replace',
         content_type='application/json',
-        adapter=flatten_adapter
+        adapter=flatten_adapter,
+        method="GET"
     )
 
     label_adapter = CustomJS(code="""
@@ -117,10 +118,11 @@ for cfg in config:
     """)
     label_src = AjaxDataSource(
         data_url=hl_url,
-        polling_interval=1000,
+        polling_interval=60000,
         mode='replace',
         content_type='application/json',
-        adapter=label_adapter
+        adapter=label_adapter,
+        method="GET"
     )
 
     # 5) プロット作成
