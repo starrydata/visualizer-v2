@@ -10,14 +10,9 @@ import requests
 
 # --- 共通関数：JSON から ColumnDataSource を作る ---
 def make_source(json_path):
-    # URL かローカルファイルかで分岐
-    if json_path.startswith(("http://", "https://")):
-        resp = requests.get(json_path)
-        resp.raise_for_status()
-        content = resp.json()
-    else:
-        with open(json_path, 'r', encoding='utf-8') as f:
-            content = json.load(f)
+    resp = requests.get(json_path)
+    resp.raise_for_status()
+    content = resp.json()
 
     d = content['data']
     x_flat, y_flat, sid_flat = [], [], []
@@ -30,7 +25,7 @@ def make_source(json_path):
 
     return ColumnDataSource(data=dict(x=x_flat, y=y_flat, SID=sid_flat)), content
 
-# --- ここでまとめて管理する config 定義 ---
+# --- 設定リスト ---
 config = [
     {
         "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Seebeck%20coefficient.json",
@@ -62,64 +57,29 @@ config = [
     },
 ]
 
-divs, scripts = [], []
-
+divs, scripts, titles = [], [], []
 for idx, cfg in enumerate(config):
-    # 1) ベースデータ読み込み
-    base_src, content = make_source(cfg["json_path"])
+    base_src, content = make_source(cfg['json_path'])
+    titles.append(f"{content['prop_y']} ({content['unit_y']}) vs {content['prop_x']} ({content['unit_x']})")
 
-    # SID に基づく不透明度計算
-    sid_vals = base_src.data['SID']
-    min_sid, max_sid = min(sid_vals), max(sid_vals)
-    if max_sid > min_sid:
-        alpha_vals = [0.1 + (sid - min_sid) / (max_sid - min_sid) * (1 - 0.1) for sid in sid_vals]
-    else:
-        alpha_vals = [1 for _ in sid_vals]
-    base_src.data['alpha'] = alpha_vals
-
-    x_min, x_max = cfg['x_range']
-    y_min, y_max = cfg['y_range']
+    # AJAX データソース作成（highlight 傾向）
     hl_url = cfg['highlight_path']
-
-    # ハイライト用 AjaxDataSource (flattened)
     scatter_adapter = CustomJS(code="""
-        const resp = cb_data.response;
-        const d = resp.data;
-        const x_flat = [], y_flat = [], sid_flat = [], fig_flat = [], sample_flat = [], ts_flat = [];
-        // flatten all arrays, 同時に updated_at も flatten
+        const d = cb_data.response.data;
+        let xf = [], yf = [], sidf = [], sizef = [];
+        const ts = [];
         for (let i = 0; i < d.x.length; i++) {
-            const xs = d.x[i], ys = d.y[i];
-            const updated = d.updated_at[i];  // 例: "2025-05-10T12:34:56Z"
-            console.log(updated)
-            const t = new Date(updated).getTime();
-            for (let j = 0; j < xs.length; j++) {
-                x_flat.push(xs[j]);
-                y_flat.push(ys[j]);
-                sid_flat.push(d.SID[i]);
-                fig_flat.push(d.figure_id[i]);
-                sample_flat.push(d.sample_id[i]);
-                ts_flat.push(t);
+            const t = new Date(d.updated_at[i]).getTime();
+            for (let j = 0; j < d.x[i].length; j++) {
+                xf.push(d.x[i][j]);
+                yf.push(d.y[i][j]);
+                sidf.push(d.SID[i]);
+                ts.push(t);
             }
         }
-        // タイムスタンプの最小/最大を取得
-        const minTs = Math.min(...ts_flat);
-        const maxTs = Math.max(...ts_flat);
-        // サイズを線形補間（2～8）
-        const size_flat = ts_flat.map(ts => {
-            if (maxTs > minTs) {
-                return 2 + (ts - minTs) / (maxTs - minTs) * (8 - 2);
-            } else {
-                return 2;
-            }
-        });
-        return {
-            x: x_flat,
-            y: y_flat,
-            SID: sid_flat,
-            figure_id: fig_flat,
-            sample_id: sample_flat,
-            size: size_flat
-        };
+        const mi = Math.min(...ts), ma = Math.max(...ts);
+        ts.forEach(t => sizef.push(ma > mi ? 2 + (t - mi)/(ma - mi)*6 : 2));
+        return { x: xf, y: yf, SID: sidf, size: sizef };
     """)
     scatter_src = AjaxDataSource(
         data_url=hl_url,
@@ -127,22 +87,20 @@ for idx, cfg in enumerate(config):
         mode='replace',
         content_type='application/json',
         adapter=scatter_adapter,
-        method="GET"
+        method='GET'
     )
 
-    # ラベル用 AjaxDataSource (末端とラベル文字列)
+    # ラベル用データソース
     label_adapter = CustomJS(code="""
-        const resp = cb_data.response;
-        const d = resp.data;
-        const x_end=[], y_end=[], label=[];
-        for(let i=0; i<d.x.length; i++){
-            const xs=d.x[i], ys=d.y[i];
-            const sid=d.SID[i], fig=d.figure_id[i], sample=d.sample_id[i];
-            x_end.push(xs.length>0 ? xs[xs.length-1] : null);
-            y_end.push(ys.length>0 ? ys[ys.length-1] : null);
-            label.push(`${sid}-${fig}-${sample}`);
+        const d = cb_data.response.data;
+        let xe = [], ye = [], lab = [];
+        for (let i = 0; i < d.x.length; i++) {
+            const xs = d.x[i], ys = d.y[i];
+            xe.push(xs.length ? xs[xs.length - 1] : null);
+            ye.push(ys.length ? ys[ys.length - 1] : null);
+            lab.push(`${d.SID[i]}-${d.figure_id[i]}-${d.sample_id[i]}`);
         }
-        return { x_end: x_end, y_end: y_end, label: label };
+        return { x_end: xe, y_end: ye, label: lab };
     """)
     label_src = AjaxDataSource(
         data_url=hl_url,
@@ -150,32 +108,24 @@ for idx, cfg in enumerate(config):
         mode='replace',
         content_type='application/json',
         adapter=label_adapter,
-        method="GET"
+        method='GET'
     )
 
-    # プロット作成
-    x_label = f"{content['prop_x']} ({content['unit_x']})"
-    y_label = f"{content['prop_y']} ({content['unit_y']})"
+    # プロット設定
     p = figure(
-        x_axis_type="linear",
-        y_axis_type=cfg['y_scale'],
-        x_range=Range1d(x_min, x_max),
-        y_range=Range1d(y_min, y_max),
-        x_axis_label=x_label,
-        y_axis_label=y_label,
-        background_fill_color="black",
-        border_fill_color="black",
-        sizing_mode="stretch_both"
+        x_axis_type='linear', y_axis_type=cfg['y_scale'],
+        x_range=Range1d(*cfg['x_range']), y_range=Range1d(*cfg['y_range']),
+        x_axis_label=f"{content['prop_x']} ({content['unit_x']})",
+        y_axis_label=f"{content['prop_y']} ({content['unit_y']})",
+        background_fill_color='black', border_fill_color='black', sizing_mode='stretch_both'
     )
-    for axis in (p.xaxis, p.yaxis):
-        axis.axis_label_text_color = "white"
-        axis.major_label_text_color = "white"
-    p.xgrid.grid_line_color, p.xgrid.grid_line_alpha = 'white', 0.1
-    p.ygrid.grid_line_color, p.ygrid.grid_line_alpha = 'white', 0.1
-    p.outline_line_color = None
+    for ax in (p.xaxis, p.yaxis):
+        ax.axis_label_text_color = 'white'
+        ax.major_label_text_color = 'white'
+    p.xgrid.grid_line_alpha = 0.1; p.xgrid.grid_line_color = 'white'
+    p.ygrid.grid_line_alpha = 0.1; p.ygrid.grid_line_color = 'white'
 
-    # プロット作成（一部抜粋）
-    # ベースラインデータ（α=0.2）
+    # ベースデータ
     p.circle('x', 'y', source=base_src,
              fill_color='blue', fill_alpha=0.4,
              size=1, line_width=0, line_color="#3288bd")
@@ -185,67 +135,68 @@ for idx, cfg in enumerate(config):
              fill_color='white', fill_alpha=1,
              line_color='#3288bd', line_alpha=1,
              size='size', line_width=0.2)
-    # ラベル表示
+    # ラベル
     labels = LabelSet(
         x='x_end', y='y_end', text='label',
         source=label_src,
         x_offset=5, y_offset=5,
         text_font_size='8pt',
         text_color='white',
-        render_mode='canvas',
         background_fill_color='black',
-        border_line_color="black",
+        border_line_color='black',
         border_line_width=3
     )
     p.add_layout(labels)
 
-    # components
     div, script = components(p)
     divs.append(div)
     scripts.append(script)
 
 # HTML 組み立て
-html = f"""<!DOCTYPE html>
+header_height = 60
+menu_items = ''.join([f'<li id="menu{idx}">{t}</li>' for idx, t in enumerate(titles)])
+plots_html = ''.join([
+    f'<div id="plot{idx}" class="plot-container">{divs[idx]}{scripts[idx]}</div>'
+    for idx in range(len(divs))
+])
+html = f'''<!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="utf-8">
-  <title>Starrydata Animated with Highlight</title>
-  {CDN.render()}
-  <style>
-    html, body {{ width:100%; height:100%; margin:0; padding:0; }}
-    .plot-container {{ position:absolute; top:0; left:0; width:100%; height:100%; transition: opacity 2s; }}
-    #plot0 {{ opacity:1; z-index:2; }}
-    #plot1 {{ opacity:0; z-index:1; }}
-  </style>
-</head>
+<head><meta charset="utf-8"><title>Starrydata Slideshow</title>{CDN.render()}
+<style>
+  html, body {{margin:0; padding:0; height:100%;}}
+  #menu {{position:fixed; top:0; left:0; width:100%; height:{header_height}px;
+           background:rgba(0,0,0,0.7); color:white; z-index:10;}}
+  #menu ul {{display:flex; margin:0; padding:10px; list-style:none;}}
+  #menu li {{margin-right:15px; cursor:pointer;}}
+  #menu li.active {{font-weight:bold; text-decoration:underline;}}
+  #content {{position:absolute; top:{header_height}px; left:0; right:0; bottom:0;}}
+  .plot-container {{position:absolute; top:0; left:0; right:0; bottom:0;
+                   opacity:0; transition:opacity 1s;}}
+</style></head>
 <body>
-  <div id="plot0" class="plot-container">
-    {divs[0]}
-    {scripts[0]}
-  </div>
-  <div id="plot1" class="plot-container">
-    {divs[1]}
-    {scripts[1]}
-  </div>
+  <div id="menu"><ul>{menu_items}</ul></div>
+  <div id="content">{plots_html}</div>
   <script>
+    const items = [...document.querySelectorAll('#menu li')];
     let current = 0;
-    setInterval(() => {{
-      const next = 1 - current;
-      const curEl = document.getElementById('plot' + current);
-      const nxtEl = document.getElementById('plot' + next);
-      curEl.style.opacity = 0;
-      nxtEl.style.opacity = 1;
-      curEl.style.zIndex = 1;
-      nxtEl.style.zIndex = 2;
-      current = next;
-    }}, 20000);
+    items.forEach((it, i) => it.addEventListener('click', () => switchPlot(i)));
+    items[0].classList.add('active');
+    function switchPlot(to) {{
+      if (to === current) return;
+      document.getElementById('plot' + current).style.opacity = 0;
+      document.getElementById('plot' + to).style.opacity = 1;
+      items[current].classList.remove('active'); items[to].classList.add('active');
+      current = to;
+    }}
+    switchPlot(0);
+    setInterval(() => switchPlot((current+1) % items.length), 5000);
   </script>
 </body>
-</html>
-"""
+</html>'''
 
-out_path = './dist/starrydata_animated_with_highlight.html'
-os.makedirs(os.path.dirname(out_path), exist_ok=True)
-with open(out_path, 'w', encoding='utf-8') as f:
+# ファイル出力
+out = './dist/starrydata_slideshow_with_menu.html'
+os.makedirs(os.path.dirname(out), exist_ok=True)
+with open(out, 'w', encoding='utf-8') as f:
     f.write(html)
-print(f"Generated: {out_path}")
+print(f"Generated: {out}")
