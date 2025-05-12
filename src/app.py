@@ -27,6 +27,7 @@ def make_source(json_path):
 
 # --- 設定リスト ---
 config = [
+    # 1. Seebeck coefficient
     {
         "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Seebeck%20coefficient.json",
         "highlight_path": (
@@ -41,6 +42,37 @@ config = [
         "y_range": (-0.0005, 0.0005),
         "y_scale": "linear",
     },
+    # 2. Electrical conductivity
+    {
+        "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Electrical%20conductivity.json",
+        "highlight_path": (
+            "https://www.starrydata2.org/paperlist/xy_data_api/"
+            "?date_before=2025-05-09"
+            "&date_after=2024-01-01"
+            "&property_x=Temperature"
+            "&property_y=Electrical%20conductivity"
+            "&limit=20"
+        ),
+        "x_range": (-5, 1400),
+        "y_range": (1, 1e8),     # S/m の例
+        "y_scale": "log",
+    },
+    # 3. Electrical resistivity
+    {
+        "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Electrical%20resistivity.json",
+        "highlight_path": (
+            "https://www.starrydata2.org/paperlist/xy_data_api/"
+            "?date_before=2025-05-09"
+            "&date_after=2024-01-01"
+            "&property_x=Temperature"
+            "&property_y=Electrical%20resistivity"
+            "&limit=20"
+        ),
+        "x_range": (-5, 1400),
+        "y_range": (1e-8, 1),     # Ω·m の例
+        "y_scale": "log",
+    },
+    # 4. Thermal conductivity
     {
         "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Thermal%20conductivity.json",
         "highlight_path": (
@@ -54,6 +86,36 @@ config = [
         "x_range": (-5, 1400),
         "y_range": (1e-1, 5e+1),
         "y_scale": "log",
+    },
+    # 5. Power factor
+    {
+        "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Power%20factor.json",
+        "highlight_path": (
+            "https://www.starrydata2.org/paperlist/xy_data_api/"
+            "?date_before=2025-05-09"
+            "&date_after=2024-01-01"
+            "&property_x=Temperature"
+            "&property_y=Power%20factor"
+            "&limit=20"
+        ),
+        "x_range": (-5, 1400),
+        "y_range": (1e-5, 1e-2),     # W/mK² の例
+        "y_scale": "log",
+    },
+    # 6. ZT
+    {
+        "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-ZT.json",
+        "highlight_path": (
+            "https://www.starrydata2.org/paperlist/xy_data_api/"
+            "?date_before=2025-05-09"
+            "&date_after=2024-01-01"
+            "&property_x=Temperature"
+            "&property_y=ZT"
+            "&limit=20"
+        ),
+        "x_range": (-5, 1400),
+        "y_range": (0, 1.5),        # 一般的な ZT の範囲
+        "y_scale": "linear",
     },
 ]
 
@@ -199,7 +261,7 @@ html = f'''<!DOCTYPE html>
       current = to;
     }}    
     switchPlot(0);
-    setInterval(() => switchPlot((current+1) % items.length), 50000);
+    setInterval(() => switchPlot((current+1) % items.length), 20000);
   </script>
 </body>
 </html>'''
