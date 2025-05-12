@@ -57,7 +57,7 @@ config = [
             "&limit=20"
         ),
         "x_range": (-5, 1400),
-        "y_range": (1e-1, 1e+2),
+        "y_range": (1e-1, 5e+1),
         "y_scale": "log",
     },
 ]
@@ -177,8 +177,8 @@ for idx, cfg in enumerate(config):
     # プロット作成（一部抜粋）
     # ベースラインデータ（α=0.2）
     p.circle('x', 'y', source=base_src,
-             fill_color='blue', fill_alpha=0.2,
-             size=2, line_width=0, line_color="#3288bd")
+             fill_color='blue', fill_alpha=0.4,
+             size=1, line_width=0, line_color="#3288bd")
 
     # ハイライトデータ（α=1、size は JS アダプタで計算したカラムを参照）
     p.circle('x', 'y', source=scatter_src,
