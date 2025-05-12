@@ -40,10 +40,11 @@ config = [
             "&date_after=2024-01-01"
             "&property_x=Temperature"
             "&property_y=Seebeck%20coefficient"
-            "&limit=100"
+            "&limit=20"
         ),
         "x_range": (-5, 1400),
-        "y_range": (-0.001, 0.001),
+        "y_range": (-0.0005, 0.0005),
+        "y_scale": "linear",
     },
     {
         "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Thermal%20conductivity.json",
@@ -53,10 +54,11 @@ config = [
             "&date_after=2024-01-01"
             "&property_x=Temperature"
             "&property_y=Thermal%20conductivity"
-            "&limit=100"
+            "&limit=20"
         ),
         "x_range": (-5, 1400),
-        "y_range": (1e-2, 1e+3),
+        "y_range": (1e-1, 1e+2),
+        "y_scale": "log",
     },
 ]
 
@@ -156,7 +158,7 @@ for idx, cfg in enumerate(config):
     y_label = f"{content['prop_y']} ({content['unit_y']})"
     p = figure(
         x_axis_type="linear",
-        y_axis_type="log",
+        y_axis_type=cfg['y_scale'],
         x_range=Range1d(x_min, x_max),
         y_range=Range1d(y_min, y_max),
         x_axis_label=x_label,
@@ -172,7 +174,8 @@ for idx, cfg in enumerate(config):
     p.ygrid.grid_line_color, p.ygrid.grid_line_alpha = 'white', 0.1
     p.outline_line_color = None
 
-    # ベースラインデータ
+    # プロット作成（一部抜粋）
+    # ベースラインデータ（α=0.2）
     p.circle('x', 'y', source=base_src,
              fill_color='blue', fill_alpha=0.2,
              size=2, line_width=0, line_color="#3288bd")
@@ -235,7 +238,7 @@ html = f"""<!DOCTYPE html>
       curEl.style.zIndex = 1;
       nxtEl.style.zIndex = 2;
       current = next;
-    }}, 10000);
+    }}, 20000);
   </script>
 </body>
 </html>
