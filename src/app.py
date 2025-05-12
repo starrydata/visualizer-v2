@@ -60,7 +60,7 @@ config = [
 divs, scripts, titles = [], [], []
 for idx, cfg in enumerate(config):
     base_src, content = make_source(cfg['json_path'])
-    titles.append(f"{content['prop_y']} ({content['unit_y']}) vs {content['prop_x']} ({content['unit_x']})")
+    titles.append(f"{content['prop_y']}")
 
     # AJAX データソース作成（highlight 傾向）
     hl_url = cfg['highlight_path']
@@ -119,11 +119,13 @@ for idx, cfg in enumerate(config):
         y_axis_label=f"{content['prop_y']} ({content['unit_y']})",
         background_fill_color='black', border_fill_color='black', sizing_mode='stretch_both'
     )
-    for ax in (p.xaxis, p.yaxis):
-        ax.axis_label_text_color = 'white'
-        ax.major_label_text_color = 'white'
-    p.xgrid.grid_line_alpha = 0.1; p.xgrid.grid_line_color = 'white'
-    p.ygrid.grid_line_alpha = 0.1; p.ygrid.grid_line_color = 'white'
+    for axis in (p.xaxis, p.yaxis):
+        axis.axis_label_text_color = "white"
+        axis.major_label_text_color = "white"
+    p.xgrid.grid_line_color, p.xgrid.grid_line_alpha = 'white', 0.1
+    p.ygrid.grid_line_color, p.ygrid.grid_line_alpha = 'white', 0.1
+    p.outline_line_color = None
+
 
     # ベースデータ
     p.circle('x', 'y', source=base_src,
