@@ -121,6 +121,8 @@ config = [
 
 divs, scripts, titles = [], [], []
 for idx, cfg in enumerate(config):
+    # if idx > 1:
+    #     continue
     base_src, content = make_source(cfg['json_path'])
     titles.append(f"{content['prop_y']}")
 
@@ -140,7 +142,7 @@ for idx, cfg in enumerate(config):
             }
         }
         const mi = Math.min(...ts), ma = Math.max(...ts);
-        ts.forEach(t => sizef.push(ma > mi ? 2 + (t - mi)/(ma - mi)*6 : 2));
+        ts.forEach(t => sizef.push(ma > mi ? 4 + (t - mi)/(ma - mi)*6 : 4));
         return { x: xf, y: yf, SID: sidf, size: sizef };
     """)
     scatter_src = AjaxDataSource(
@@ -149,6 +151,27 @@ for idx, cfg in enumerate(config):
         mode='replace',
         content_type='application/json',
         adapter=scatter_adapter,
+        method='GET'
+    )
+
+    # ── 追加：系列ごとの線用 AjaxDataSource ──
+    line_adapter = CustomJS(code="""
+        // d.x, d.y: 各シリーズ毎の座標配列
+        // d.updated_at: 各シリーズのタイムスタンプ文字列配列
+        const d = cb_data.response.data;
+        // UNIX 時間に変換
+        const ts = d.updated_at.map(t => new Date(t).getTime());
+        const mi = Math.min(...ts), ma = Math.max(...ts);
+        // シリーズ毎に線幅を計算（新しいほど太くなる）
+        const widths = ts.map(t => 0.2 + (ma > mi ? (t - mi)/(ma - mi)*0.5 : 0));
+        return { xs: d.x, ys: d.y, widths: widths };
+    """)
+    line_src = AjaxDataSource(
+        data_url=hl_url,
+        polling_interval=60000,
+        mode='replace',
+        content_type='application/json',
+        adapter=line_adapter,
         method='GET'
     )
 
@@ -191,7 +214,7 @@ for idx, cfg in enumerate(config):
 
     # ベースデータ
     p.circle('x', 'y', source=base_src,
-             fill_color='blue', fill_alpha=0.4,
+             fill_color='blue', fill_alpha=0.5,
              size=1, line_width=0, line_color="#3288bd")
 
     # ハイライトデータ（α=1、size は JS アダプタで計算したカラムを参照）
@@ -199,6 +222,14 @@ for idx, cfg in enumerate(config):
              fill_color='white', fill_alpha=1,
              line_color='#3288bd', line_alpha=1,
              size='size', line_width=0.2)
+    # ── 追加：系列ごとに線を描画 ──
+    p.multi_line(
+        xs='xs', ys='ys', source=line_src,
+        line_color='white', line_alpha=1,
+        # widths フィールドを線幅にマッピング
+        line_width={'field': 'widths'}
+    )
+
     # ラベル
     labels = LabelSet(
         x='x_end', y='y_end', text='label',
