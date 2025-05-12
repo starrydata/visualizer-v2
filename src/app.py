@@ -120,10 +120,10 @@ for idx, cfg in enumerate(config):
         background_fill_color='black', border_fill_color='black', sizing_mode='stretch_both'
     )
     for axis in (p.xaxis, p.yaxis):
-        axis.axis_label_text_color = "white"
-        axis.major_label_text_color = "white"
-    p.xgrid.grid_line_color, p.xgrid.grid_line_alpha = 'white', 0.1
-    p.ygrid.grid_line_color, p.ygrid.grid_line_alpha = 'white', 0.1
+        axis.axis_label_text_color = "#ccc"
+        axis.major_label_text_color = "#ccc"
+    p.xgrid.grid_line_color, p.xgrid.grid_line_alpha = '#ccc', 0.1
+    p.ygrid.grid_line_color, p.ygrid.grid_line_alpha = '#ccc', 0.1
     p.outline_line_color = None
 
 
@@ -155,7 +155,7 @@ for idx, cfg in enumerate(config):
     scripts.append(script)
 
 # HTML 組み立て
-header_height = 60
+header_height = 40
 menu_items = ''.join([f'<li id="menu{idx}">{t}</li>' for idx, t in enumerate(titles)])
 plots_html = ''.join([
     f'<div id="plot{idx}" class="plot-container">{divs[idx]}{scripts[idx]}</div>'
@@ -167,20 +167,28 @@ html = f'''<!DOCTYPE html>
 <style>
   html, body {{margin:0; padding:0; height:100%;}}
   #menu {{position:fixed; top:0; left:0; width:100%; height:{header_height}px;
-           background:rgba(0,0,0,0.7); color:white; z-index:10;}}
-  #menu ul {{display:flex; margin:0; padding:10px; list-style:none;}}
-  #menu li {{margin-right:15px; cursor:pointer;}}
-  #menu li.active {{font-weight:bold; text-decoration:underline;}}
+           background:black; color:white; z-index:10; font-size: 12px;}}
+  #menu ul {{display:inline-flex; margin:0; padding:10px; list-style:none;}}
+  #menu li {{margin-right:30px; cursor:pointer;}}
+  #menu li.active {{position: relative;}}
+  /* 右端に☑️を表示 */
+    #menu li.active::after {{
+      content: '☑️';
+      position: absolute;
+      right: -1.3em;       /* 右からの余白 */
+      top: 50%;
+      transform: translateY(-50%);
+    }}
   #content {{position:absolute; top:{header_height}px; left:0; right:0; bottom:0;}}
   .plot-container {{position:absolute; top:0; left:0; right:0; bottom:0;
                    opacity:0; transition:opacity 1s;}}
 </style></head>
 <body>
-  <div id="menu"><ul>{menu_items}</ul></div>
+  <div id="menu"><span>Y axis: </span><ul>{menu_items}</ul></div>
   <div id="content">{plots_html}</div>
   <script>
     const items = [...document.querySelectorAll('#menu li')];
-    let current = 0;
+    let current = 1;
     items.forEach((it, i) => it.addEventListener('click', () => switchPlot(i)));
     items[0].classList.add('active');
     function switchPlot(to) {{
@@ -189,9 +197,9 @@ html = f'''<!DOCTYPE html>
       document.getElementById('plot' + to).style.opacity = 1;
       items[current].classList.remove('active'); items[to].classList.add('active');
       current = to;
-    }}
+    }}    
     switchPlot(0);
-    setInterval(() => switchPlot((current+1) % items.length), 5000);
+    setInterval(() => switchPlot((current+1) % items.length), 50000);
   </script>
 </body>
 </html>'''
