@@ -43,7 +43,7 @@ config = [
             "&limit=100"
         ),
         "x_range": (-5, 1400),
-        "y_range": (1e-8, 1e-2),
+        "y_range": (-0.001, 0.001),
     },
     {
         "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Thermal%20conductivity.json",
@@ -83,23 +83,40 @@ for idx, cfg in enumerate(config):
     scatter_adapter = CustomJS(code="""
         const resp = cb_data.response;
         const d = resp.data;
-        const x_flat=[], y_flat=[], sid_flat=[], fig_flat=[], sample_flat=[];
-        for(let i=0; i<d.x.length; i++){
-            const xs=d.x[i], ys=d.y[i];
-            for(let j=0; j<xs.length; j++){
+        const x_flat = [], y_flat = [], sid_flat = [], fig_flat = [], sample_flat = [], ts_flat = [];
+        // flatten all arrays, 同時に updated_at も flatten
+        for (let i = 0; i < d.x.length; i++) {
+            const xs = d.x[i], ys = d.y[i];
+            const updated = d.updated_at[i];  // 例: "2025-05-10T12:34:56Z"
+            console.log(updated)
+            const t = new Date(updated).getTime();
+            for (let j = 0; j < xs.length; j++) {
                 x_flat.push(xs[j]);
                 y_flat.push(ys[j]);
                 sid_flat.push(d.SID[i]);
                 fig_flat.push(d.figure_id[i]);
                 sample_flat.push(d.sample_id[i]);
+                ts_flat.push(t);
             }
         }
+        // タイムスタンプの最小/最大を取得
+        const minTs = Math.min(...ts_flat);
+        const maxTs = Math.max(...ts_flat);
+        // サイズを線形補間（2～8）
+        const size_flat = ts_flat.map(ts => {
+            if (maxTs > minTs) {
+                return 2 + (ts - minTs) / (maxTs - minTs) * (8 - 2);
+            } else {
+                return 2;
+            }
+        });
         return {
-          x: x_flat,
-          y: y_flat,
-          SID: sid_flat,
-          figure_id: fig_flat,
-          sample_id: sample_flat
+            x: x_flat,
+            y: y_flat,
+            SID: sid_flat,
+            figure_id: fig_flat,
+            sample_id: sample_flat,
+            size: size_flat
         };
     """)
     scatter_src = AjaxDataSource(
@@ -157,12 +174,14 @@ for idx, cfg in enumerate(config):
 
     # ベースラインデータ
     p.circle('x', 'y', source=base_src,
-              fill_color='white', fill_alpha='alpha', size=1, line_width=0.2, line_color="#3288bd")
-    # ハイライトデータ
+             fill_color='blue', fill_alpha=0.2,
+             size=2, line_width=0, line_color="#3288bd")
+
+    # ハイライトデータ（α=1、size は JS アダプタで計算したカラムを参照）
     p.circle('x', 'y', source=scatter_src,
-              fill_color='white', fill_alpha=1,
-              line_color='#3288bd', line_alpha=1.0,
-              size=2, line_width=0.2)
+             fill_color='white', fill_alpha=1,
+             line_color='#3288bd', line_alpha=1,
+             size='size', line_width=0.2)
     # ラベル表示
     labels = LabelSet(
         x='x_end', y='y_end', text='label',
