@@ -26,20 +26,23 @@ def make_source(json_path):
     return ColumnDataSource(data=dict(x=x_flat, y=y_flat, SID=sid_flat)), content
 
 # --- 設定リスト ---
+date_after="2024-01-01"
+date_before="2025-05-09"
+limit = 50
 config = [
     # 1. Seebeck coefficient
     {
         "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Seebeck%20coefficient.json",
         "highlight_path": (
             "https://www.starrydata2.org/paperlist/xy_data_api/"
-            "?date_before=2025-05-09"
-            "&date_after=2024-01-01"
+            f"?date_after={date_after}"
+            f"&date_before={date_before}"
             "&property_x=Temperature"
             "&property_y=Seebeck%20coefficient"
-            "&limit=20"
+            f"&limit={limit}"
         ),
-        "x_range": (-5, 1400),
-        "y_range": (-0.0005, 0.0005),
+        "x_range": (-5, 1150),
+        "y_range": (-0.0003, 0.0003),
         "y_scale": "linear",
     },
     # 2. Electrical conductivity
@@ -47,14 +50,14 @@ config = [
         "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Electrical%20conductivity.json",
         "highlight_path": (
             "https://www.starrydata2.org/paperlist/xy_data_api/"
-            "?date_before=2025-05-09"
-            "&date_after=2024-01-01"
+            f"?date_after={date_after}"
+            f"&date_before={date_before}"
             "&property_x=Temperature"
             "&property_y=Electrical%20conductivity"
-            "&limit=20"
+            f"&limit={limit}"
         ),
-        "x_range": (-5, 1400),
-        "y_range": (1, 1e8),     # S/m の例
+        "x_range": (-5, 1150),
+        "y_range": (1e2, 1e6),     # S/m の例
         "y_scale": "log",
     },
     # 3. Electrical resistivity
@@ -62,14 +65,14 @@ config = [
         "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Electrical%20resistivity.json",
         "highlight_path": (
             "https://www.starrydata2.org/paperlist/xy_data_api/"
-            "?date_before=2025-05-09"
-            "&date_after=2024-01-01"
+            f"?date_after={date_after}"
+            f"&date_before={date_before}"
             "&property_x=Temperature"
             "&property_y=Electrical%20resistivity"
-            "&limit=20"
+            f"&limit={limit}"
         ),
-        "x_range": (-5, 1400),
-        "y_range": (1e-8, 1),     # Ω·m の例
+        "x_range": (-5, 1150),
+        "y_range": (1e-6, 1e-2),     # Ω·m の例
         "y_scale": "log",
     },
     # 4. Thermal conductivity
@@ -77,14 +80,14 @@ config = [
         "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Thermal%20conductivity.json",
         "highlight_path": (
             "https://www.starrydata2.org/paperlist/xy_data_api/"
-            "?date_before=2025-05-09"
-            "&date_after=2024-01-01"
+            f"?date_after={date_after}"
+            f"&date_before={date_before}"
             "&property_x=Temperature"
             "&property_y=Thermal%20conductivity"
-            "&limit=20"
+            f"&limit={limit}"
         ),
-        "x_range": (-5, 1400),
-        "y_range": (1e-1, 5e+1),
+        "x_range": (-5, 1150),
+        "y_range": (5e-1, 2e+1),
         "y_scale": "log",
     },
     # 5. Power factor
@@ -92,14 +95,14 @@ config = [
         "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Power%20factor.json",
         "highlight_path": (
             "https://www.starrydata2.org/paperlist/xy_data_api/"
-            "?date_before=2025-05-09"
-            "&date_after=2024-01-01"
+            f"?date_after={date_after}"
+            f"&date_before={date_before}"
             "&property_x=Temperature"
             "&property_y=Power%20factor"
-            "&limit=20"
+            f"&limit={limit}"
         ),
-        "x_range": (-5, 1400),
-        "y_range": (1e-5, 1e-2),     # W/mK² の例
+        "x_range": (-5, 1150),
+        "y_range": (1e-4, 1e-2),     # W/mK² の例
         "y_scale": "log",
     },
     # 6. ZT
@@ -107,13 +110,13 @@ config = [
         "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-ZT.json",
         "highlight_path": (
             "https://www.starrydata2.org/paperlist/xy_data_api/"
-            "?date_before=2025-05-09"
-            "&date_after=2024-01-01"
+            f"?date_after={date_after}"
+            f"&date_before={date_before}"
             "&property_x=Temperature"
             "&property_y=ZT"
-            "&limit=20"
+            f"&limit={limit}"
         ),
-        "x_range": (-5, 1400),
+        "x_range": (-5, 1150),
         "y_range": (0, 1.5),        # 一般的な ZT の範囲
         "y_scale": "linear",
     },
@@ -130,7 +133,7 @@ for idx, cfg in enumerate(config):
     hl_url = cfg['highlight_path']
     scatter_adapter = CustomJS(code="""
         const d = cb_data.response.data;
-        let xf = [], yf = [], sidf = [], sizef = [];
+        let xf = [], yf = [], sidf = [], sizef = [], line_sizef = [];
         const ts = [];
         for (let i = 0; i < d.x.length; i++) {
             const t = new Date(d.updated_at[i]).getTime();
@@ -142,8 +145,9 @@ for idx, cfg in enumerate(config):
             }
         }
         const mi = Math.min(...ts), ma = Math.max(...ts);
-        ts.forEach(t => sizef.push(ma > mi ? 4 + (t - mi)/(ma - mi)*6 : 4));
-        return { x: xf, y: yf, SID: sidf, size: sizef };
+        ts.forEach(t => sizef.push(ma > mi ? 2 + (t - mi)/(ma - mi)*4 : 2));
+        ts.forEach(t => line_sizef.push(ma > mi ? 0.1 + (t-mi)/(ma - mi)*0.4 : 0.1));
+        return { x: xf, y: yf, SID: sidf, size: sizef, line_size: line_sizef };
     """)
     scatter_src = AjaxDataSource(
         data_url=hl_url,
@@ -163,7 +167,7 @@ for idx, cfg in enumerate(config):
         const ts = d.updated_at.map(t => new Date(t).getTime());
         const mi = Math.min(...ts), ma = Math.max(...ts);
         // シリーズ毎に線幅を計算（新しいほど太くなる）
-        const widths = ts.map(t => 0.2 + (ma > mi ? (t - mi)/(ma - mi)*0.5 : 0));
+        const widths = ts.map(t => 0.1 + (ma > mi ? (t - mi)/(ma - mi)*0.2 : 0.1));
         return { xs: d.x, ys: d.y, widths: widths };
     """)
     line_src = AjaxDataSource(
@@ -214,8 +218,8 @@ for idx, cfg in enumerate(config):
 
     # ベースデータ
     p.circle('x', 'y', source=base_src,
-             fill_color='blue', fill_alpha=0.5,
-             size=2, line_width=0, line_color="#3288bd")
+             fill_color='blue', fill_alpha=1,
+             size=1, line_width=0, line_color="#3288bd")
 
     # ── 追加：系列ごとに線を描画 ──
     p.multi_line(
@@ -228,8 +232,8 @@ for idx, cfg in enumerate(config):
     # ハイライトデータ（α=1、size は JS アダプタで計算したカラムを参照）
     p.circle('x', 'y', source=scatter_src,
              fill_color='white', fill_alpha=1,
-             line_color='#3288bd', line_alpha=1,
-             size='size', line_width=0.4)
+             line_color='blue', line_alpha=1,
+             size='size', line_width='line_size')
 
     # ラベル
     labels = LabelSet(
