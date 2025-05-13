@@ -1,18 +1,23 @@
-import json, os
+import json
+import os
+import requests
 from bokeh.plotting import figure
 from bokeh.models import ColumnDataSource, Range1d, CustomJS, AjaxDataSource, LabelSet
 from bokeh.embed import components
 from bokeh.resources import CDN
-import requests
 
 # --- CustomJSコードを外部ファイルから読み込む ---
-with open("src/static/js/scatter_adapter.js", encoding="utf-8") as f:
-    scatter_code = f.read().strip()
-with open("src/static/js/line_adapter.js", encoding="utf-8") as f:
-    line_code = f.read().strip()
-with open("src/static/js/label_adapter.js", encoding="utf-8") as f:
-    label_code = f.read().strip()
+def load_js_code():
+    base_path = "src/static/js"
+    with open(f"{base_path}/scatter_adapter.js", encoding="utf-8") as f:
+        scatter_code = f.read().strip()
+    with open(f"{base_path}/line_adapter.js", encoding="utf-8") as f:
+        line_code = f.read().strip()
+    with open(f"{base_path}/label_adapter.js", encoding="utf-8") as f:
+        label_code = f.read().strip()
+    return scatter_code, line_code, label_code
 
+scatter_code, line_code, label_code = load_js_code()
 
 # --- 共通関数：JSON から ColumnDataSource を作る ---
 def make_source(json_path):
@@ -30,7 +35,6 @@ def make_source(json_path):
             sid_flat.append(num_sid)
 
     return ColumnDataSource(data=dict(x=x_flat, y=y_flat, SID=sid_flat)), content
-
 
 def generate_graph(json_path, highlight_path, y_scale, x_range, y_range):
     base_src, content = make_source(json_path)
@@ -134,7 +138,6 @@ def generate_graph(json_path, highlight_path, y_scale, x_range, y_range):
     title = content["prop_y"]
     return div, script, title
 
-
 def generate_slideshow(graphs):
     divs, scripts, titles = [], [], []
     for div, script, title in graphs:
@@ -166,53 +169,3 @@ def generate_slideshow(graphs):
         f.write(html)
     print(f"Generated: {out}")
     return out, html
-
-
-def main():
-    import json
-    import os
-
-    # 環境変数からURIを取得
-    json_base_uri = os.environ.get("JSON_BASE_URI", "")
-    highlight_base_uri = os.environ.get("HIGHLIGHT_BASE_URI", "")
-
-    with open("src/config.json", "r", encoding="utf-8") as f:
-        config_data = json.load(f)
-
-    graphs = []
-    for idx, cfg in enumerate(config_data["config"]):
-        # json_pathとhighlight_pathを環境変数のベースURIと組み合わせて作成
-        json_path = f"{json_base_uri}/{cfg['prop_x']}-{cfg['prop_y']}.json"
-        highlight_path = f"{highlight_base_uri}/?property_x={cfg['prop_x']}&property_y={cfg['prop_y']}&date_after=2024-01-01&date_before=2025-05-09&limit=50"
-
-        div, script, title = generate_graph(
-            json_path, highlight_path, cfg["y_scale"], cfg["x_range"], cfg["y_range"]
-        )
-        graphs.append((div, script, title))
-
-        # ファイル名をX軸とY軸の名前をベースに作成
-        safe_x_name = cfg["prop_x"].replace(" ", "_")
-        safe_y_name = cfg["prop_y"].replace(" ", "_")
-        single_out = f"./dist/graphs/graph_{safe_x_name}_{safe_y_name}.html"
-
-        # 単体グラフのHTMLをdist/graphsに生成
-        single_html = f"""
-        <html>
-        <head>{CDN.render()}</head>
-        <body>
-        {div}
-        {script}
-        </body>
-        </html>
-        """
-        os.makedirs(os.path.dirname(single_out), exist_ok=True)
-        with open(single_out, "w", encoding="utf-8") as f:
-            f.write(single_html)
-        print(f"Generated single graph HTML: {single_out}")
-
-    out_path, html_content = generate_slideshow(graphs)
-    print(f"Generated slideshow at: {out_path}")
-
-
-if __name__ == "__main__":
-    main()

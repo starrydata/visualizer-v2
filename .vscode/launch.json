@@ -9,7 +9,7 @@
             "type": "debugpy",
             "request": "launch",
             // src/app.pyを実行したい
-            "program": "${workspaceFolder}/src/app.py",
+            "program": "${workspaceFolder}/src/main.py",
             "console": "integratedTerminal"
         }
     ]
