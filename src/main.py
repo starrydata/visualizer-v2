@@ -1,33 +1,35 @@
 import json
 import os
-from graph_generator import generate_graph, generate_slideshow
+from application.services import GraphGenerationService, SlideshowGenerationService, load_js_code
+from domain.slideshow import Slideshow
 from bokeh.resources import CDN
 
 def main():
-    # 環境変数からURIを取得
     json_base_uri = os.environ.get("JSON_BASE_URI", "")
     highlight_base_uri = os.environ.get("HIGHLIGHT_BASE_URI", "")
 
     with open("src/config.json", "r", encoding="utf-8") as f:
         config_data = json.load(f)
 
-    graphs = []
-    for idx, cfg in enumerate(config_data["config"]):
-        # json_pathとhighlight_pathを環境変数のベースURIと組み合わせて作成
+    scatter_js, line_js, label_js = load_js_code()
+    graph_service = GraphGenerationService(scatter_js, line_js, label_js)
+    slideshow_service = SlideshowGenerationService()
+
+    graphs = Slideshow([])
+
+    for cfg in config_data["config"]:
         json_path = f"{json_base_uri}/{cfg['prop_x']}-{cfg['prop_y']}.json"
         highlight_path = f"{highlight_base_uri}/?property_x={cfg['prop_x']}&property_y={cfg['prop_y']}&date_after=2024-01-01&date_before=2025-05-09&limit=50"
 
-        div, script, title = generate_graph(
+        div, script, title = graph_service.create_graph(
             json_path, highlight_path, cfg["y_scale"], cfg["x_range"], cfg["y_range"]
         )
-        graphs.append((div, script, title))
+        graphs.add_graph(div, script, title)
 
-        # ファイル名をX軸とY軸の名前をベースに作成
         safe_x_name = cfg["prop_x"].replace(" ", "_")
         safe_y_name = cfg["prop_y"].replace(" ", "_")
         single_out = f"./dist/graphs/graph_{safe_x_name}_{safe_y_name}.html"
 
-        # 単体グラフのHTMLをdist/graphsに生成
         single_html = f"""
         <html>
         <head>{CDN.render()}</head>
@@ -42,7 +44,7 @@ def main():
             f.write(single_html)
         print(f"Generated single graph HTML: {single_out}")
 
-    out_path, html_content = generate_slideshow(graphs)
+    out_path, html_content = slideshow_service.generate_slideshow(graphs)
     print(f"Generated slideshow at: {out_path}")
 
 if __name__ == "__main__":
