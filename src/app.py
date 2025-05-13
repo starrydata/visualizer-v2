@@ -7,6 +7,14 @@ from bokeh.embed import components
 from bokeh.resources import CDN
 import requests
 
+# --- CustomJSコードを外部ファイルから読み込む ---
+with open("src/static/js/scatter_adapter.js", encoding="utf-8") as f:
+    scatter_code = f.read().strip()
+with open("src/static/js/line_adapter.js", encoding="utf-8") as f:
+    line_code = f.read().strip()
+with open("src/static/js/label_adapter.js", encoding="utf-8") as f:
+    label_code = f.read().strip()
+
 
 # --- 共通関数：JSON から ColumnDataSource を作る ---
 def make_source(json_path):
@@ -131,24 +139,7 @@ for idx, cfg in enumerate(config):
 
     # AJAX データソース作成（highlight 傾向）
     hl_url = cfg['highlight_path']
-    scatter_adapter = CustomJS(code="""
-        const d = cb_data.response.data;
-        let xf = [], yf = [], sidf = [], sizef = [], line_sizef = [];
-        const ts = [];
-        for (let i = 0; i < d.x.length; i++) {
-            const t = new Date(d.updated_at[i]).getTime();
-            for (let j = 0; j < d.x[i].length; j++) {
-                xf.push(d.x[i][j]);
-                yf.push(d.y[i][j]);
-                sidf.push(d.SID[i]);
-                ts.push(t);
-            }
-        }
-        const mi = Math.min(...ts), ma = Math.max(...ts);
-        ts.forEach(t => sizef.push(ma > mi ? 2 + (t - mi)/(ma - mi)*4 : 2));
-        ts.forEach(t => line_sizef.push(ma > mi ? 0.1 + (t-mi)/(ma - mi)*0.4 : 0.1));
-        return { x: xf, y: yf, SID: sidf, size: sizef, line_size: line_sizef };
-    """)
+    scatter_adapter = CustomJS(code=scatter_code)
     scatter_src = AjaxDataSource(
         data_url=hl_url,
         polling_interval=60000,
@@ -159,17 +150,7 @@ for idx, cfg in enumerate(config):
     )
 
     # ── 追加：系列ごとの線用 AjaxDataSource ──
-    line_adapter = CustomJS(code="""
-        // d.x, d.y: 各シリーズ毎の座標配列
-        // d.updated_at: 各シリーズのタイムスタンプ文字列配列
-        const d = cb_data.response.data;
-        // UNIX 時間に変換
-        const ts = d.updated_at.map(t => new Date(t).getTime());
-        const mi = Math.min(...ts), ma = Math.max(...ts);
-        // シリーズ毎に線幅を計算（新しいほど太くなる）
-        const widths = ts.map(t => 0.1 + (ma > mi ? (t - mi)/(ma - mi)*0.2 : 0.1));
-        return { xs: d.x, ys: d.y, widths: widths };
-    """)
+    line_adapter = CustomJS(code=line_code)
     line_src = AjaxDataSource(
         data_url=hl_url,
         polling_interval=60000,
@@ -180,17 +161,7 @@ for idx, cfg in enumerate(config):
     )
 
     # ラベル用データソース
-    label_adapter = CustomJS(code="""
-        const d = cb_data.response.data;
-        let xe = [], ye = [], lab = [];
-        for (let i = 0; i < d.x.length; i++) {
-            const xs = d.x[i], ys = d.y[i];
-            xe.push(xs.length ? xs[xs.length - 1] : null);
-            ye.push(ys.length ? ys[ys.length - 1] : null);
-            lab.push(`${d.SID[i]}-${d.figure_id[i]}-${d.sample_id[i]}`);
-        }
-        return { x_end: xe, y_end: ye, label: lab };
-    """)
+    label_adapter = CustomJS(code=label_code)
     label_src = AjaxDataSource(
         data_url=hl_url,
         polling_interval=60000,
@@ -295,7 +266,7 @@ html = f'''<!DOCTYPE html>
       document.getElementById('plot' + to).style.opacity = 1;
       items[current].classList.remove('active'); items[to].classList.add('active');
       current = to;
-    }}    
+    }}
     switchPlot(0);
     setInterval(() => switchPlot((current+1) % items.length), 20000);
   </script>
