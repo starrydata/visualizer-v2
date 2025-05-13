@@ -1,0 +1,16 @@
+{
+  "name": "night-mode",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write 'src/static/js/**/*.js' 'src/templates/**/*.html' && black src"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "prettier": "^3.5.3"
+  }
+}
