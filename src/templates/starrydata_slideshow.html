@@ -16,19 +16,47 @@
       top: 50%;
       transform: translateY(-50%);
     }
+  #menu #slideshow-toggle {
+    margin-left: auto;
+    margin-right: 20px;
+    cursor: pointer;
+    user-select: none;
+    font-weight: bold;
+    color: white;
+  }
   #content {position:absolute; top:40px; left:0; right:0; bottom:0;}
   .plot-container {position:absolute; top:0; left:0; right:0; bottom:0;
                    opacity:0; transition:opacity 1s; pointer-events:none;}
   .plot-container.active {opacity:1; pointer-events:auto;}
 </style></head>
 <body>
-  <div id="menu"><span>Y axis: </span><ul>{{ menu_items|safe }}</ul></div>
+  <div id="menu"><span>Y axis: </span><ul>{{ menu_items|safe }}</ul><div id="slideshow-toggle">Slideshow ON</div></div>
   <div id="content">{{ plots_html|safe }}</div>
   <script>
     const items = [...document.querySelectorAll('#menu li')];
     let current = 1;
-    items.forEach((it, i) => it.addEventListener('click', () => switchPlot(i)));
+    let slideshowOn = true;
+    let slideshowInterval = null;
+
+    items.forEach((it, i) => it.addEventListener('click', () => {
+      switchPlot(i);
+      if (slideshowOn) {
+        resetSlideshowInterval();
+      }
+    }));
     items[0].classList.add('active');
+
+    const toggleBtn = document.getElementById('slideshow-toggle');
+    toggleBtn.addEventListener('click', () => {
+      slideshowOn = !slideshowOn;
+      toggleBtn.textContent = slideshowOn ? 'Slideshow ON' : 'Slideshow OFF';
+      if (slideshowOn) {
+        resetSlideshowInterval();
+      } else {
+        clearInterval(slideshowInterval);
+      }
+    });
+
     function switchPlot(to) {
       if (to === current) return;
       const prev = document.getElementById('plot' + current);
@@ -38,8 +66,14 @@
       items[current].classList.remove('active'); items[to].classList.add('active');
       current = to;
     }
+
+    function resetSlideshowInterval() {
+      if (slideshowInterval) clearInterval(slideshowInterval);
+      slideshowInterval = setInterval(() => switchPlot((current + 1) % items.length), 20000);
+    }
+
     switchPlot(0);
-    setInterval(() => switchPlot((current+1) % items.length), 20000);
+    resetSlideshowInterval();
   </script>
 </body>
 </html>
