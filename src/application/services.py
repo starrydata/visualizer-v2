@@ -179,7 +179,6 @@ class SlideshowGenerationService:
         scripts = [script for _, script, _ in graphs.graphs]
         titles = graphs.get_titles()
 
-        header_height = 40
         menu_items = "".join(
             [f'<li id="menu{idx}">{title}</li>' for idx, title in enumerate(titles)]
         )
