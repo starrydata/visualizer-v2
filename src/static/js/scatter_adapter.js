@@ -1,4 +1,3 @@
-console.log("scatter_adapter.js loaded");
 const d = cb_data.response.data;
 let xf = [], yf = [], sidf = [], sizef = [], line_sizef = [];
 const ts = [];

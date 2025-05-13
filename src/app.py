@@ -33,102 +33,13 @@ def make_source(json_path):
 
     return ColumnDataSource(data=dict(x=x_flat, y=y_flat, SID=sid_flat)), content
 
-# --- 設定リスト ---
-date_after="2024-01-01"
-date_before="2025-05-09"
-limit = 50
-config = [
-    # 1. Seebeck coefficient
-    {
-        "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Seebeck%20coefficient.json",
-        "highlight_path": (
-            "https://www.starrydata2.org/paperlist/xy_data_api/"
-            f"?date_after={date_after}"
-            f"&date_before={date_before}"
-            "&property_x=Temperature"
-            "&property_y=Seebeck%20coefficient"
-            f"&limit={limit}"
-        ),
-        "x_range": (-5, 1150),
-        "y_range": (-0.0003, 0.0003),
-        "y_scale": "linear",
-    },
-    # 2. Electrical conductivity
-    {
-        "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Electrical%20conductivity.json",
-        "highlight_path": (
-            "https://www.starrydata2.org/paperlist/xy_data_api/"
-            f"?date_after={date_after}"
-            f"&date_before={date_before}"
-            "&property_x=Temperature"
-            "&property_y=Electrical%20conductivity"
-            f"&limit={limit}"
-        ),
-        "x_range": (-5, 1150),
-        "y_range": (1e2, 1e6),     # S/m の例
-        "y_scale": "log",
-    },
-    # 3. Electrical resistivity
-    {
-        "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Electrical%20resistivity.json",
-        "highlight_path": (
-            "https://www.starrydata2.org/paperlist/xy_data_api/"
-            f"?date_after={date_after}"
-            f"&date_before={date_before}"
-            "&property_x=Temperature"
-            "&property_y=Electrical%20resistivity"
-            f"&limit={limit}"
-        ),
-        "x_range": (-5, 1150),
-        "y_range": (1e-6, 1e-2),     # Ω·m の例
-        "y_scale": "log",
-    },
-    # 4. Thermal conductivity
-    {
-        "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Thermal%20conductivity.json",
-        "highlight_path": (
-            "https://www.starrydata2.org/paperlist/xy_data_api/"
-            f"?date_after={date_after}"
-            f"&date_before={date_before}"
-            "&property_x=Temperature"
-            "&property_y=Thermal%20conductivity"
-            f"&limit={limit}"
-        ),
-        "x_range": (-5, 1150),
-        "y_range": (5e-1, 2e+1),
-        "y_scale": "log",
-    },
-    # 5. Power factor
-    {
-        "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Power%20factor.json",
-        "highlight_path": (
-            "https://www.starrydata2.org/paperlist/xy_data_api/"
-            f"?date_after={date_after}"
-            f"&date_before={date_before}"
-            "&property_x=Temperature"
-            "&property_y=Power%20factor"
-            f"&limit={limit}"
-        ),
-        "x_range": (-5, 1150),
-        "y_range": (1e-4, 1e-2),     # W/mK² の例
-        "y_scale": "log",
-    },
-    # 6. ZT
-    {
-        "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-ZT.json",
-        "highlight_path": (
-            "https://www.starrydata2.org/paperlist/xy_data_api/"
-            f"?date_after={date_after}"
-            f"&date_before={date_before}"
-            "&property_x=Temperature"
-            "&property_y=ZT"
-            f"&limit={limit}"
-        ),
-        "x_range": (-5, 1150),
-        "y_range": (0, 1.5),        # 一般的な ZT の範囲
-        "y_scale": "linear",
-    },
-]
+
+import json
+
+with open("src/config.json", "r", encoding="utf-8") as f:
+    config_data = json.load(f)
+
+config = config_data["config"]
 
 divs, scripts, titles = [], [], []
 for idx, cfg in enumerate(config):
