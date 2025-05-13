@@ -1,81 +1,151 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head><meta charset="utf-8"><title>Starrydata Slideshow</title>{{ bokeh_cdn }}
-<style>
-  html, body {margin:0; padding:0; height:100%;}
-  #menu {position:fixed; top:0; left:0; width:100%; height:40px;
-           background:black; color:white; z-index:10; font-size: 12px;}
-  #menu {position:fixed; top:0; left:0; width:100%; height:40px;
-           background:black; color:white; z-index:10; font-size: 12px; display: flex; align-items: center;}
-  #menu ul {display:inline-flex; margin:0; padding:0; list-style:none; flex-grow: 1;}
-  #menu li {margin-right:30px; cursor:pointer; line-height: 40px;}
-  #menu li.active {position: relative;}
-  /* 右端に☑️を表示 */
-    #menu li.active::after {
-      content: '☑️';
-      position: absolute;
-      right: -1.3em;       /* 右からの余白 */
-      top: 50%;
-      transform: translateY(-50%);
-    }
-  #menu #slideshow-toggle {
-    margin-left: auto;
-    cursor: pointer;
-    user-select: none;
-    font-weight: bold;
-    color: white;
-    line-height: 40px;
-  }
-  #content {position:absolute; top:40px; left:0; right:0; bottom:0;}
-  .plot-container {position:absolute; top:0; left:0; right:0; bottom:0;
-                   opacity:0; transition:opacity 1s; pointer-events:none;}
-  .plot-container.active {opacity:1; pointer-events:auto;}
-</style></head>
-<body>
-  <div id="menu"><span>Y axis: </span><ul>{{ menu_items|safe }}</ul><div id="slideshow-toggle">Slideshow ON</div></div>
-  <div id="content">{{ plots_html|safe }}</div>
-  <script>
-    const items = [...document.querySelectorAll('#menu li')];
-    let current = 1;
-    let slideshowOn = true;
-    let slideshowInterval = null;
-
-    items.forEach((it, i) => it.addEventListener('click', () => {
-      switchPlot(i);
-      if (slideshowOn) {
-        resetSlideshowInterval();
+  <head>
+    <meta charset="utf-8" />
+    <title>Starrydata Slideshow</title>
+    {{ bokeh_cdn }}
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
       }
-    }));
-    items[0].classList.add('active');
-
-    const toggleBtn = document.getElementById('slideshow-toggle');
-    toggleBtn.addEventListener('click', () => {
-      slideshowOn = !slideshowOn;
-      toggleBtn.textContent = slideshowOn ? 'Slideshow ON' : 'Slideshow OFF';
-      if (slideshowOn) {
-        resetSlideshowInterval();
-      } else {
-        clearInterval(slideshowInterval);
+      #menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 40px;
+        background: black;
+        color: white;
+        z-index: 10;
+        font-size: 12px;
       }
-    });
+      #menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 40px;
+        background: black;
+        color: white;
+        z-index: 10;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+      }
+      #menu ul {
+        display: inline-flex;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        flex-grow: 1;
+      }
+      #menu li {
+        margin-right: 30px;
+        cursor: pointer;
+        line-height: 40px;
+      }
+      #menu li.active {
+        position: relative;
+      }
+      /* 右端に☑️を表示 */
+      #menu li.active::after {
+        content: '☑️';
+        position: absolute;
+        right: -1.3em; /* 右からの余白 */
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      #menu #slideshow-toggle {
+        margin-left: auto;
+        cursor: pointer;
+        user-select: none;
+        font-weight: bold;
+        color: white;
+        line-height: 40px;
+      }
+      #content {
+        position: absolute;
+        top: 40px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+      .plot-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0;
+        transition: opacity 1s;
+        pointer-events: none;
+      }
+      .plot-container.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="menu">
+      <span>Y axis: </span>
+      <ul>
+        {{ menu_items|safe }}
+      </ul>
+      <div id="slideshow-toggle">Slideshow ON</div>
+    </div>
+    <div id="content">{{ plots_html|safe }}</div>
+    <script>
+      const items = [...document.querySelectorAll('#menu li')];
+      let current = 1;
+      let slideshowOn = true;
+      let slideshowInterval = null;
 
-    function switchPlot(to) {
-      if (to === current) return;
-      const prev = document.getElementById('plot' + current);
-      const next = document.getElementById('plot' + to);
-      prev.classList.remove('active');
-      next.classList.add('active');
-      items[current].classList.remove('active'); items[to].classList.add('active');
-      current = to;
-    }
+      items.forEach((it, i) =>
+        it.addEventListener('click', () => {
+          switchPlot(i);
+          if (slideshowOn) {
+            resetSlideshowInterval();
+          }
+        })
+      );
+      items[0].classList.add('active');
 
-    function resetSlideshowInterval() {
-      if (slideshowInterval) clearInterval(slideshowInterval);
-      slideshowInterval = setInterval(() => switchPlot((current + 1) % items.length), 20000);
-    }
+      const toggleBtn = document.getElementById('slideshow-toggle');
+      toggleBtn.addEventListener('click', () => {
+        slideshowOn = !slideshowOn;
+        toggleBtn.textContent = slideshowOn ? 'Slideshow ON' : 'Slideshow OFF';
+        if (slideshowOn) {
+          resetSlideshowInterval();
+        } else {
+          clearInterval(slideshowInterval);
+        }
+      });
 
-    switchPlot(0);
-    resetSlideshowInterval();
-  </script>
-</body>
+      function switchPlot(to) {
+        if (to === current) return;
+        const prev = document.getElementById('plot' + current);
+        const next = document.getElementById('plot' + to);
+        prev.classList.remove('active');
+        next.classList.add('active');
+        items[current].classList.remove('active');
+        items[to].classList.add('active');
+        current = to;
+      }
+
+      function resetSlideshowInterval() {
+        if (slideshowInterval) clearInterval(slideshowInterval);
+        slideshowInterval = setInterval(
+          () => switchPlot((current + 1) % items.length),
+          20000
+        );
+      }
+
+      switchPlot(0);
+      resetSlideshowInterval();
+    </script>
+  </body>
 </html>

@@ -1,6 +1,7 @@
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import pytest
 from unittest.mock import patch, Mock
@@ -10,21 +11,18 @@ import app as app
 # モック用のJSONレスポンスデータ
 mock_json_response = {
     "data": {
-        "x": [
-            [i + j*0.1 for i in range(10)] for j in range(10)
-        ],
-        "y": [
-            [i * 2 + j*0.2 for i in range(10)] for j in range(10)
-        ],
-        "SID": [str(100 + j) for j in range(10)]
+        "x": [[i + j * 0.1 for i in range(10)] for j in range(10)],
+        "y": [[i * 2 + j * 0.2 for i in range(10)] for j in range(10)],
+        "SID": [str(100 + j) for j in range(10)],
     },
     "prop_x": "X Axis",
     "prop_y": "Y Axis",
     "unit_x": "units",
-    "unit_y": "units"
+    "unit_y": "units",
 }
 
-@patch('app.requests.get')
+
+@patch("app.requests.get")
 def test_make_source(mock_get):
     # requests.getのモック設定
     mock_resp = Mock()
@@ -47,17 +45,19 @@ def test_make_source(mock_get):
     expected_sid = []
     for j in range(10):
         for i in range(10):
-            expected_x.append(i + j*0.1)
-            expected_y.append(i * 2 + j*0.2)
+            expected_x.append(i + j * 0.1)
+            expected_y.append(i * 2 + j * 0.2)
             expected_sid.append(100 + j)
-    assert data['x'] == expected_x
-    assert data['y'] == expected_y
-    assert data['SID'] == expected_sid
+    assert data["x"] == expected_x
+    assert data["y"] == expected_y
+    assert data["SID"] == expected_sid
+
 
 import json
 
-@patch('app.generate_graph')
-@patch('app.generate_slideshow')
+
+@patch("app.generate_graph")
+@patch("app.generate_slideshow")
 def test_generate_slideshow(mock_generate_slideshow, mock_generate_graph):
     # generate_graphのモック設定
     mock_generate_graph.side_effect = [
@@ -71,7 +71,9 @@ def test_generate_slideshow(mock_generate_slideshow, mock_generate_graph):
     # 実際の呼び出し
     graphs = []
     for i in range(2):
-        div, script, title = mock_generate_graph(f"url{i}", f"hl{i}", "linear", [0,1], [0,1])
+        div, script, title = mock_generate_graph(
+            f"url{i}", f"hl{i}", "linear", [0, 1], [0, 1]
+        )
         graphs.append((div, script, title))
     out_path, html_content = mock_generate_slideshow(graphs)
 
