@@ -141,50 +141,10 @@ plots_html = ''.join([
     f'<div id="plot{idx}" class="plot-container">{divs[idx]}{scripts[idx]}</div>'
     for idx in range(len(divs))
 ])
-html = f'''<!DOCTYPE html>
-<html lang="ja">
-<head><meta charset="utf-8"><title>Starrydata Slideshow</title>{CDN.render()}
-<style>
-  html, body {{margin:0; padding:0; height:100%;}}
-  #menu {{position:fixed; top:0; left:0; width:100%; height:{header_height}px;
-           background:black; color:white; z-index:10; font-size: 12px;}}
-  #menu ul {{display:inline-flex; margin:0; padding:10px; list-style:none;}}
-  #menu li {{margin-right:30px; cursor:pointer;}}
-  #menu li.active {{position: relative;}}
-  /* 右端に☑️を表示 */
-    #menu li.active::after {{
-      content: '☑️';
-      position: absolute;
-      right: -1.3em;       /* 右からの余白 */
-      top: 50%;
-      transform: translateY(-50%);
-    }}
-  #content {{position:absolute; top:{header_height}px; left:0; right:0; bottom:0;}}
-  .plot-container {{position:absolute; top:0; left:0; right:0; bottom:0;
-                   opacity:0; transition:opacity 1s;}}
-</style></head>
-<body>
-  <div id="menu"><span>Y axis: </span><ul>{menu_items}</ul></div>
-  <div id="content">{plots_html}</div>
-  <script>
-    const items = [...document.querySelectorAll('#menu li')];
-    let current = 1;
-    items.forEach((it, i) => it.addEventListener('click', () => switchPlot(i)));
-    items[0].classList.add('active');
-    function switchPlot(to) {{
-      if (to === current) return;
-      document.getElementById('plot' + current).style.opacity = 0;
-      document.getElementById('plot' + to).style.opacity = 1;
-      items[current].classList.remove('active'); items[to].classList.add('active');
-      current = to;
-    }}
-    switchPlot(0);
-    setInterval(() => switchPlot((current+1) % items.length), 20000);
-  </script>
-</body>
-</html>'''
 
-# ファイル出力
+with open("src/templates/starrydata_slideshow.html", encoding="utf-8") as f:
+    template = f.read()
+html = template.replace("{{ menu_items|safe }}", menu_items).replace("{{ plots_html|safe }}", plots_html).replace("{{ bokeh_cdn }}", CDN.render())
 out = './dist/starrydata_slideshow_with_menu.html'
 os.makedirs(os.path.dirname(out), exist_ok=True)
 with open(out, 'w', encoding='utf-8') as f:
