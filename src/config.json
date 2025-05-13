@@ -1,43 +1,55 @@
 {
   "config": [
     {
-      "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Seebeck%20coefficient.json",
-      "highlight_path": "https://www.starrydata2.org/paperlist/xy_data_api/?date_after=2024-01-01&date_before=2025-05-09&property_x=Temperature&property_y=Seebeck%20coefficient&limit=50",
+      "prop_x": "Temperature",
+      "unit_x": "K",
+      "prop_y": "Seebeck coefficient",
+      "unit_y": "V/K",
       "x_range": [-5, 1150],
       "y_range": [-0.0003, 0.0003],
       "y_scale": "linear"
     },
     {
-      "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Electrical%20conductivity.json",
-      "highlight_path": "https://www.starrydata2.org/paperlist/xy_data_api/?date_after=2024-01-01&date_before=2025-05-09&property_x=Temperature&property_y=Electrical%20conductivity&limit=50",
+      "prop_x": "Temperature",
+      "unit_x": "K",
+      "prop_y": "Electrical conductivity",
+      "unit_y": "S/m",
       "x_range": [-5, 1150],
       "y_range": [100, 1000000],
       "y_scale": "log"
     },
     {
-      "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Electrical%20resistivity.json",
-      "highlight_path": "https://www.starrydata2.org/paperlist/xy_data_api/?date_after=2024-01-01&date_before=2025-05-09&property_x=Temperature&property_y=Electrical%20resistivity&limit=50",
+      "prop_x": "Temperature",
+      "unit_x": "K",
+      "prop_y": "Electrical resistivity",
+      "unit_y": "Ω·m",
       "x_range": [-5, 1150],
       "y_range": [1e-6, 1e-2],
       "y_scale": "log"
     },
     {
-      "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Thermal%20conductivity.json",
-      "highlight_path": "https://www.starrydata2.org/paperlist/xy_data_api/?date_after=2024-01-01&date_before=2025-05-09&property_x=Temperature&property_y=Thermal%20conductivity&limit=50",
+      "prop_x": "Temperature",
+      "unit_x": "K",
+      "prop_y": "Thermal conductivity",
+      "unit_y": "W/(m·K)",
       "x_range": [-5, 1150],
       "y_range": [0.5, 20],
       "y_scale": "log"
     },
     {
-      "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-Power%20factor.json",
-      "highlight_path": "https://www.starrydata2.org/paperlist/xy_data_api/?date_after=2024-01-01&date_before=2025-05-09&property_x=Temperature&property_y=Power%20factor&limit=50",
+      "prop_x": "Temperature",
+      "unit_x": "K",
+      "prop_y": "Power factor",
+      "unit_y": "W/(m·K²)",
       "x_range": [-5, 1150],
       "y_range": [0.0001, 0.01],
       "y_scale": "log"
     },
     {
-      "json_path": "https://visualizer.starrydata.org/all_curves/json/Temperature-ZT.json",
-      "highlight_path": "https://www.starrydata2.org/paperlist/xy_data_api/?date_after=2024-01-01&date_before=2025-05-09&property_x=Temperature&property_y=ZT&limit=50",
+      "prop_x": "Temperature",
+      "unit_x": "K",
+      "prop_y": "ZT",
+      "unit_y": "-",
       "x_range": [-5, 1150],
       "y_range": [0, 1.5],
       "y_scale": "linear"
