@@ -18,7 +18,8 @@
     }
   #content {position:absolute; top:40px; left:0; right:0; bottom:0;}
   .plot-container {position:absolute; top:0; left:0; right:0; bottom:0;
-                   opacity:0; transition:opacity 1s;}
+                   opacity:0; transition:opacity 1s; pointer-events:none;}
+  .plot-container.active {opacity:1; pointer-events:auto;}
 </style></head>
 <body>
   <div id="menu"><span>Y axis: </span><ul>{{ menu_items|safe }}</ul></div>
@@ -30,8 +31,10 @@
     items[0].classList.add('active');
     function switchPlot(to) {
       if (to === current) return;
-      document.getElementById('plot' + current).style.opacity = 0;
-      document.getElementById('plot' + to).style.opacity = 1;
+      const prev = document.getElementById('plot' + current);
+      const next = document.getElementById('plot' + to);
+      prev.classList.remove('active');
+      next.classList.add('active');
       items[current].classList.remove('active'); items[to].classList.add('active');
       current = to;
     }
