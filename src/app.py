@@ -7,15 +7,6 @@ from bokeh.embed import components
 from bokeh.resources import CDN
 import requests
 
-# --- 外部JSファイル読込関数 ---
-def load_js(path):
-    with open(path, "r", encoding="utf-8") as f:
-        return f.read()
-
-# --- 外部HTMLテンプレート読込関数 ---
-def load_html_template(path):
-    with open(path, "r", encoding="utf-8") as f:
-        return f.read()
 
 # --- 共通関数：JSON から ColumnDataSource を作る ---
 def make_source(json_path):
@@ -131,23 +122,33 @@ config = [
     },
 ]
 
-# --- 外部JSファイルパス ---
-scatter_adapter_path = os.path.join(os.path.dirname(__file__), "js/scatter_adapter.js")
-line_adapter_path = os.path.join(os.path.dirname(__file__), "js/line_adapter.js")
-label_adapter_path = os.path.join(os.path.dirname(__file__), "js/label_adapter.js")
-
-scatter_adapter_code = load_js(scatter_adapter_path)
-line_adapter_code = load_js(line_adapter_path)
-label_adapter_code = load_js(label_adapter_path)
-
 divs, scripts, titles = [], [], []
 for idx, cfg in enumerate(config):
+    # if idx > 1:
+    #     continue
     base_src, content = make_source(cfg['json_path'])
     titles.append(f"{content['prop_y']}")
 
     # AJAX データソース作成（highlight 傾向）
     hl_url = cfg['highlight_path']
-    scatter_adapter = CustomJS(code=scatter_adapter_code)
+    scatter_adapter = CustomJS(code="""
+        const d = cb_data.response.data;
+        let xf = [], yf = [], sidf = [], sizef = [], line_sizef = [];
+        const ts = [];
+        for (let i = 0; i < d.x.length; i++) {
+            const t = new Date(d.updated_at[i]).getTime();
+            for (let j = 0; j < d.x[i].length; j++) {
+                xf.push(d.x[i][j]);
+                yf.push(d.y[i][j]);
+                sidf.push(d.SID[i]);
+                ts.push(t);
+            }
+        }
+        const mi = Math.min(...ts), ma = Math.max(...ts);
+        ts.forEach(t => sizef.push(ma > mi ? 2 + (t - mi)/(ma - mi)*4 : 2));
+        ts.forEach(t => line_sizef.push(ma > mi ? 0.1 + (t-mi)/(ma - mi)*0.4 : 0.1));
+        return { x: xf, y: yf, SID: sidf, size: sizef, line_size: line_sizef };
+    """)
     scatter_src = AjaxDataSource(
         data_url=hl_url,
         polling_interval=60000,
@@ -158,7 +159,17 @@ for idx, cfg in enumerate(config):
     )
 
     # ── 追加：系列ごとの線用 AjaxDataSource ──
-    line_adapter = CustomJS(code=line_adapter_code)
+    line_adapter = CustomJS(code="""
+        // d.x, d.y: 各シリーズ毎の座標配列
+        // d.updated_at: 各シリーズのタイムスタンプ文字列配列
+        const d = cb_data.response.data;
+        // UNIX 時間に変換
+        const ts = d.updated_at.map(t => new Date(t).getTime());
+        const mi = Math.min(...ts), ma = Math.max(...ts);
+        // シリーズ毎に線幅を計算（新しいほど太くなる）
+        const widths = ts.map(t => 0.1 + (ma > mi ? (t - mi)/(ma - mi)*0.2 : 0.1));
+        return { xs: d.x, ys: d.y, widths: widths };
+    """)
     line_src = AjaxDataSource(
         data_url=hl_url,
         polling_interval=60000,
@@ -169,7 +180,17 @@ for idx, cfg in enumerate(config):
     )
 
     # ラベル用データソース
-    label_adapter = CustomJS(code=label_adapter_code)
+    label_adapter = CustomJS(code="""
+        const d = cb_data.response.data;
+        let xe = [], ye = [], lab = [];
+        for (let i = 0; i < d.x.length; i++) {
+            const xs = d.x[i], ys = d.y[i];
+            xe.push(xs.length ? xs[xs.length - 1] : null);
+            ye.push(ys.length ? ys[ys.length - 1] : null);
+            lab.push(`${d.SID[i]}-${d.figure_id[i]}-${d.sample_id[i]}`);
+        }
+        return { x_end: xe, y_end: ye, label: lab };
+    """)
     label_src = AjaxDataSource(
         data_url=hl_url,
         polling_interval=60000,
@@ -193,6 +214,7 @@ for idx, cfg in enumerate(config):
     p.xgrid.grid_line_color, p.xgrid.grid_line_alpha = '#ccc', 0.1
     p.ygrid.grid_line_color, p.ygrid.grid_line_alpha = '#ccc', 0.1
     p.outline_line_color = None
+
 
     # ベースデータ
     p.circle('x', 'y', source=base_src,
@@ -230,23 +252,55 @@ for idx, cfg in enumerate(config):
     divs.append(div)
     scripts.append(script)
 
-# HTMLテンプレート読込
-template_path = os.path.join(os.path.dirname(__file__), "templates/starrydata_slideshow_with_menu.html")
-html_template = load_html_template(template_path)
-
+# HTML 組み立て
 header_height = 40
 menu_items = ''.join([f'<li id="menu{idx}">{t}</li>' for idx, t in enumerate(titles)])
 plots_html = ''.join([
     f'<div id="plot{idx}" class="plot-container">{divs[idx]}{scripts[idx]}</div>'
     for idx in range(len(divs))
 ])
-
-# テンプレート置換
-html = html_template \
-    .replace("{{CDN}}", CDN.render()) \
-    .replace("{{header_height}}", str(header_height)) \
-    .replace("{{menu_items}}", menu_items) \
-    .replace("{{plots_html}}", plots_html)
+html = f'''<!DOCTYPE html>
+<html lang="ja">
+<head><meta charset="utf-8"><title>Starrydata Slideshow</title>{CDN.render()}
+<style>
+  html, body {{margin:0; padding:0; height:100%;}}
+  #menu {{position:fixed; top:0; left:0; width:100%; height:{header_height}px;
+           background:black; color:white; z-index:10; font-size: 12px;}}
+  #menu ul {{display:inline-flex; margin:0; padding:10px; list-style:none;}}
+  #menu li {{margin-right:30px; cursor:pointer;}}
+  #menu li.active {{position: relative;}}
+  /* 右端に☑️を表示 */
+    #menu li.active::after {{
+      content: '☑️';
+      position: absolute;
+      right: -1.3em;       /* 右からの余白 */
+      top: 50%;
+      transform: translateY(-50%);
+    }}
+  #content {{position:absolute; top:{header_height}px; left:0; right:0; bottom:0;}}
+  .plot-container {{position:absolute; top:0; left:0; right:0; bottom:0;
+                   opacity:0; transition:opacity 1s;}}
+</style></head>
+<body>
+  <div id="menu"><span>Y axis: </span><ul>{menu_items}</ul></div>
+  <div id="content">{plots_html}</div>
+  <script>
+    const items = [...document.querySelectorAll('#menu li')];
+    let current = 1;
+    items.forEach((it, i) => it.addEventListener('click', () => switchPlot(i)));
+    items[0].classList.add('active');
+    function switchPlot(to) {{
+      if (to === current) return;
+      document.getElementById('plot' + current).style.opacity = 0;
+      document.getElementById('plot' + to).style.opacity = 1;
+      items[current].classList.remove('active'); items[to].classList.add('active');
+      current = to;
+    }}    
+    switchPlot(0);
+    setInterval(() => switchPlot((current+1) % items.length), 20000);
+  </script>
+</body>
+</html>'''
 
 # ファイル出力
 out = './dist/starrydata_slideshow_with_menu.html'
