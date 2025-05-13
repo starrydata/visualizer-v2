@@ -215,13 +215,8 @@ for idx, cfg in enumerate(config):
     # ベースデータ
     p.circle('x', 'y', source=base_src,
              fill_color='blue', fill_alpha=0.5,
-             size=1, line_width=0, line_color="#3288bd")
+             size=2, line_width=0, line_color="#3288bd")
 
-    # ハイライトデータ（α=1、size は JS アダプタで計算したカラムを参照）
-    p.circle('x', 'y', source=scatter_src,
-             fill_color='white', fill_alpha=1,
-             line_color='#3288bd', line_alpha=1,
-             size='size', line_width=0.2)
     # ── 追加：系列ごとに線を描画 ──
     p.multi_line(
         xs='xs', ys='ys', source=line_src,
@@ -229,6 +224,12 @@ for idx, cfg in enumerate(config):
         # widths フィールドを線幅にマッピング
         line_width={'field': 'widths'}
     )
+
+    # ハイライトデータ（α=1、size は JS アダプタで計算したカラムを参照）
+    p.circle('x', 'y', source=scatter_src,
+             fill_color='white', fill_alpha=1,
+             line_color='#3288bd', line_alpha=1,
+             size='size', line_width=0.4)
 
     # ラベル
     labels = LabelSet(
