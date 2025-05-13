@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 import pytest
 from unittest.mock import patch, Mock
 from bokeh.models import ColumnDataSource
-import app as app
+import graph_generator as graph_generator
 
 # モック用のJSONレスポンスデータ
 mock_json_response = {
@@ -22,7 +22,7 @@ mock_json_response = {
 }
 
 
-@patch("app.requests.get")
+@patch("graph_generator.requests.get")
 def test_make_source(mock_get):
     # requests.getのモック設定
     mock_resp = Mock()
@@ -30,7 +30,7 @@ def test_make_source(mock_get):
     mock_resp.raise_for_status = Mock()
     mock_get.return_value = mock_resp
 
-    source, content = app.make_source("dummy_url")
+    source, content = graph_generator.make_source("dummy_url")
 
     # ColumnDataSourceの型チェック
     assert isinstance(source, ColumnDataSource)
@@ -56,8 +56,8 @@ def test_make_source(mock_get):
 import json
 
 
-@patch("app.generate_graph")
-@patch("app.generate_slideshow")
+@patch("graph_generator.generate_graph")
+@patch("graph_generator.generate_slideshow")
 def test_generate_slideshow(mock_generate_slideshow, mock_generate_graph):
     # generate_graphのモック設定
     mock_generate_graph.side_effect = [
