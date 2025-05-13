@@ -149,6 +149,27 @@ class GraphGenerationService:
         title = graph.prop_y
         return div, script, title
 
+    def save_graph_html(self, div: str, script: str, prop_x: str, prop_y: str, output_dir: str = "./dist/graphs") -> str:
+        safe_x_name = prop_x.replace(" ", "_")
+        safe_y_name = prop_y.replace(" ", "_")
+        single_out = f"{output_dir}/graph_{safe_x_name}_{safe_y_name}.html"
+
+        single_html = f"""
+        <html>
+        <head>{CDN.render()}</head>
+        <body>
+        {div}
+        {script}
+        </body>
+        </html>
+        """
+        import os
+        os.makedirs(output_dir, exist_ok=True)
+        with open(single_out, "w", encoding="utf-8") as f:
+            f.write(single_html)
+        print(f"Generated single graph HTML: {single_out}")
+        return single_out
+
 class SlideshowGenerationService:
     def __init__(self, template_path: str = "src/templates/starrydata_slideshow.html"):
         self.template_path = template_path

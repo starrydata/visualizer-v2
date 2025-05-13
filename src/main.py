@@ -26,23 +26,8 @@ def main():
         )
         graphs.add_graph(div, script, title)
 
-        safe_x_name = cfg["prop_x"].replace(" ", "_")
-        safe_y_name = cfg["prop_y"].replace(" ", "_")
-        single_out = f"./dist/graphs/graph_{safe_x_name}_{safe_y_name}.html"
-
-        single_html = f"""
-        <html>
-        <head>{CDN.render()}</head>
-        <body>
-        {div}
-        {script}
-        </body>
-        </html>
-        """
-        os.makedirs(os.path.dirname(single_out), exist_ok=True)
-        with open(single_out, "w", encoding="utf-8") as f:
-            f.write(single_html)
-        print(f"Generated single graph HTML: {single_out}")
+        # グラフHTMLファイルの生成をサービスに移行
+        single_out = graph_service.save_graph_html(div, script, cfg["prop_x"], cfg["prop_y"])
 
     out_path, html_content = slideshow_service.generate_slideshow(graphs)
     print(f"Generated slideshow at: {out_path}")
