@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write 'src/static/js/**/*.js' 'src/templates/**/*.html' && black src",
-    "build": "python src/main.py"
+    "build": "python src/main.py thermoelectric && python src/main.py battery"
   },
   "keywords": [],
   "author": "",
