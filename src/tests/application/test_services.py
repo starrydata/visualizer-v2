@@ -58,6 +58,6 @@ def test_slideshow_generation_service_generate_slideshow(mock_makedirs, mock_ope
     with patch("builtins.open", mock_open):
         out_path, html = service.generate_slideshow(graphs)
 
-    assert out_path == "./dist/starrydata_slideshow_with_menu.html"
+    assert out_path == "./dist/starrydata_slideshow.html"
     assert isinstance(html, str)
     assert isinstance(out_path, str)

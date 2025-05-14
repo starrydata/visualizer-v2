@@ -8,7 +8,7 @@ def main():
     json_base_uri = os.environ.get("JSON_BASE_URI", "")
     highlight_base_uri = os.environ.get("HIGHLIGHT_BASE_URI", "")
 
-    with open("src/config.json", "r", encoding="utf-8") as f:
+    with open("src/config.thermoelectric.json", "r", encoding="utf-8") as f:
         config_data = json.load(f)
 
     scatter_js, line_js, label_js = load_js_code()
@@ -17,7 +17,7 @@ def main():
 
     graphs = Slideshow([])
 
-    for cfg in config_data["config"]:
+    for cfg in config_data["graphs"]:
         json_path = f"{json_base_uri}/{cfg['prop_x']}-{cfg['prop_y']}.json"
         highlight_path = f"{highlight_base_uri}/?property_x={cfg['prop_x']}&property_y={cfg['prop_y']}&date_after=2024-01-01&date_before=2025-05-09&limit=50"
 
@@ -29,7 +29,10 @@ def main():
         # グラフHTMLファイルの生成をサービスに移行
         single_out = graph_service.save_graph_html(div, script, cfg["prop_x"], cfg["prop_y"])
 
-    out_path, html_content = slideshow_service.generate_slideshow(graphs)
+    # material_nameをconfig.jsonの内容から取得
+    material_name = config_data.get("material", "starrydata")
+
+    out_path, html_content = slideshow_service.generate_slideshow(graphs, material_name=material_name)
     print(f"Generated slideshow at: {out_path}")
 
 if __name__ == "__main__":

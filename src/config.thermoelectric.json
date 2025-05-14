@@ -1,5 +1,6 @@
 {
-  "config": [
+  "material": "ThermoElectric Material",
+  "graphs": [
     {
       "prop_x": "Temperature",
       "unit_x": "K",

@@ -152,7 +152,7 @@ class GraphGenerationService:
     def save_graph_html(self, div: str, script: str, prop_x: str, prop_y: str, output_dir: str = "./dist/graphs") -> str:
         safe_x_name = prop_x.replace(" ", "_")
         safe_y_name = prop_y.replace(" ", "_")
-        single_out = f"{output_dir}/graph_{safe_x_name}_{safe_y_name}.html"
+        single_out = f"{output_dir}/{safe_x_name}_{safe_y_name}.html"
 
         single_html = f"""
         <html>
@@ -174,7 +174,7 @@ class SlideshowGenerationService:
     def __init__(self, template_path: str = "src/templates/starrydata_slideshow.html"):
         self.template_path = template_path
 
-    def generate_slideshow(self, graphs: Slideshow) -> Tuple[str, str]:
+    def generate_slideshow(self, graphs: Slideshow, material_name: str = "starrydata") -> Tuple[str, str]:
         divs = [div for div, _, _ in graphs.graphs]
         scripts = [script for _, script, _ in graphs.graphs]
         titles = graphs.get_titles()
@@ -198,7 +198,8 @@ class SlideshowGenerationService:
             .replace("{{ bokeh_cdn }}", CDN.render())
         )
 
-        out = "./dist/starrydata_slideshow_with_menu.html"
+        safe_material_name = material_name.replace(" ", "_").lower()
+        out = f"./dist/{safe_material_name}_slideshow.html"
         os.makedirs(os.path.dirname(out), exist_ok=True)
         with open(out, "w", encoding="utf-8") as f:
             f.write(html)
