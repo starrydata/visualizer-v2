@@ -38,7 +38,8 @@ def main():
 
     for cfg in config_data["graphs"]:
         json_path = f"{json_base_uri}/{cfg['prop_x']}-{cfg['prop_y']}.json"
-        highlight_path = f"{highlight_base_uri}/?property_x={cfg['prop_x']}&property_y={cfg['prop_y']}&date_after=2024-01-01&date_before=2025-05-09&limit=50"
+
+        highlight_path = f"{highlight_base_uri}/?property_x={cfg['prop_x']}&property_y={cfg['prop_y']}&date_after={config_data['after']}&date_before={config_data['before']}&limit={config_data['limit']}"
 
         div, script, title = graph_service.create_graph(
             json_path, highlight_path, cfg["y_scale"], cfg["x_range"], cfg["y_range"], cfg.get("x_scale", "linear"), material_type=material_type

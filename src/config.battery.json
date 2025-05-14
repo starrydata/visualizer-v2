@@ -10,40 +10,40 @@
       "prop_y": "Voltage",
       "y_scale": "linear",
       "x_scale": "log",
-      "x_range": [1, 8000],
-      "y_range": [1, 5]
+      "x_range": [1e+3, 1e+7],
+      "y_range": [-5, 5]
     },
     {
       "prop_x": "Charge capacity",
       "prop_y": "Voltage",
       "y_scale": "linear",
       "x_scale": "log",
-      "x_range": [1, 8000],
-      "y_range": [1, 5]
+      "x_range": [1e+3, 1e+7],
+      "y_range": [-5, 5]
     },
     {
       "prop_x": "Cycle number",
       "prop_y": "Discharge capacity",
       "y_scale": "linear",
       "x_scale": "linear",
-      "x_range": [1, 6000],
-      "y_range": [1, 8000]
+      "x_range": [1, 2000],
+      "y_range": [1e+3, 1e+7]
     },
     {
       "prop_x": "C rate",
       "prop_y": "Discharge capacity",
       "y_scale": "linear",
       "x_scale": "linear",
-      "x_range": [1, 3000],
-      "y_range": [1, 8000]
+      "x_range": [-5, 5],
+      "y_range": [1e+3, 1e+7]
     },
     {
       "prop_x": "Time",
       "prop_y": "Voltage",
       "y_scale": "linear",
       "x_scale": "linear",
-      "x_range": [1, 2000],
-      "y_range": [1, 5]
+      "x_range": [1, 1e+6],
+      "y_range": [-5, 5]
     },
     {
       "prop_x": "Cycle number",
@@ -51,7 +51,7 @@
       "y_scale": "linear",
       "x_scale": "linear",
       "x_range": [1, 2000],
-      "y_range": [1, 5]
+      "y_range": [-5, 5]
     }
   ]
 }
