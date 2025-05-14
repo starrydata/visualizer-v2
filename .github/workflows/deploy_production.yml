@@ -33,6 +33,9 @@ jobs:
 
       - name: Build static site
         run: npm run build
+        env:
+          JSON_BASE_URI: https://visualizer.starrydata.org/all_curves/json
+          HIGHLIGHT_BASE_URI: https://www.starrydata2.org/paperlist/xy_data_api
 
       - name: Deploy to GitHub Pages (production)
         uses: peaceiris/actions-gh-pages@v3
