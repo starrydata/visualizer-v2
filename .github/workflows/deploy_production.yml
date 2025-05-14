@@ -39,10 +39,10 @@ jobs:
           JSON_BASE_URI: https://visualizer.starrydata.org/all_curves/json
           HIGHLIGHT_BASE_URI: https://www.starrydata2.org/paperlist/xy_data_api
 
-      - name: Deploy to separate GitHub Pages repository
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          github_token: \${{ secrets.DEPLOY_TOKEN }}
-          publish_dir: ./docs
-          destination_repo: starrydata/nightmode-slideshow-webapp
+          path: ./dist
 
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v1
