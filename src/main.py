@@ -41,7 +41,7 @@ def main():
         highlight_path = f"{highlight_base_uri}/?property_x={cfg['prop_x']}&property_y={cfg['prop_y']}&date_after=2024-01-01&date_before=2025-05-09&limit=50"
 
         div, script, title = graph_service.create_graph(
-            json_path, highlight_path, cfg["y_scale"], cfg["x_range"], cfg["y_range"], material_type=material_type
+            json_path, highlight_path, cfg["y_scale"], cfg["x_range"], cfg["y_range"], cfg.get("x_scale", "linear"), material_type=material_type
         )
         graphs.add_graph(div, script, title)
 

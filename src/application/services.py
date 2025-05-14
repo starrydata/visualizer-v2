@@ -25,7 +25,7 @@ class GraphGenerationService:
         with open(file_path, "r", encoding="utf-8") as f:
             return json.load(f)
 
-    def create_graph(self, json_path: str, highlight_path: str, y_scale: str, x_range: List[float], y_range: List[float], material_type: str = "thermoelectric") -> Tuple[str, str, str]:
+    def create_graph(self, json_path: str, highlight_path: str, y_scale: str, x_range: List[float], y_range: List[float], x_scale: str = "linear", material_type: str = "thermoelectric") -> Tuple[str, str, str]:
         content = self.fetch_json(json_path)
         d = content["data"]
 
@@ -91,7 +91,7 @@ class GraphGenerationService:
         )
 
         p = figure(
-            x_axis_type="linear",
+            x_axis_type=x_scale,
             y_axis_type=y_scale,
             x_range=Range1d(*x_range),
             y_range=Range1d(*y_range),
@@ -192,25 +192,10 @@ class SlideshowGenerationService:
         scripts = [script for _, script, _ in graphs.graphs]
         titles = graphs.get_titles()
 
-        # configファイル読み込み
-        import json
-        config_path = f"src/config.{material_type}.json"
-        with open(config_path, "r", encoding="utf-8") as f:
-            config = json.load(f)
-        axis_display = config.get("axis_display", "y")
+        menu_items = "".join(
+            [f'<li id="menu{idx}">{title}</li>' for idx, title in enumerate(titles)]
+        )
 
-        if axis_display == "xy":
-            prefix = "Figure: "
-        else:
-            prefix = "Y axis: "
-
-        if axis_display == "xy":
-            combined_title = prefix + " ".join(titles)
-            menu_items = f'<li id="menu0">{combined_title}</li>'
-        else:
-            menu_items = "".join(
-                [f'<li id="menu{idx}">{prefix}{title}</li>' for idx, title in enumerate(titles)]
-            )
         plots_html = "".join(
             [
                 f'<div id="plot{idx}" class="plot-container">{divs[idx]}{scripts[idx]}</div>'
