@@ -4,11 +4,30 @@ from application.services import GraphGenerationService, SlideshowGenerationServ
 from domain.slideshow import Slideshow
 from bokeh.resources import CDN
 
+import sys
+
 def main():
     json_base_uri = os.environ.get("JSON_BASE_URI", "")
     highlight_base_uri = os.environ.get("HIGHLIGHT_BASE_URI", "")
 
-    with open("src/config.thermoelectric.json", "r", encoding="utf-8") as f:
+    # コマンドライン引数または環境変数で材料種別を指定（デフォルトは thermoelectric）
+    material_type = None
+    if len(sys.argv) > 1:
+        material_type = sys.argv[1].lower()
+    else:
+        material_type = os.environ.get("MATERIAL_TYPE", "thermoelectric").lower()
+
+    config_file_map = {
+        "thermoelectric": "src/config.thermoelectric.json",
+        "battery": "src/config.battery.json",
+    }
+
+    config_file = config_file_map.get(material_type)
+    if not config_file:
+        print(f"Unknown material type '{material_type}', defaulting to thermoelectric")
+        config_file = config_file_map["thermoelectric"]
+
+    with open(config_file, "r", encoding="utf-8") as f:
         config_data = json.load(f)
 
     scatter_js, line_js, label_js = load_js_code()
@@ -29,8 +48,7 @@ def main():
         # グラフHTMLファイルの生成をサービスに移行
         single_out = graph_service.save_graph_html(div, script, cfg["prop_x"], cfg["prop_y"])
 
-    # material_typeをconfig.jsonの内容から取得
-    material_type = config_data.get("material_type", "starrydata")
+    material_type = config_data.get("material_type", material_type)
 
     out_path, html_content = slideshow_service.generate_slideshow(graphs, material_type=material_type)
     print(f"Generated slideshow at: {out_path}")

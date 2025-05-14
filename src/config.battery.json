@@ -1,0 +1,47 @@
+{
+  "material_type": "Battery",
+  "graphs": [
+    {
+      "prop_x": "Discharge capacity",
+      "prop_y": "Voltage",
+      "y_scale": "linear",
+      "x_range": [0, 8000],
+      "y_range": [0, 5]
+    },
+    {
+      "prop_x": "Charge capacity",
+      "prop_y": "Voltage",
+      "y_scale": "linear",
+      "x_range": [0, 8000],
+      "y_range": [0, 5]
+    },
+    {
+      "prop_x": "Cycle number",
+      "prop_y": "Discharge capacity",
+      "y_scale": "linear",
+      "x_range": [0, 6000],
+      "y_range": [0, 8000]
+    },
+    {
+      "prop_x": "C rate",
+      "prop_y": "Discharge capacity",
+      "y_scale": "linear",
+      "x_range": [0, 3000],
+      "y_range": [0, 8000]
+    },
+    {
+      "prop_x": "Time",
+      "prop_y": "Voltage",
+      "y_scale": "linear",
+      "x_range": [0, 2000],
+      "y_range": [0, 5]
+    },
+    {
+      "prop_x": "Cycle number",
+      "prop_y": "Voltage",
+      "y_scale": "linear",
+      "x_range": [0, 2000],
+      "y_range": [0, 5]
+    }
+  ]
+}

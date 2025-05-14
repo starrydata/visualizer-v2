@@ -10,6 +10,8 @@
             "request": "launch",
             // src/app.pyを実行したい
             "program": "${workspaceFolder}/src/main.py",
+            // 引数にbatteryを渡す
+            "args": ["battery"],
             "console": "integratedTerminal"
         }
     ]
