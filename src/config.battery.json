@@ -1,5 +1,9 @@
 {
-  "material_type": "Battery",
+  "material_type": "battery",
+  "axis_display": "xy",
+  "before": "2025-05-14",
+  "after": "2025-05-14",
+  "limit": 200,
   "graphs": [
     {
       "prop_x": "Discharge capacity",

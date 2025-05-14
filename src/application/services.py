@@ -20,9 +20,19 @@ class GraphGenerationService:
         resp.raise_for_status()
         return resp.json()
 
-    def create_graph(self, json_path: str, highlight_path: str, y_scale: str, x_range: List[float], y_range: List[float]) -> Tuple[str, str, str]:
+    def load_local_json(self, file_path: str) -> dict:
+        import json
+        with open(file_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+
+    def create_graph(self, json_path: str, highlight_path: str, y_scale: str, x_range: List[float], y_range: List[float], material_type: str = "thermoelectric") -> Tuple[str, str, str]:
         content = self.fetch_json(json_path)
         d = content["data"]
+
+        # configファイル読み込み
+        config_path = f"src/config.{material_type}.json"
+        config = self.load_local_json(config_path)
+        axis_display = config.get("axis_display", "y")
 
         data_points = []
         for xs, ys, sid in zip(d["x"], d["y"], d["SID"]):
@@ -146,7 +156,10 @@ class GraphGenerationService:
         p.add_layout(labels)
 
         div, script = components(p)
-        title = graph.prop_y
+        if axis_display == "y":
+            title = graph.prop_y
+        else:
+            title = f"{graph.prop_x} / {graph.prop_y}"
         return div, script, title
 
     def save_graph_html(self, div: str, script: str, prop_x: str, prop_y: str, output_dir: str = "./dist/graphs") -> str:
@@ -179,9 +192,25 @@ class SlideshowGenerationService:
         scripts = [script for _, script, _ in graphs.graphs]
         titles = graphs.get_titles()
 
-        menu_items = "".join(
-            [f'<li id="menu{idx}">{title}</li>' for idx, title in enumerate(titles)]
-        )
+        # configファイル読み込み
+        import json
+        config_path = f"src/config.{material_type}.json"
+        with open(config_path, "r", encoding="utf-8") as f:
+            config = json.load(f)
+        axis_display = config.get("axis_display", "y")
+
+        if axis_display == "xy":
+            prefix = "Figure: "
+        else:
+            prefix = "Y axis: "
+
+        if axis_display == "xy":
+            combined_title = prefix + " ".join(titles)
+            menu_items = f'<li id="menu0">{combined_title}</li>'
+        else:
+            menu_items = "".join(
+                [f'<li id="menu{idx}">{prefix}{title}</li>' for idx, title in enumerate(titles)]
+            )
         plots_html = "".join(
             [
                 f'<div id="plot{idx}" class="plot-container">{divs[idx]}{scripts[idx]}</div>'

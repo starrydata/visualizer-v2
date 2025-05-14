@@ -36,7 +36,8 @@
         align-items: center;
       }
       #menu ul {
-        display: inline-flex;
+        display: flex;
+        flex-wrap: wrap;
         margin: 0;
         padding: 0;
         list-style: none;
@@ -51,6 +52,17 @@
         position: relative;
       }
       /* 右端に☑️を表示 */
+      /* チェックアイコンをメニュー左端に固定表示 */
+      #menu::before {
+        content: '';
+        position: static;
+        left: auto;
+        top: auto;
+        transform: none;
+        font-size: 0;
+        color: transparent;
+        pointer-events: none;
+      }
       #menu li.active::after {
         content: '☑️';
         position: absolute;
@@ -91,7 +103,6 @@
   </head>
   <body>
     <div id="menu">
-      <span>Y axis: </span>
       <ul>
         {{ menu_items|safe }}
       </ul>
