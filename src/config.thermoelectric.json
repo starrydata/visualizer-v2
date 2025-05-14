@@ -1,5 +1,5 @@
 {
-  "material": "ThermoElectric Material",
+  "material_type": "thermoelectric",
   "graphs": [
     {
       "prop_x": "Temperature",

@@ -29,10 +29,10 @@ def main():
         # グラフHTMLファイルの生成をサービスに移行
         single_out = graph_service.save_graph_html(div, script, cfg["prop_x"], cfg["prop_y"])
 
-    # material_nameをconfig.jsonの内容から取得
-    material_name = config_data.get("material", "starrydata")
+    # material_typeをconfig.jsonの内容から取得
+    material_type = config_data.get("material_type", "starrydata")
 
-    out_path, html_content = slideshow_service.generate_slideshow(graphs, material_name=material_name)
+    out_path, html_content = slideshow_service.generate_slideshow(graphs, material_type=material_type)
     print(f"Generated slideshow at: {out_path}")
 
 if __name__ == "__main__":
