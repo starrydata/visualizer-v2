@@ -80,15 +80,6 @@ class GraphGenerationService:
             method="GET",
         )
 
-        label_adapter = CustomJS(code=self.label_js)
-        label_src = AjaxDataSource(
-            data_url=highlight_path,
-            polling_interval=60000,
-            mode="replace",
-            content_type="application/json",
-            adapter=label_adapter,
-            method="GET",
-        )
 
         p = figure(
             x_axis_type=x_scale,
@@ -144,7 +135,7 @@ class GraphGenerationService:
             x="x_end",
             y="y_end",
             text="label",
-            source=label_src,
+            source=line_src,
             x_offset=5,
             y_offset=5,
             text_font_size="8pt",
