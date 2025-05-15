@@ -18,12 +18,13 @@ def main():
 
     st.sidebar.header("API Parameters")
     limit = st.sidebar.number_input("Limit", min_value=1, max_value=100, value=10, step=1)
-    from_ = st.sidebar.text_input("From (timestamp or ID)", "")
-    to = st.sidebar.text_input("To (timestamp or ID)", "")
+    from_date = st.sidebar.date_input("From Date")
+    to_date = st.sidebar.date_input("To Date")
 
     # グラフ選択用のリストをconfigファイルから取得
     import json
     import os
+    import datetime
     config_path = os.path.join(os.path.dirname(__file__), "src", "config.thermoelectric.json")
     with open(config_path, "r", encoding="utf-8") as f:
         config_data = json.load(f)
@@ -33,10 +34,14 @@ def main():
 
     prop_x, prop_y = selected_graph
 
+    # 日付をtimestamp文字列に変換（例としてISOフォーマット）
+    after = to_date.isoformat() if to_date else None
+    before = from_date.isoformat() if from_date else None
+
     div, script, title, figure = generate_single_graph(
         prop_x, prop_y,
-        after=to if to != "" else None,
-        before=from_ if from_ != "" else None,
+        after=after,
+        before=before,
         limit=limit
     )
 
@@ -49,8 +54,8 @@ def main():
     import os
     from src.main import main as generate_slideshow_html
 
-    out_path = generate_slideshow_html(after=to if to != "" else None,
-                                      before=from_ if from_ != "" else None,
+    out_path = generate_slideshow_html(after=after,
+                                      before=before,
                                       limit=limit)
 
     if out_path and os.path.exists(out_path):
