@@ -1,9 +1,9 @@
 {
   "material_type": "thermoelectric",
   "axis_display": "y",
-  "before": "2023-01-01",
-  "after": "2023-12-31",
-  "limit": 100,
+  "after": "2023-01-01",
+  "before": "2025-01-01",
+  "limit": 10,
   "graphs": [
     {
       "prop_x": "Temperature",

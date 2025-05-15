@@ -154,13 +154,12 @@ class GraphGenerationService:
             border_line_width=3,
         )
         p.add_layout(labels)
-
         div, script = components(p)
         if axis_display == "y":
             title = graph.prop_y
         else:
             title = f"{graph.prop_x} / {graph.prop_y}"
-        return div, script, title
+        return div, script, title, p
 
     def save_graph_html(self, div: str, script: str, prop_x: str, prop_y: str, output_dir: str = "./dist/graphs") -> str:
         safe_x_name = prop_x.replace(" ", "_")

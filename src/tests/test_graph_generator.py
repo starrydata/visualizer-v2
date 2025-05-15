@@ -3,7 +3,7 @@ from domain.graph import Graph, GraphDataPoint
 from domain.slideshow import Slideshow
 from application.services import GraphGenerationService, SlideshowGenerationService, load_js_code
 from unittest.mock import patch, Mock
-from bokeh.models import ColumnDataSource
+from bokeh.plotting import Figure
 
 def test_graph_data_point():
     dp = GraphDataPoint(1.0, 2.0, 100)
@@ -67,7 +67,7 @@ def test_graph_generation_service_create_graph(mock_get):
     mock_response.raise_for_status = Mock()
     mock_get.return_value = mock_response
 
-    div, script, title = service.create_graph(
+    div, script, title, figure = service.create_graph(
         "http://dummy_json_path",
         "http://dummy_highlight_path",
         "linear",
@@ -79,6 +79,7 @@ def test_graph_generation_service_create_graph(mock_get):
     assert isinstance(div, str)
     assert isinstance(script, str)
     assert isinstance(title, str)
+    assert isinstance(figure, Figure)
 
 @patch("application.services.open", create=True)
 @patch("application.services.os.makedirs")
