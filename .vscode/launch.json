@@ -23,6 +23,17 @@
             // 引数にbatteryを渡す
             "args": ["thermoelectric"],
             "console": "integratedTerminal"
+        },
+        // stremaliteのデバッグ用
+        {
+            "name": "streamlit",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "${workspaceFolder}/streamlit_app.py",
+            ]
         }
     ]
 }

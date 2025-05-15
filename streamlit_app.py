@@ -17,20 +17,24 @@ def main():
     st.title("Nightmode Slideshow Graph Viewer")
 
     st.sidebar.header("API Parameters")
+
+    # material type選択を追加
+    material_type = st.sidebar.selectbox("Select Material Type", ["thermoelectric", "battery"])
+
     limit = st.sidebar.number_input("Limit", min_value=1, max_value=100, value=10, step=1)
     from_date = st.sidebar.date_input("From Date")
     to_date = st.sidebar.date_input("To Date")
 
-    # グラフ選択用のリストをconfigファイルから取得
+    # material_typeに応じてconfigファイルを切り替え
     import json
     import os
     import datetime
-    config_path = os.path.join(os.path.dirname(__file__), "src", "config.thermoelectric.json")
+    config_path = os.path.join(os.path.dirname(__file__), "src", f"config.{material_type}.json")
     with open(config_path, "r", encoding="utf-8") as f:
         config_data = json.load(f)
     graph_options = [(g["prop_x"], g["prop_y"]) for g in config_data.get("graphs", [])]
 
-    selected_graph = st.sidebar.selectbox("Select Graph", graph_options, format_func=lambda x: f"{x[0]} - {x[1]}")
+    selected_graph = st.sidebar.selectbox("Select Graph", graph_options, index=0, format_func=lambda x: f"{x[0]} - {x[1]}")
 
     prop_x, prop_y = selected_graph
 
@@ -42,7 +46,8 @@ def main():
         prop_x, prop_y,
         after=after,
         before=before,
-        limit=limit
+        limit=limit,
+        material_type=material_type
     )
 
     st.subheader(f"Graph: {title}")
@@ -51,7 +56,6 @@ def main():
     st.bokeh_chart(figure, use_container_width=True)
 
     # 生成HTMLの大画面表示リンクを表示
-    import os
     from src.main import main as generate_slideshow_html
 
     out_path = generate_slideshow_html(after=after,
