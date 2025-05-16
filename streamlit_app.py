@@ -55,15 +55,6 @@ def main():
     # BokehのFigureオブジェクトをStreamlitで表示
     st.bokeh_chart(figure, use_container_width=True)
 
-    # 生成HTMLの大画面表示リンクを表示
-    from src.main import main as generate_slideshow_html
-
-    out_path = generate_slideshow_html(after=after,
-                                      before=before,
-                                      limit=limit)
-
-    if out_path and os.path.exists(out_path):
-        st.markdown(f"[Open generated slideshow in new tab]({out_path})", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
