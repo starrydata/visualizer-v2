@@ -11,7 +11,9 @@
       "y_scale": "linear",
       "x_scale": "log",
       "x_range": [1e+3, 1e+7],
-      "y_range": [0, 5]
+      "y_range": [0, 5],
+      "unit_x": "A*s/kg",
+      "unit_y": "V"
     },
     {
       "prop_x": "Charge capacity",
@@ -19,7 +21,9 @@
       "y_scale": "linear",
       "x_scale": "log",
       "x_range": [1e+3, 1e+7],
-      "y_range": [0, 5]
+      "y_range": [0, 5],
+      "unit_x": "A*s/kg",
+      "unit_y": "V"
     },
     {
       "prop_x": "Cycle number",
@@ -27,7 +31,9 @@
       "y_scale": "linear",
       "x_scale": "linear",
       "x_range": [1, 2000],
-      "y_range": [1e+3, 5e+6]
+      "y_range": [1e+3, 5e+6],
+      "unit_x": "1",
+      "unit_y": "A*s/kg"
     },
     {
       "prop_x": "C rate",
@@ -35,7 +41,9 @@
       "y_scale": "linear",
       "x_scale": "linear",
       "x_range": [0, 5],
-      "y_range": [1e+3, 5e+6]
+      "y_range": [1e+3, 5e+6],
+      "unit_x": "1",
+      "unit_y": "A*s/kg"
     },
     {
       "prop_x": "Time",
@@ -43,7 +51,9 @@
       "y_scale": "linear",
       "x_scale": "linear",
       "x_range": [1, 1e+6],
-      "y_range": [-3, 3]
+      "y_range": [-3, 3],
+      "unit_x": "s",
+      "unit_y": "V"
     },
     {
       "prop_x": "Cycle number",
@@ -51,7 +61,9 @@
       "y_scale": "linear",
       "x_scale": "linear",
       "x_range": [1, 2000],
-      "y_range": [-3, 3]
+      "y_range": [-3, 3],
+      "unit_x": "1",
+      "unit_y": "V"
     }
   ]
 }

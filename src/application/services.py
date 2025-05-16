@@ -25,7 +25,8 @@ class GraphGenerationService:
         with open(file_path, "r", encoding="utf-8") as f:
             return json.load(f)
 
-    def create_graph(self, json_path: str, highlight_path: str, y_scale: str, x_range: List[float], y_range: List[float], x_scale: str = "linear", material_type: str = "thermoelectric") -> Tuple[str, str, str]:
+    def create_graph(self, json_path: str, highlight_path: str, y_scale: str, x_range: List[float], y_range: List[float], x_scale: str = "linear", material_type: str = "thermoelectric", display_unit_x: str = None, display_unit_y: str = None) -> Tuple[str, str, str]:
+        import pint
         content = self.fetch_json(json_path)
         d = content["data"]
 
@@ -35,16 +36,35 @@ class GraphGenerationService:
         axis_display = config.get("axis_display", "y")
 
         data_points = []
+        ureg = pint.UnitRegistry()
+        unit_x = content["unit_x"]
+        unit_y = content["unit_y"]
+
+        # 単位変換可能かチェックし、可能なら変換する関数
+        def try_convert(value, from_unit, to_unit):
+            try:
+                q = value * ureg(from_unit)
+                q2 = q.to(to_unit)
+                return q2.magnitude
+            except Exception:
+                return value
+
         for xs, ys, sid in zip(d["x"], d["y"], d["SID"]):
             num_sid = int(sid)
             for j in range(len(xs)):
-                data_points.append(GraphDataPoint(xs[j], ys[j], num_sid))
+                x_val = xs[j]
+                y_val = ys[j]
+                if display_unit_x:
+                    x_val = try_convert(x_val, unit_x, display_unit_x)
+                if display_unit_y:
+                    y_val = try_convert(y_val, unit_y, display_unit_y)
+                data_points.append(GraphDataPoint(x_val, y_val, num_sid))
 
         graph = Graph(
             prop_x=content["prop_x"],
             prop_y=content["prop_y"],
-            unit_x=content["unit_x"],
-            unit_y=content["unit_y"],
+            unit_x=display_unit_x if display_unit_x else unit_x,
+            unit_y=display_unit_y if display_unit_y else unit_y,
             data_points=data_points,
             y_scale=y_scale,
             x_range=x_range,
