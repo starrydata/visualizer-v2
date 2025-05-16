@@ -46,19 +46,9 @@ def main():
         {}
     )
 
-    # display unitのデフォルト値は空文字にする（jsonファイルから取得するため）
-    default_unit_x = selected_graph_config.get("unit_x", "")
-    default_unit_y = selected_graph_config.get("unit_y", "")
-
     # x_range, y_rangeのデフォルト値を取得
     default_x_range = selected_graph_config.get("x_range", [None, None])
     default_y_range = selected_graph_config.get("y_range", [None, None])
-
-    # X軸用単位入力欄を追加（グラフごとに切り替え可能）
-    unit_input_x = st.sidebar.text_input("Display Unit for X Axis (e.g. m, cm, inch)", value=default_unit_x, key=f"unit_x_{prop_x}_{prop_y}")
-
-    # Y軸用単位入力欄を追加（グラフごとに切り替え可能）
-    unit_input_y = st.sidebar.text_input("Display Unit for Y Axis (e.g. m, cm, inch)", value=default_unit_y, key=f"unit_y_{prop_x}_{prop_y}")
 
     # X軸のmin/max入力欄を追加（グラフごとに切り替え可能）
     x_min = st.sidebar.number_input("X Axis Min", value=default_x_range[0] if default_x_range[0] is not None else 0.0, key=f"x_min_{prop_x}_{prop_y}")
@@ -105,8 +95,6 @@ def main():
         material_type=material_type,
         x_scale=x_scale,
         y_scale=y_scale,
-        display_unit_x=unit_input_x,
-        display_unit_y=unit_input_y,
     )
 
     st.subheader(f"Graph: {title}")

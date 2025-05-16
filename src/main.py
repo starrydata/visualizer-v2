@@ -6,10 +6,10 @@ from bokeh.resources import CDN
 
 import sys
 
-def generate_single_graph(prop_x, prop_y, after=None, before=None, limit=None, material_type=None, x_scale="linear", y_scale="linear", display_unit_x=None, display_unit_y=None):
+def generate_single_graph(prop_x, prop_y, after=None, before=None, limit=None, material_type=None, x_scale="linear", y_scale="linear"):
     import pint
-    json_base_uri = os.environ.get("JSON_BASE_URI", "")
-    highlight_base_uri = os.environ.get("HIGHLIGHT_BASE_URI", "")
+    json_base_uri = os.environ.get("JSON_BASE_URI")
+    highlight_base_uri = os.environ.get("HIGHLIGHT_BASE_URI")
 
     if material_type is None:
         material_type = os.environ.get("MATERIAL_TYPE", "battery").lower()
@@ -60,15 +60,13 @@ def generate_single_graph(prop_x, prop_y, after=None, before=None, limit=None, m
         graph_cfg.get("y_range"),
         x_scale,
         material_type=material_type,
-        display_unit_x=display_unit_x,
-        display_unit_y=display_unit_y,
     )
 
     return div, script, title, figure
 
 def main(after=None, before=None, limit=None):
-    json_base_uri = os.environ.get("JSON_BASE_URI", "")
-    highlight_base_uri = os.environ.get("HIGHLIGHT_BASE_URI", "")
+    json_base_uri = os.environ.get("JSON_BASE_URI")
+    highlight_base_uri = os.environ.get("HIGHLIGHT_BASE_URI")
 
     # コマンドライン引数または環境変数で材料種別を指定（デフォルトは thermoelectric）
     material_type = None
