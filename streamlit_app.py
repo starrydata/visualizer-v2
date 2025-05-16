@@ -4,14 +4,7 @@ import streamlit as st
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
-import sys
-import os
-import streamlit as st
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
-
 from src.main import generate_single_graph
-import streamlit.components.v1 as components
 
 def main():
     st.title("Nightmode Slideshow Graph Viewer")
@@ -19,9 +12,13 @@ def main():
     st.sidebar.header("API Parameters")
 
     # material type選択を追加
-    material_type = st.sidebar.selectbox("Select Material Type", ["thermoelectric", "battery"])
+    material_type = st.sidebar.selectbox(
+        "Select Material Type", ["thermoelectric", "battery"]
+    )
 
-    limit = st.sidebar.number_input("Limit", min_value=1, max_value=100, value=10, step=1)
+    limit = st.sidebar.number_input(
+        "Limit", min_value=1, max_value=100, value=10, step=1
+    )
     from_date = st.sidebar.date_input("From Date")
     to_date = st.sidebar.date_input("To Date")
 
@@ -29,25 +26,38 @@ def main():
     import json
     import os
     import datetime
-    config_path = os.path.join(os.path.dirname(__file__), "src", f"config.{material_type}.json")
+
+    config_path = os.path.join(
+        os.path.dirname(__file__), "src", f"config.{material_type}.json"
+    )
     with open(config_path, "r", encoding="utf-8") as f:
         config_data = json.load(f)
     graph_options = [(g["prop_x"], g["prop_y"]) for g in config_data.get("graphs", [])]
 
-    selected_graph = st.sidebar.selectbox("Select Graph", graph_options, index=0, format_func=lambda x: f"{x[0]} - {x[1]}")
+    selected_graph = st.sidebar.selectbox(
+        "Select Graph", graph_options, index=0, format_func=lambda x: f"{x[0]} - {x[1]}"
+    )
 
     prop_x, prop_y = selected_graph
+
+    # X軸スケール選択追加
+    x_scale = st.sidebar.selectbox("X Axis Scale", ["linear", "log"], index=0)
+    # Y軸スケール選択追加
+    y_scale = st.sidebar.selectbox("Y Axis Scale", ["linear", "log"], index=0)
 
     # 日付をtimestamp文字列に変換（例としてISOフォーマット）
     after = to_date.isoformat() if to_date else None
     before = from_date.isoformat() if from_date else None
 
     div, script, title, figure = generate_single_graph(
-        prop_x, prop_y,
+        prop_x,
+        prop_y,
         after=after,
         before=before,
         limit=limit,
-        material_type=material_type
+        material_type=material_type,
+        x_scale=x_scale,
+        y_scale=y_scale,
     )
 
     st.subheader(f"Graph: {title}")

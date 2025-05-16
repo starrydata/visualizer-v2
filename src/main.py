@@ -6,7 +6,7 @@ from bokeh.resources import CDN
 
 import sys
 
-def generate_single_graph(prop_x, prop_y, after=None, before=None, limit=None, material_type=None):
+def generate_single_graph(prop_x, prop_y, after=None, before=None, limit=None, material_type=None, x_scale="linear", y_scale="linear"):
     json_base_uri = os.environ.get("JSON_BASE_URI", "")
     highlight_base_uri = os.environ.get("HIGHLIGHT_BASE_URI", "")
 
@@ -54,10 +54,10 @@ def generate_single_graph(prop_x, prop_y, after=None, before=None, limit=None, m
     div, script, title, figure = graph_service.create_graph(
         json_path,
         highlight_path,
-        graph_cfg.get("y_scale"),
+        y_scale,
         graph_cfg.get("x_range"),
         graph_cfg.get("y_range"),
-        graph_cfg.get("x_scale", "linear"),
+        x_scale,
         material_type=material_type
     )
 
