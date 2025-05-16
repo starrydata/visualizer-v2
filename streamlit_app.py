@@ -123,39 +123,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-        after=after,
-        before=before,
-        limit=limit,
-        material_type=material_type,
-        x_scale=x_scale,
-        y_scale=y_scale,
-        display_unit_x=unit_input_x,
-        display_unit_y=unit_input_y,
-    )
-
-    st.subheader(f"Graph: {title}")
-
-    # BokehのFigureオブジェクトをStreamlitで表示
-    st.bokeh_chart(figure, use_container_width=True)
-
-
-if __name__ == "__main__":
-    main()
-        after=after,
-        before=before,
-        limit=limit,
-        material_type=material_type,
-        x_scale=x_scale,
-        y_scale=y_scale,
-        display_unit_x=unit_input_x,
-        display_unit_y=unit_input_y,
-    )
-
-    st.subheader(f"Graph: {title}")
-
-    # BokehのFigureオブジェクトをStreamlitで表示
-    st.bokeh_chart(figure, use_container_width=True)
-
-
-if __name__ == "__main__":
-    main()
