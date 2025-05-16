@@ -80,12 +80,6 @@ def main():
         config_data = json.load(f)
     graph_options = [(g["prop_x"], g["prop_y"]) for g in config_data.get("graphs", [])]
 
-    selected_graph = st.sidebar.selectbox(
-        "Select Graph", graph_options, index=0, format_func=lambda x: f"{x[0]} - {x[1]}"
-    )
-
-    prop_x, prop_y = selected_graph
-
     # X軸スケール選択追加
     x_scale = st.sidebar.selectbox("X Axis Scale", ["linear", "log"], index=0)
     # Y軸スケール選択追加
