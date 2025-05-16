@@ -1,4 +1,4 @@
-bokeh>=2.4.3
+bokeh==2.4.3
 pytest>=8.3.5
 requests>=2.32.3
 streamlit>=1.45.1
