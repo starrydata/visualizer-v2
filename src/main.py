@@ -1,5 +1,6 @@
 import json
 import os
+import requests
 from application.services import GraphGenerationService, SlideshowGenerationService, load_js_code
 from domain.slideshow import Slideshow
 from bokeh.resources import CDN
@@ -49,7 +50,14 @@ def generate_single_graph(prop_x, prop_y, after=None, before=None, limit=None, m
     graph_service = GraphGenerationService(scatter_js, line_js, label_js)
 
     json_path = f"{json_base_uri}/{prop_x}-{prop_y}.json"
-    highlight_path = f"{highlight_base_uri}/?property_x={prop_x}&property_y={prop_y}&date_after={config_data['after']}&date_before={config_data['before']}&limit={config_data['limit']}"
+    # JSONを取得してunit_x, unit_yを抽出
+    response = requests.get(json_path)
+    response.raise_for_status()
+    json_data = response.json()
+    unit_x = json_data.get("unit_x", "")
+    unit_y = json_data.get("unit_y", "")
+
+    highlight_path = f"{highlight_base_uri}/?property_x={prop_x}&property_y={prop_y}&unit_x={unit_x}&unit_y={unit_y}&date_after={config_data['after']}&date_before={config_data['before']}&limit={config_data['limit']}"
 
     # create_bokeh_figureメソッドを呼び出すように修正
     div, script, title, figure = graph_service.create_graph(
@@ -96,8 +104,14 @@ def main(after=None, before=None, limit=None):
 
     for cfg in config_data["graphs"]:
         json_path = f"{json_base_uri}/{cfg['prop_x']}-{cfg['prop_y']}.json"
+        # JSONを取得してunit_x, unit_yを抽出
+        response = requests.get(json_path)
+        response.raise_for_status()
+        json_data = response.json()
+        unit_x = json_data.get("unit_x", "")
+        unit_y = json_data.get("unit_y", "")
 
-        highlight_path = f"{highlight_base_uri}/?property_x={cfg['prop_x']}&property_y={cfg['prop_y']}&date_after={config_data['after']}&date_before={config_data['before']}&limit={config_data['limit']}"
+        highlight_path = f"{highlight_base_uri}/?property_x={cfg['prop_x']}&property_y={cfg['prop_y']}&unit_x={unit_x}&unit_y={unit_y}&date_after={config_data['after']}&date_before={config_data['before']}&limit={config_data['limit']}"
 
         div, script, title, figure = graph_service.create_graph(
             json_path, highlight_path, cfg["y_scale"], cfg["x_range"], cfg["y_range"], cfg.get("x_scale", "linear"), material_type=material_type
