@@ -8,7 +8,6 @@ from bokeh.resources import CDN
 import sys
 
 def generate_single_graph(prop_x, prop_y, after=None, before=None, limit=None, material_type=None, x_scale="linear", y_scale="linear"):
-    import pint
     json_base_uri = os.environ.get("JSON_BASE_URI")
     highlight_base_uri = os.environ.get("HIGHLIGHT_BASE_URI")
 

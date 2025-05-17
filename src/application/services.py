@@ -26,7 +26,6 @@ class GraphGenerationService:
             return json.load(f)
 
     def create_graph(self, json_path: str, highlight_path: str, y_scale: str, x_range: List[float], y_range: List[float], x_scale: str = "linear", material_type: str = "thermoelectric") -> Tuple[str, str, str]:
-        import pint
         content = self.fetch_json(json_path)
         d = content["data"]
 
@@ -36,7 +35,6 @@ class GraphGenerationService:
         axis_display = config.get("axis_display", "y")
 
         data_points = []
-        ureg = pint.UnitRegistry()
         unit_x = content["unit_x"]
         unit_y = content["unit_y"]
 
