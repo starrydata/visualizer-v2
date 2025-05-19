@@ -36,7 +36,7 @@ jobs:
         id: build
         run: npm run build
         env:
-          JSON_BASE_URI: https://visualizer.starrydata.org/all_curves/json
+          JSON_BASE_URI: https://starrydata.github.io/cleansing-dataset/v1
           HIGHLIGHT_BASE_URI: https://www.starrydata2.org/paperlist/xy_data_api
 
       - name: Upload static files as artifact
