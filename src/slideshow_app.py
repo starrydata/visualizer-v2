@@ -9,7 +9,7 @@ import sys
 
 
 
-def main(after=None, before=None, limit=None):
+def main(date_from=None, date_to=None, limit=None):
     json_base_uri = os.environ.get("JSON_BASE_URI")
     highlight_base_uri = os.environ.get("HIGHLIGHT_BASE_URI")
 
@@ -48,7 +48,7 @@ def main(after=None, before=None, limit=None):
         unit_x = json_data.get("unit_x", "")
         unit_y = json_data.get("unit_y", "")
 
-        highlight_path = f"{highlight_base_uri}/?property_x={cfg['prop_x']}&property_y={cfg['prop_y']}&unit_x={unit_x}&unit_y={unit_y}&date_after={config_data['after']}&date_before={config_data['before']}&limit={config_data['limit']}"
+        highlight_path = f"{highlight_base_uri}/?property_x={cfg['prop_x']}&property_y={cfg['prop_y']}&unit_x={unit_x}&unit_y={unit_y}&date_from={config_data['date_from']}&date_to={config_data['date_to']}&limit={config_data['limit']}"
 
         div, script, title, figure = graph_service.create_graph(
             json_path, highlight_path, cfg["y_scale"], cfg["x_range"], cfg["y_range"], cfg.get("x_scale", "linear"), material_type=material_type

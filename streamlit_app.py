@@ -24,8 +24,8 @@ def main():
     limit = st.sidebar.number_input(
         "Limit", min_value=1, max_value=100, value=10, step=1
     )
-    from_date = st.sidebar.date_input("From Date")
-    to_date = st.sidebar.date_input("To Date")
+    date_from = st.sidebar.date_input("From Date")
+    date_to = st.sidebar.date_input("To Date")
 
     config_path = os.path.join(
         os.path.dirname(__file__), "src", f"config.{material_type}.json"
@@ -57,8 +57,8 @@ def main():
     x_scale = st.sidebar.selectbox("X Axis Scale", ["linear", "log"], index=0)
     y_scale = st.sidebar.selectbox("Y Axis Scale", ["linear", "log"], index=0)
 
-    after = to_date.isoformat() if to_date else None
-    before = from_date.isoformat() if from_date else None
+    date_from = date_from.isoformat() if date_from else None
+    date_to = date_to.isoformat() if date_to else None
 
     for g in config_data.get("graphs", []):
         if g.get("prop_x") == prop_x and g.get("prop_y") == prop_y:
@@ -79,7 +79,7 @@ def main():
     unit_x = json_data.get("unit_x", "")
     unit_y = json_data.get("unit_y", "")
 
-    highlight_path = f"{highlight_base_uri}/?property_x={prop_x}&property_y={prop_y}&unit_x={unit_x}&unit_y={unit_y}&date_after={after}&date_before={before}&limit={limit}"
+    highlight_path = f"{highlight_base_uri}/?property_x={prop_x}&property_y={prop_y}&unit_x={unit_x}&unit_y={unit_y}&date_from={date_from}&date_to={date_to}&limit={limit}"
 
     div, script, title, figure = graph_service.create_graph(
         json_path,
