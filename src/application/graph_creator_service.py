@@ -74,6 +74,7 @@ class GraphCreator(ABC):
         for axis in (p.xaxis, p.yaxis):
             axis.axis_label_text_color = "#ccc"
             axis.major_label_text_color = "#ccc"
+            axis.axis_label_text_font_style = "normal"
         p.xgrid.grid_line_color, p.xgrid.grid_line_alpha = "#ccc", 0.1
         p.ygrid.grid_line_color, p.ygrid.grid_line_alpha = "#ccc", 0.1
         p.outline_line_color = None
