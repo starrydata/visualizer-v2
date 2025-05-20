@@ -7,69 +7,7 @@ from bokeh.resources import CDN
 
 import sys
 
-def generate_single_graph(prop_x, prop_y, after=None, before=None, limit=None, material_type=None, x_scale="linear", y_scale="linear"):
-    json_base_uri = os.environ.get("JSON_BASE_URI")
-    highlight_base_uri = os.environ.get("HIGHLIGHT_BASE_URI")
 
-    if material_type is None:
-        material_type = os.environ.get("MATERIAL_TYPE", "battery").lower()
-
-    config_file_map = {
-        "thermoelectric": "src/config.thermoelectric.json",
-        "battery": "src/config.battery.json",
-    }
-
-    config_file = config_file_map.get(material_type)
-    if not config_file:
-        print(f"Unknown material type '{material_type}', defaulting to thermoelectric")
-        config_file = config_file_map["thermoelectric"]
-
-    with open(config_file, "r", encoding="utf-8") as f:
-        config_data = json.load(f)
-
-    # 引数で渡された場合はconfig_dataの値を上書き
-    if after is not None:
-        config_data['before'] = after
-    if before is not None:
-        config_data['after'] = before
-    if limit is not None:
-        config_data['limit'] = limit
-
-    # prop_x, prop_yに一致するグラフ設定を探す
-    graph_cfg = None
-    for g in config_data.get("graphs", []):
-        if g.get("prop_x") == prop_x and g.get("prop_y") == prop_y:
-            graph_cfg = g
-            break
-
-    if graph_cfg is None:
-        raise ValueError(f"Graph configuration not found for prop_x={prop_x}, prop_y={prop_y}")
-
-    scatter_js, line_js, label_js = load_js_code()
-    graph_service = GraphGenerationService(scatter_js, line_js, label_js)
-
-    json_path = f"{json_base_uri}/{prop_x}-{prop_y}.json"
-    # JSONを取得してunit_x, unit_yを抽出
-    response = requests.get(json_path)
-    response.raise_for_status()
-    json_data = response.json()
-    unit_x = json_data.get("unit_x", "")
-    unit_y = json_data.get("unit_y", "")
-
-    highlight_path = f"{highlight_base_uri}/?property_x={prop_x}&property_y={prop_y}&unit_x={unit_x}&unit_y={unit_y}&date_after={config_data['after']}&date_before={config_data['before']}&limit={config_data['limit']}"
-
-    # create_bokeh_figureメソッドを呼び出すように修正
-    div, script, title, figure = graph_service.create_graph(
-        json_path,
-        highlight_path,
-        y_scale,
-        graph_cfg.get("x_range"),
-        graph_cfg.get("y_range"),
-        x_scale,
-        material_type=material_type,
-    )
-
-    return div, script, title, figure
 
 def main(after=None, before=None, limit=None):
     json_base_uri = os.environ.get("JSON_BASE_URI")

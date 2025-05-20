@@ -37,7 +37,8 @@
             "env": {
                 "JSON_BASE_URI": "https://starrydata.github.io/cleansing-dataset/v1",
                 "HIGHLIGHT_BASE_URI": "https://www.starrydata2.org/paperlist/xy_data_api"
-            }
+            },
+            "python": "${workspaceFolder}/.venv/bin/python"
         }
     ]
 }
