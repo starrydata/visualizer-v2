@@ -1,7 +1,8 @@
 import json
 import os
 import requests
-from application.services import GraphGenerationService, SlideshowGenerationService, load_js_code
+from application.graph_creator import SlideshowGraphCreator
+from application.slideshow_generation_service import SlideshowGenerationService
 from domain.slideshow import Slideshow
 from bokeh.resources import CDN
 
@@ -33,8 +34,7 @@ def main(date_from=None, date_to=None, limit=None):
     with open(config_file, "r", encoding="utf-8") as f:
         config_data = json.load(f)
 
-    scatter_js, line_js, label_js = load_js_code()
-    graph_service = GraphGenerationService(scatter_js, line_js, label_js)
+    graph_service = SlideshowGraphCreator()
     slideshow_service = SlideshowGenerationService()
 
     graphs = Slideshow([])

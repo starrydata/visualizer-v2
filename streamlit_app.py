@@ -1,6 +1,6 @@
 import os
 import streamlit as st
-from application.services import GraphGenerationService
+from application.graph_creator import StreamlitGraphCreator
 from application.graph_data_service import GraphDataService
 
 def main():
@@ -59,7 +59,7 @@ def main():
             g["y_range"] = [y_min, y_max]
             break
 
-    graph_service = GraphGenerationService("", "", "")
+    graph_service = StreamlitGraphCreator()
 
     base_data = graph_data_service.fetch_base_data(prop_x, prop_y)
     unit_x = base_data.get("unit_x", "")
@@ -80,7 +80,7 @@ def main():
         widths,
     ) = graph_data_service.process_highlight_data(highlight_data)
 
-    div, script, title, figure = graph_service.create_graph_with_highlight(
+    div, script, title, figure = graph_service.create_graph(
         base_data,
         highlight_points,
         highlight_lines,

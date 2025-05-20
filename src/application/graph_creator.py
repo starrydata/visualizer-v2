@@ -1,5 +1,10 @@
 import os
-from typing import List, Tuple
+
+from domain.graph import Graph, GraphDataPoint
+from domain.slideshow import Slideshow
+
+from abc import ABC, abstractmethod
+from typing import List, Tuple, Optional, Dict
 import requests
 from bokeh.models import ColumnDataSource, Range1d, CustomJS, AjaxDataSource, LabelSet
 from bokeh.plotting import figure
@@ -7,37 +12,23 @@ from bokeh.embed import components
 from bokeh.resources import CDN
 
 from domain.graph import Graph, GraphDataPoint
-from domain.slideshow import Slideshow
 
-class GraphGenerationService:
-    def __init__(self, scatter_js: str, line_js: str, label_js: str):
-        self.scatter_js = scatter_js
-        self.line_js = line_js
-        self.label_js = label_js
-
-    def fetch_json(self, json_path: str) -> dict:
-        resp = requests.get(json_path)
-        resp.raise_for_status()
-        return resp.json()
-
-    def load_local_json(self, file_path: str) -> dict:
+class GraphCreator(ABC):
+    def _load_local_json(self, file_path: str) -> dict:
         import json
         with open(file_path, "r", encoding="utf-8") as f:
             return json.load(f)
 
-    def create_graph(self, json_path: str, highlight_path: str, y_scale: str, x_range: List[float], y_range: List[float], x_scale: str = "linear", material_type: str = "thermoelectric") -> Tuple[str, str, str]:
-        content = self.fetch_json(json_path)
-        d = content["data"]
-
-        # configファイル読み込み
+    def _load_config_and_create_graph(self, data: dict, y_scale: str, x_range: List[float], y_range: List[float], x_scale: str, material_type: str) -> Tuple[Graph, str]:
         config_path = f"src/config.{material_type}.json"
-        config = self.load_local_json(config_path)
+        config = self._load_local_json(config_path)
         axis_display = config.get("axis_display", "y")
 
         data_points = []
-        unit_x = content["unit_x"]
-        unit_y = content["unit_y"]
+        unit_x = data.get("unit_x", "")
+        unit_y = data.get("unit_y", "")
 
+        d = data["data"]
         for xs, ys, sid in zip(d["x"], d["y"], d["SID"]):
             num_sid = int(sid)
             for j in range(len(xs)):
@@ -46,8 +37,8 @@ class GraphGenerationService:
                 data_points.append(GraphDataPoint(x_val, y_val, num_sid))
 
         graph = Graph(
-            prop_x=content["prop_x"],
-            prop_y=content["prop_y"],
+            prop_x=data.get("prop_x", ""),
+            prop_y=data.get("prop_y", ""),
             unit_x=unit_x,
             unit_y=unit_y,
             data_points=data_points,
@@ -59,11 +50,59 @@ class GraphGenerationService:
         if not graph.validate():
             raise ValueError("Graph data validation failed")
 
-        base_src = ColumnDataSource(data=dict(
+        return graph, axis_display
+
+    def _create_base_source(self, data_points: List[GraphDataPoint]) -> ColumnDataSource:
+        return ColumnDataSource(data=dict(
             x=[dp.x for dp in data_points],
             y=[dp.y for dp in data_points],
             SID=[dp.sid for dp in data_points],
         ))
+
+    def _create_figure_base(self, graph: Graph, y_scale: str, x_scale: str, x_range: List[float], y_range: List[float]) -> figure:
+        p = figure(
+            x_axis_type=x_scale,
+            y_axis_type=y_scale,
+            x_range=Range1d(*x_range),
+            y_range=Range1d(*y_range),
+            x_axis_label=f"{graph.prop_x} ({graph.unit_x})",
+            y_axis_label=f"{graph.prop_y} ({graph.unit_y})",
+            background_fill_color="black",
+            border_fill_color="black",
+            sizing_mode="stretch_both",
+        )
+        for axis in (p.xaxis, p.yaxis):
+            axis.axis_label_text_color = "#ccc"
+            axis.major_label_text_color = "#ccc"
+        p.xgrid.grid_line_color, p.xgrid.grid_line_alpha = "#ccc", 0.1
+        p.ygrid.grid_line_color, p.ygrid.grid_line_alpha = "#ccc", 0.1
+        p.outline_line_color = None
+        return p
+
+    @abstractmethod
+    def create_graph(self, *args, **kwargs) -> Tuple[str, str, str, Optional[object]]:
+        pass
+
+class SlideshowGraphCreator(GraphCreator):
+    def __init__(self):
+        base_path = "src/static/js"
+        with open(f"{base_path}/scatter_adapter.js", encoding="utf-8") as f:
+            self.scatter_js = f.read().strip()
+        with open(f"{base_path}/line_adapter.js", encoding="utf-8") as f:
+            self.line_js = f.read().strip()
+
+
+    def fetch_json(self, json_path: str) -> dict:
+        resp = requests.get(json_path)
+        resp.raise_for_status()
+        return resp.json()
+
+    def create_graph(self, json_path: str, highlight_path: str, y_scale: str, x_range: List[float], y_range: List[float], x_scale: str = "linear", material_type: str = "thermoelectric") -> Tuple[str, str, str, object]:
+        content = self.fetch_json(json_path)
+        graph, axis_display = self._load_config_and_create_graph(content, y_scale, x_range, y_range, x_scale, material_type)
+
+        data_points = graph.data_points
+        base_src = self._create_base_source(data_points)
 
         scatter_adapter = CustomJS(code=self.scatter_js)
         scatter_src = AjaxDataSource(
@@ -85,24 +124,7 @@ class GraphGenerationService:
             method="GET",
         )
 
-
-        p = figure(
-            x_axis_type=x_scale,
-            y_axis_type=y_scale,
-            x_range=Range1d(*x_range),
-            y_range=Range1d(*y_range),
-            x_axis_label=f"{graph.prop_x} ({graph.unit_x})",
-            y_axis_label=f"{graph.prop_y} ({graph.unit_y})",
-            background_fill_color="black",
-            border_fill_color="black",
-            sizing_mode="stretch_both",
-        )
-        for axis in (p.xaxis, p.yaxis):
-            axis.axis_label_text_color = "#ccc"
-            axis.major_label_text_color = "#ccc"
-        p.xgrid.grid_line_color, p.xgrid.grid_line_alpha = "#ccc", 0.1
-        p.ygrid.grid_line_color, p.ygrid.grid_line_alpha = "#ccc", 0.1
-        p.outline_line_color = None
+        p = self._create_figure_base(graph, y_scale, x_scale, x_range, y_range)
 
         p.circle(
             "x",
@@ -150,6 +172,7 @@ class GraphGenerationService:
             border_line_width=3,
         )
         p.add_layout(labels)
+
         div, script = components(p)
         if axis_display == "y":
             title = graph.prop_y
@@ -157,46 +180,37 @@ class GraphGenerationService:
             title = f"{graph.prop_x} / {graph.prop_y}"
         return div, script, title, p
 
+    def save_graph_html(self, div: str, script: str, prop_x: str, prop_y: str, output_dir: str = "./dist/graphs") -> str:
+        safe_x_name = prop_x.replace(" ", "_")
+        safe_y_name = prop_y.replace(" ", "_")
+        single_out = f"{output_dir}/{safe_x_name}_{safe_y_name}.html"
 
-    def create_graph_with_highlight(self, base_data: dict, highlight_points: dict, highlight_lines: dict, sizef_points: List[float], line_sizef_points: List[float], x_end: List[float], y_end: List[float], label: List[str], widths: List[float], y_scale: str, x_range: List[float], y_range: List[float], x_scale: str = "linear", material_type: str = "thermoelectric") -> Tuple[str, str, str]:
-        # configファイル読み込み
-        config_path = f"src/config.{material_type}.json"
-        config = self.load_local_json(config_path)
-        axis_display = config.get("axis_display", "y")
+        single_html = f"""
+        <html>
+        <head>{CDN.render()}</head>
+        <body>
+        {div}
+        {script}
+        </body>
+        </html>
+        """
+        import os
+        os.makedirs(output_dir, exist_ok=True)
+        with open(single_out, "w", encoding="utf-8") as f:
+            f.write(single_html)
+        print(f"Generated single graph HTML: {single_out}")
+        return single_out
 
-        data_points = []
-        unit_x = base_data.get("unit_x", "")
-        unit_y = base_data.get("unit_y", "")
+class StreamlitGraphCreator(GraphCreator):
+    def __init__(self):
+        pass
 
-        d = base_data["data"]
-        for xs, ys, sid in zip(d["x"], d["y"], d["SID"]):
-            num_sid = int(sid)
-            for j in range(len(xs)):
-                x_val = xs[j]
-                y_val = ys[j]
-                data_points.append(GraphDataPoint(x_val, y_val, num_sid))
+    def create_graph(self, base_data: dict, highlight_points: dict, highlight_lines: dict, sizef_points: List[float], line_sizef_points: List[float], x_end: List[float], y_end: List[float], label: List[str], widths: List[float], y_scale: str, x_range: List[float], y_range: List[float], x_scale: str = "linear", material_type: str = "thermoelectric") -> Tuple[str, str, str, object]:
+        graph, axis_display = self._load_config_and_create_graph(base_data, y_scale, x_range, y_range, x_scale, material_type)
 
-        graph = Graph(
-            prop_x=base_data.get("prop_x", ""),
-            prop_y=base_data.get("prop_y", ""),
-            unit_x=unit_x,
-            unit_y=unit_y,
-            data_points=data_points,
-            y_scale=y_scale,
-            x_range=x_range,
-            y_range=y_range,
-        )
+        data_points = graph.data_points
+        base_src = self._create_base_source(data_points)
 
-        if not graph.validate():
-            raise ValueError("Graph data validation failed")
-
-        base_src = ColumnDataSource(data=dict(
-            x=[dp.x for dp in data_points],
-            y=[dp.y for dp in data_points],
-            SID=[dp.sid for dp in data_points],
-        ))
-
-        # highlight_pointsのx,y,SIDは点の数に展開し、sizef_points, line_sizef_pointsは点の数に合わせて繰り返す
         x_expanded_points = []
         y_expanded_points = []
         sid_expanded_points = []
@@ -226,7 +240,6 @@ class GraphGenerationService:
             line_size=line_size_expanded_points,
         ))
 
-        # highlight_linesはそのままmulti_line用に使う
         highlight_lines_src = ColumnDataSource(data=dict(
             xs=highlight_lines.get("x", []),
             ys=highlight_lines.get("y", []),
@@ -236,23 +249,7 @@ class GraphGenerationService:
             widths=widths,
         ))
 
-        p = figure(
-            x_axis_type=x_scale,
-            y_axis_type=y_scale,
-            x_range=Range1d(*x_range),
-            y_range=Range1d(*y_range),
-            x_axis_label=f"{graph.prop_x} ({graph.unit_x})",
-            y_axis_label=f"{graph.prop_y} ({graph.unit_y})",
-            background_fill_color="black",
-            border_fill_color="black",
-            sizing_mode="stretch_both",
-        )
-        for axis in (p.xaxis, p.yaxis):
-            axis.axis_label_text_color = "#ccc"
-            axis.major_label_text_color = "#ccc"
-        p.xgrid.grid_line_color, p.xgrid.grid_line_alpha = "#ccc", 0.1
-        p.ygrid.grid_line_color, p.ygrid.grid_line_alpha = "#ccc", 0.1
-        p.outline_line_color = None
+        p = self._create_figure_base(graph, y_scale, x_scale, x_range, y_range)
 
         p.circle(
             "x",
@@ -300,6 +297,7 @@ class GraphGenerationService:
             border_line_width=3,
         )
         p.add_layout(labels)
+
         div, script = components(p)
         if axis_display == "y":
             title = graph.prop_y
@@ -328,49 +326,3 @@ class GraphGenerationService:
         print(f"Generated single graph HTML: {single_out}")
         return single_out
 
-class SlideshowGenerationService:
-    def __init__(self, template_path: str = "src/templates/starrydata_slideshow.html"):
-        self.template_path = template_path
-
-    def generate_slideshow(self, graphs: Slideshow, material_type: str = "starrydata") -> Tuple[str, str]:
-        divs = [div for div, _, _ in graphs.graphs]
-        scripts = [script for _, script, _ in graphs.graphs]
-        titles = graphs.get_titles()
-
-        menu_items = "".join(
-            [f'<li id="menu{idx}">{title}</li>' for idx, title in enumerate(titles)]
-        )
-
-        plots_html = "".join(
-            [
-                f'<div id="plot{idx}" class="plot-container">{divs[idx]}{scripts[idx]}</div>'
-                for idx in range(len(divs))
-            ]
-        )
-
-        with open(self.template_path, "r", encoding="utf-8") as f:
-            template = f.read()
-
-        html = (
-            template.replace("{{ menu_items|safe }}", menu_items)
-            .replace("{{ plots_html|safe }}", plots_html)
-            .replace("{{ bokeh_cdn }}", CDN.render())
-        )
-
-        safe_material_type = material_type.replace(" ", "_").lower()
-        out = f"./dist/{safe_material_type}_slideshow.html"
-        os.makedirs(os.path.dirname(out), exist_ok=True)
-        with open(out, "w", encoding="utf-8") as f:
-            f.write(html)
-        print(f"Generated: {out}")
-        return out, html
-
-def load_js_code():
-    base_path = "src/static/js"
-    with open(f"{base_path}/scatter_adapter.js", encoding="utf-8") as f:
-        scatter_code = f.read().strip()
-    with open(f"{base_path}/line_adapter.js", encoding="utf-8") as f:
-        line_code = f.read().strip()
-    with open(f"{base_path}/label_adapter.js", encoding="utf-8") as f:
-        label_code = f.read().strip()
-    return scatter_code, line_code, label_code

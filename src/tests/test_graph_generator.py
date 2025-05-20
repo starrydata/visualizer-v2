@@ -1,7 +1,9 @@
 import pytest
 from domain.graph import Graph, GraphDataPoint
 from domain.slideshow import Slideshow
-from application.services import GraphGenerationService, SlideshowGenerationService, load_js_code
+from application.graph_creator import GraphGenerationService
+from application.slideshow_generation_service import SlideshowGenerationService
+
 from unittest.mock import patch, Mock
 from bokeh.plotting import Figure
 
