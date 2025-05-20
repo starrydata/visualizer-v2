@@ -19,8 +19,8 @@ def main():
     date_to = st.sidebar.date_input("To Date")
 
     graph_data_service = GraphDataService(
-        json_base_uri=os.environ.get("JSON_BASE_URI", ""),
-        highlight_base_uri=os.environ.get("HIGHLIGHT_BASE_URI", "")
+        base_data_uri=os.environ.get("BASE_DATA_URI", ""),
+        highlight_data_uri=os.environ.get("HIGHLIGHT_DATA_URI", "")
     )
 
     config_data = graph_data_service.load_config(material_type)

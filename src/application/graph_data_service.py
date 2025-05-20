@@ -4,9 +4,9 @@ import requests
 from typing import Dict, List, Tuple
 
 class GraphDataService:
-    def __init__(self, json_base_uri: str, highlight_base_uri: str):
-        self.json_base_uri = json_base_uri
-        self.highlight_base_uri = highlight_base_uri
+    def __init__(self, base_data_uri: str, highlight_data_uri: str):
+        self.base_data_uri = base_data_uri
+        self.highlight_data_uri = highlight_data_uri
 
     def load_config(self, material_type: str) -> Dict:
         config_path = os.path.join(os.path.dirname(__file__), f"../config.{material_type}.json")
@@ -14,15 +14,15 @@ class GraphDataService:
         with open(config_path, "r", encoding="utf-8") as f:
             return json.load(f)
 
-    def fetch_json_data(self, prop_x: str, prop_y: str) -> Dict:
-        json_path = f"{self.json_base_uri}/{prop_x}-{prop_y}.json"
+    def fetch_base_data(self, prop_x: str, prop_y: str) -> Dict:
+        json_path = f"{self.base_data_uri}/{prop_x}-{prop_y}.json"
         response = requests.get(json_path)
         response.raise_for_status()
         return response.json()
 
     def fetch_highlight_data(self, prop_x: str, prop_y: str, unit_x: str, unit_y: str, date_from: str, date_to: str, limit: int) -> Dict:
         highlight_path = (
-            f"{self.highlight_base_uri}/?property_x={prop_x}&property_y={prop_y}"
+            f"{self.highlight_data_uri}/?property_x={prop_x}&property_y={prop_y}"
             f"&unit_x={unit_x}&unit_y={unit_y}&date_from={date_from}&date_to={date_to}&limit={limit}"
         )
         response = requests.get(highlight_path)

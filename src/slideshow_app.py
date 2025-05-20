@@ -10,8 +10,8 @@ import sys
 
 
 def main(date_from=None, date_to=None, limit=None):
-    json_base_uri = os.environ.get("JSON_BASE_URI")
-    highlight_base_uri = os.environ.get("HIGHLIGHT_BASE_URI")
+    BASE_DATA_URI = os.environ.get("BASE_DATA_URI")
+    HIGHLIGHT_DATA_URI = os.environ.get("HIGHLIGHT_DATA_URI")
 
     # コマンドライン引数または環境変数で材料種別を指定（デフォルトは thermoelectric）
     material_type = None
@@ -40,15 +40,15 @@ def main(date_from=None, date_to=None, limit=None):
     graphs = Slideshow([])
 
     for cfg in config_data["graphs"]:
-        json_path = f"{json_base_uri}/{cfg['prop_x']}-{cfg['prop_y']}.json"
+        json_path = f"{BASE_DATA_URI}/{cfg['prop_x']}-{cfg['prop_y']}.json"
         # JSONを取得してunit_x, unit_yを抽出
         response = requests.get(json_path)
         response.raise_for_status()
-        json_data = response.json()
-        unit_x = json_data.get("unit_x", "")
-        unit_y = json_data.get("unit_y", "")
+        base_data = response.json()
+        unit_x = base_data.get("unit_x", "")
+        unit_y = base_data.get("unit_y", "")
 
-        highlight_path = f"{highlight_base_uri}/?property_x={cfg['prop_x']}&property_y={cfg['prop_y']}&unit_x={unit_x}&unit_y={unit_y}&date_from={config_data['date_from']}&date_to={config_data['date_to']}&limit={config_data['limit']}"
+        highlight_path = f"{HIGHLIGHT_DATA_URI}/?property_x={cfg['prop_x']}&property_y={cfg['prop_y']}&unit_x={unit_x}&unit_y={unit_y}&date_from={config_data['date_from']}&date_to={config_data['date_to']}&limit={config_data['limit']}"
 
         div, script, title, figure = graph_service.create_graph(
             json_path, highlight_path, cfg["y_scale"], cfg["x_range"], cfg["y_range"], cfg.get("x_scale", "linear"), material_type=material_type

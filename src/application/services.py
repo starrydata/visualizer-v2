@@ -158,17 +158,17 @@ class GraphGenerationService:
         return div, script, title, p
 
 
-    def create_graph_with_highlight(self, json_data: dict, highlight_points: dict, highlight_lines: dict, sizef_points: List[float], line_sizef_points: List[float], x_end: List[float], y_end: List[float], label: List[str], widths: List[float], y_scale: str, x_range: List[float], y_range: List[float], x_scale: str = "linear", material_type: str = "thermoelectric") -> Tuple[str, str, str]:
+    def create_graph_with_highlight(self, base_data: dict, highlight_points: dict, highlight_lines: dict, sizef_points: List[float], line_sizef_points: List[float], x_end: List[float], y_end: List[float], label: List[str], widths: List[float], y_scale: str, x_range: List[float], y_range: List[float], x_scale: str = "linear", material_type: str = "thermoelectric") -> Tuple[str, str, str]:
         # configファイル読み込み
         config_path = f"src/config.{material_type}.json"
         config = self.load_local_json(config_path)
         axis_display = config.get("axis_display", "y")
 
         data_points = []
-        unit_x = json_data.get("unit_x", "")
-        unit_y = json_data.get("unit_y", "")
+        unit_x = base_data.get("unit_x", "")
+        unit_y = base_data.get("unit_y", "")
 
-        d = json_data["data"]
+        d = base_data["data"]
         for xs, ys, sid in zip(d["x"], d["y"], d["SID"]):
             num_sid = int(sid)
             for j in range(len(xs)):
@@ -177,8 +177,8 @@ class GraphGenerationService:
                 data_points.append(GraphDataPoint(x_val, y_val, num_sid))
 
         graph = Graph(
-            prop_x=json_data.get("prop_x", ""),
-            prop_y=json_data.get("prop_y", ""),
+            prop_x=base_data.get("prop_x", ""),
+            prop_y=base_data.get("prop_y", ""),
             unit_x=unit_x,
             unit_y=unit_y,
             data_points=data_points,

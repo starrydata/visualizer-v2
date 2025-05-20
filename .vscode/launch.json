@@ -9,20 +9,22 @@
             "type": "debugpy",
             "request": "launch",
             // src/app.pyを実行したい
-            "program": "${workspaceFolder}/src/main.py",
+            "program": "${workspaceFolder}/src/slideshow_app.py",
             // 引数にbatteryを渡す
             "args": ["battery"],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "python": "${workspaceFolder}/.venv/bin/python"
         },
         {
             "name": "thermoelectric",
             "type": "debugpy",
             "request": "launch",
             // src/app.pyを実行したい
-            "program": "${workspaceFolder}/src/main.py",
+            "program": "${workspaceFolder}/src/slideshow_app.py",
             // 引数にbatteryを渡す
             "args": ["thermoelectric"],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "python": "${workspaceFolder}/.venv/bin/python"
         },
         // stremaliteのデバッグ用
         {
@@ -35,8 +37,9 @@
                 "${workspaceFolder}/streamlit_app.py",
             ],
             "env": {
-                "JSON_BASE_URI": "https://starrydata.github.io/cleansing-dataset/v1",
-                "HIGHLIGHT_BASE_URI": "https://www.starrydata2.org/paperlist/xy_data_api"
+                "BASE_DATA_URI": "https://starrydata.github.io/cleansing-dataset/v1",
+                "HIGHLIGHT_DATA_URI": "https://www.starrydata2.org/paperlist/xy_data_api",
+                "PYTHONPATH": "${workspaceFolder}/src/",
             },
             "python": "${workspaceFolder}/.venv/bin/python"
         }
