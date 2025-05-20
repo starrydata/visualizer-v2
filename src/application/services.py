@@ -65,6 +65,27 @@ class GraphGenerationService:
             SID=[dp.sid for dp in data_points],
         ))
 
+        scatter_adapter = CustomJS(code=self.scatter_js)
+        scatter_src = AjaxDataSource(
+            data_url=highlight_path,
+            polling_interval=60000,
+            mode="replace",
+            content_type="application/json",
+            adapter=scatter_adapter,
+            method="GET",
+        )
+
+        line_adapter = CustomJS(code=self.line_js)
+        line_src = AjaxDataSource(
+            data_url=highlight_path,
+            polling_interval=60000,
+            mode="replace",
+            content_type="application/json",
+            adapter=line_adapter,
+            method="GET",
+        )
+
+
         p = figure(
             x_axis_type=x_scale,
             y_axis_type=y_scale,
@@ -93,6 +114,49 @@ class GraphGenerationService:
             line_width=0,
             line_color="#3288bd",
         )
+
+        p.multi_line(
+            xs="xs",
+            ys="ys",
+            source=line_src,
+            line_color="white",
+            line_alpha=1,
+            line_width={"field": "widths"},
+        )
+
+        p.circle(
+            "x",
+            "y",
+            source=scatter_src,
+            fill_color="white",
+            fill_alpha=1,
+            line_color="blue",
+            line_alpha=1,
+            size="size",
+            line_width="line_size",
+        )
+
+        labels = LabelSet(
+            x="x_end",
+            y="y_end",
+            text="label",
+            source=line_src,
+            x_offset=5,
+            y_offset=5,
+            text_font_size="8pt",
+            text_color="white",
+            background_fill_color="black",
+            border_line_color="black",
+            border_line_width=3,
+        )
+        p.add_layout(labels)
+        div, script = components(p)
+        if axis_display == "y":
+            title = graph.prop_y
+        else:
+            title = f"{graph.prop_x} / {graph.prop_y}"
+        return div, script, title, p
+
 
     def create_graph_with_highlight(self, json_data: dict, highlight_points: dict, highlight_lines: dict, sizef_points: List[float], line_sizef_points: List[float], x_end: List[float], y_end: List[float], label: List[str], widths: List[float], y_scale: str, x_range: List[float], y_range: List[float], x_scale: str = "linear", material_type: str = "thermoelectric") -> Tuple[str, str, str]:
         # configファイル読み込み
