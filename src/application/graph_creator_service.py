@@ -268,7 +268,7 @@ class StreamlitGraphCreator(GraphCreator):
             source=highlight_lines_src,
             line_color="white",
             line_alpha=1,
-            line_width={"field": "widths"},
+            line_width=0.5 #{"field": "widths"},
         )
 
         p.circle(
@@ -279,24 +279,24 @@ class StreamlitGraphCreator(GraphCreator):
             fill_alpha=1,
             line_color="blue",
             line_alpha=1,
-            size="size",
-            line_width="line_size",
+            size=4, #"size",
+            line_width=0.2 #"line_size",
         )
 
-        labels = LabelSet(
-            x="x_end",
-            y="y_end",
-            text="label",
-            source=highlight_lines_src,
-            x_offset=5,
-            y_offset=5,
-            text_font_size="8pt",
-            text_color="white",
-            background_fill_color="black",
-            border_line_color="black",
-            border_line_width=3,
-        )
-        p.add_layout(labels)
+        # labels = LabelSet(
+        #     x="x_end",
+        #     y="y_end",
+        #     text="label",
+        #     source=highlight_lines_src,
+        #     x_offset=5,
+        #     y_offset=5,
+        #     text_font_size="8pt",
+        #     text_color="white",
+        #     background_fill_color="black",
+        #     border_line_color="black",
+        #     border_line_width=3,
+        # )
+        # p.add_layout(labels)
 
         div, script = components(p)
         if axis_display == "y":
@@ -325,4 +325,3 @@ class StreamlitGraphCreator(GraphCreator):
             f.write(single_html)
         print(f"Generated single graph HTML: {single_out}")
         return single_out
-
