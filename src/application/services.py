@@ -65,26 +65,112 @@ class GraphGenerationService:
             SID=[dp.sid for dp in data_points],
         ))
 
-        scatter_adapter = CustomJS(code=self.scatter_js)
-        scatter_src = AjaxDataSource(
-            data_url=highlight_path,
-            polling_interval=60000,
-            mode="replace",
-            content_type="application/json",
-            adapter=scatter_adapter,
-            method="GET",
+        p = figure(
+            x_axis_type=x_scale,
+            y_axis_type=y_scale,
+            x_range=Range1d(*x_range),
+            y_range=Range1d(*y_range),
+            x_axis_label=f"{graph.prop_x} ({graph.unit_x})",
+            y_axis_label=f"{graph.prop_y} ({graph.unit_y})",
+            background_fill_color="black",
+            border_fill_color="black",
+            sizing_mode="stretch_both",
+        )
+        for axis in (p.xaxis, p.yaxis):
+            axis.axis_label_text_color = "#ccc"
+            axis.major_label_text_color = "#ccc"
+        p.xgrid.grid_line_color, p.xgrid.grid_line_alpha = "#ccc", 0.1
+        p.ygrid.grid_line_color, p.ygrid.grid_line_alpha = "#ccc", 0.1
+        p.outline_line_color = None
+
+        p.circle(
+            "x",
+            "y",
+            source=base_src,
+            fill_color="blue",
+            fill_alpha=1,
+            size=1,
+            line_width=0,
+            line_color="#3288bd",
         )
 
-        line_adapter = CustomJS(code=self.line_js)
-        line_src = AjaxDataSource(
-            data_url=highlight_path,
-            polling_interval=60000,
-            mode="replace",
-            content_type="application/json",
-            adapter=line_adapter,
-            method="GET",
+    def create_graph_with_highlight(self, json_data: dict, highlight_points: dict, highlight_lines: dict, sizef_points: List[float], line_sizef_points: List[float], x_end: List[float], y_end: List[float], label: List[str], widths: List[float], y_scale: str, x_range: List[float], y_range: List[float], x_scale: str = "linear", material_type: str = "thermoelectric") -> Tuple[str, str, str]:
+        # configファイル読み込み
+        config_path = f"src/config.{material_type}.json"
+        config = self.load_local_json(config_path)
+        axis_display = config.get("axis_display", "y")
+
+        data_points = []
+        unit_x = json_data.get("unit_x", "")
+        unit_y = json_data.get("unit_y", "")
+
+        d = json_data["data"]
+        for xs, ys, sid in zip(d["x"], d["y"], d["SID"]):
+            num_sid = int(sid)
+            for j in range(len(xs)):
+                x_val = xs[j]
+                y_val = ys[j]
+                data_points.append(GraphDataPoint(x_val, y_val, num_sid))
+
+        graph = Graph(
+            prop_x=json_data.get("prop_x", ""),
+            prop_y=json_data.get("prop_y", ""),
+            unit_x=unit_x,
+            unit_y=unit_y,
+            data_points=data_points,
+            y_scale=y_scale,
+            x_range=x_range,
+            y_range=y_range,
         )
 
+        if not graph.validate():
+            raise ValueError("Graph data validation failed")
+
+        base_src = ColumnDataSource(data=dict(
+            x=[dp.x for dp in data_points],
+            y=[dp.y for dp in data_points],
+            SID=[dp.sid for dp in data_points],
+        ))
+
+        # highlight_pointsのx,y,SIDは点の数に展開し、sizef_points, line_sizef_pointsは点の数に合わせて繰り返す
+        x_expanded_points = []
+        y_expanded_points = []
+        sid_expanded_points = []
+        size_expanded_points = []
+        line_size_expanded_points = []
+
+        for i in range(len(highlight_points.get("x", []))):
+            xs = highlight_points["x"][i]
+            ys = highlight_points["y"][i]
+            sid = highlight_points.get("SID", [])[i] if i < len(highlight_points.get("SID", [])) else ""
+            size_val = sizef_points[i] if i < len(sizef_points) else 2
+            line_size_val = line_sizef_points[i] if i < len(line_sizef_points) else 0.1
+            for _ in xs:
+                x_expanded_points.append(_)
+                size_expanded_points.append(size_val)
+                line_size_expanded_points.append(line_size_val)
+            for y in ys:
+                y_expanded_points.append(y)
+            for _ in xs:
+                sid_expanded_points.append(sid)
+
+        highlight_points_src = ColumnDataSource(data=dict(
+            x=x_expanded_points,
+            y=y_expanded_points,
+            SID=sid_expanded_points,
+            size=size_expanded_points,
+            line_size=line_size_expanded_points,
+        ))
+
+        # highlight_linesはそのままmulti_line用に使う
+        highlight_lines_src = ColumnDataSource(data=dict(
+            xs=highlight_lines.get("x", []),
+            ys=highlight_lines.get("y", []),
+            x_end=x_end,
+            y_end=y_end,
+            label=label,
+            widths=widths,
+        ))
 
         p = figure(
             x_axis_type=x_scale,
@@ -118,7 +204,7 @@ class GraphGenerationService:
         p.multi_line(
             xs="xs",
             ys="ys",
-            source=line_src,
+            source=highlight_lines_src,
             line_color="white",
             line_alpha=1,
             line_width={"field": "widths"},
@@ -127,7 +213,7 @@ class GraphGenerationService:
         p.circle(
             "x",
             "y",
-            source=scatter_src,
+            source=highlight_points_src,
             fill_color="white",
             fill_alpha=1,
             line_color="blue",
@@ -140,7 +226,7 @@ class GraphGenerationService:
             x="x_end",
             y="y_end",
             text="label",
-            source=line_src,
+            source=highlight_lines_src,
             x_offset=5,
             y_offset=5,
             text_font_size="8pt",

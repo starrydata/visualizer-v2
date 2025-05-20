@@ -66,8 +66,7 @@ def main():
             g["y_range"] = [y_min, y_max]
             break
 
-    scatter_js, line_js, label_js = load_js_code()
-    graph_service = GraphGenerationService(scatter_js, line_js, label_js)
+    graph_service = GraphGenerationService("", "", "")
 
     json_base_uri = os.environ.get("JSON_BASE_URI")
     highlight_base_uri = os.environ.get("HIGHLIGHT_BASE_URI")
@@ -80,10 +79,69 @@ def main():
     unit_y = json_data.get("unit_y", "")
 
     highlight_path = f"{highlight_base_uri}/?property_x={prop_x}&property_y={prop_y}&unit_x={unit_x}&unit_y={unit_y}&date_from={date_from}&date_to={date_to}&limit={limit}"
+    highlight_response = requests.get(highlight_path)
+    highlight_response.raise_for_status()
+    highlight_data = highlight_response.json().get("data", {})
 
-    div, script, title, figure = graph_service.create_graph(
-        json_path,
-        highlight_path,
+    # highlight_dataをpointsとlinesに分割
+    highlight_points = {
+        "x": highlight_data.get("x", []),
+        "y": highlight_data.get("y", []),
+        "SID": highlight_data.get("SID", []),
+        "updated_at": highlight_data.get("updated_at", []),
+    }
+    highlight_lines = {
+        "x": highlight_data.get("x", []),
+        "y": highlight_data.get("y", []),
+        "SID": highlight_data.get("SID", []),
+        "figure_id": highlight_data.get("figure_id", []),
+        "sample_id": highlight_data.get("sample_id", []),
+        "updated_at": highlight_data.get("updated_at", []),
+    }
+
+    # pointsのサイズ計算
+    ts_points = [int(datetime.datetime.fromisoformat(t).timestamp() * 1000) for t in highlight_points.get("updated_at", [])]
+    mi_points = min(ts_points) if ts_points else 0
+    ma_points = max(ts_points) if ts_points else 0
+
+    sizef_points = []
+    line_sizef_points = []
+    for t in ts_points:
+        sizef_points.append(2 + ((t - mi_points) / (ma_points - mi_points)) * 4 if ma_points > mi_points else 2)
+        line_sizef_points.append(0.1 + ((t - mi_points) / (ma_points - mi_points)) * 0.4 if ma_points > mi_points else 0.1)
+
+    # linesの終端点とラベル、線幅計算
+    x_end = []
+    y_end = []
+    label = []
+    widths = []
+    for i in range(len(highlight_lines.get("x", []))):
+        xs = highlight_lines["x"][i]
+        ys = highlight_lines["y"][i]
+        x_end.append(xs[-1] if xs else None)
+        y_end.append(ys[-1] if ys else None)
+        sid = highlight_lines.get("SID", [])[i] if i < len(highlight_lines.get("SID", [])) else ""
+        figure_id = highlight_lines.get("figure_id", [])[i] if i < len(highlight_lines.get("figure_id", [])) else ""
+        sample_id = highlight_lines.get("sample_id", [])[i] if i < len(highlight_lines.get("sample_id", [])) else ""
+        label.append(f"{sid}-{figure_id}-{sample_id}")
+
+    ts_lines = [int(datetime.datetime.fromisoformat(t).timestamp() * 1000) for t in highlight_lines.get("updated_at", [])]
+    mi_lines = min(ts_lines) if ts_lines else 0
+    ma_lines = max(ts_lines) if ts_lines else 0
+
+    for t in ts_lines:
+        widths.append(0.1 + ((t - mi_lines) / (ma_lines - mi_lines)) * 0.2 if ma_lines > mi_lines else 0.1)
+
+    div, script, title, figure = graph_service.create_graph_with_highlight(
+        json_data,
+        highlight_points,
+        highlight_lines,
+        sizef_points,
+        line_sizef_points,
+        x_end,
+        y_end,
+        label,
+        widths,
         y_scale,
         [x_min, x_max],
         [y_min, y_max],
