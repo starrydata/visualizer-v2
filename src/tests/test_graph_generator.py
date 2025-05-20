@@ -1,7 +1,7 @@
 import pytest
 from domain.graph import Graph, GraphDataPoint
 from domain.slideshow import Slideshow
-from application.graph_creator import GraphGenerationService
+from application.graph_creator_service import GraphGenerationService
 from application.slideshow_generation_service import SlideshowGenerationService
 
 from unittest.mock import patch, Mock

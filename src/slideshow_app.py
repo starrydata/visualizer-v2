@@ -1,7 +1,7 @@
 import json
 import os
 import requests
-from application.graph_creator import SlideshowGraphCreator
+from application.graph_creator_service import SlideshowGraphCreator
 from application.slideshow_generation_service import SlideshowGenerationService
 from domain.slideshow import Slideshow
 from bokeh.resources import CDN

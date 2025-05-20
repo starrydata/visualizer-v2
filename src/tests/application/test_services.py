@@ -1,5 +1,5 @@
 import pytest
-from application.graph_creator import GraphGenerationService, SlideshowGenerationService, load_js_code
+from application.graph_creator_service import GraphGenerationService, SlideshowGenerationService, load_js_code
 from domain.slideshow import Slideshow
 from unittest.mock import patch, Mock
 from bokeh.plotting import Figure

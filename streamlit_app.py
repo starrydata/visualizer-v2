@@ -1,6 +1,6 @@
 import os
 import streamlit as st
-from application.graph_creator import StreamlitGraphCreator
+from application.graph_creator_service import StreamlitGraphCreator
 from application.graph_data_service import GraphDataService
 
 def main():
