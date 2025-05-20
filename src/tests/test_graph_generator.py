@@ -1,7 +1,7 @@
 import pytest
 from domain.graph import Graph, GraphDataPoint
 from domain.slideshow import Slideshow
-from application.graph_creator_service import GraphGenerationService
+from application.graph_creator_service import SlideshowGraphCreator
 from application.slideshow_generation_service import SlideshowGenerationService
 
 from unittest.mock import patch, Mock
@@ -49,10 +49,9 @@ def test_slideshow_add_and_getters():
     html_fragments = slideshow.get_html_fragments()
     assert html_fragments == ["<div><script>", "<div2><script2>"]
 
-@patch("application.services.requests.get")
+@patch("application.graph_creator_service.requests.get")
 def test_graph_generation_service_create_graph(mock_get):
-    scatter_js, line_js, label_js = load_js_code()
-    service = GraphGenerationService(scatter_js, line_js, label_js)
+    service = SlideshowGraphCreator()
 
     mock_response = Mock()
     mock_response.json.return_value = {
@@ -83,8 +82,8 @@ def test_graph_generation_service_create_graph(mock_get):
     assert isinstance(title, str)
     assert isinstance(figure, Figure)
 
-@patch("application.services.open", create=True)
-@patch("application.services.os.makedirs")
+@patch("application.slideshow_generation_service.open", create=True)
+@patch("application.slideshow_generation_service.os.makedirs")
 def test_slideshow_generation_service_generate_slideshow(mock_makedirs, mock_open):
     service = SlideshowGenerationService(template_path="src/templates/starrydata_slideshow.html")
 
