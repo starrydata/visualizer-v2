@@ -1,6 +1,7 @@
 import json
 import os
 import requests
+import urllib.parse
 from application.graph_creator_service import SlideshowGraphCreator
 from application.slideshow_generation_service import SlideshowGenerationService
 from domain.slideshow import Slideshow
@@ -48,7 +49,17 @@ def main(date_from=None, date_to=None, limit=None):
         unit_x = base_data.get("unit_x", "")
         unit_y = base_data.get("unit_y", "")
 
-        highlight_path = f"{HIGHLIGHT_DATA_URI}/?property_x={cfg['prop_x']}&property_y={cfg['prop_y']}&unit_x={unit_x}&unit_y={unit_y}&date_from={config_data['date_from']}&date_to={config_data['date_to']}&limit={config_data['limit']}"
+        params = {
+            "property_x": cfg["prop_x"],
+            "property_y": cfg["prop_y"],
+            "unit_x": unit_x,
+            "unit_y": unit_y,
+            "date_from": config_data["date_from"],
+            "date_to": config_data["date_to"],
+            "limit": config_data["limit"],
+        }
+        query_string = urllib.parse.urlencode(params)
+        highlight_path = f"{HIGHLIGHT_DATA_URI}/?{query_string}"
 
         div, script, title, figure = graph_service.create_graph(
             json_path, highlight_path, cfg["y_scale"], cfg["x_range"], cfg["y_range"], cfg.get("x_scale", "linear"), material_type=material_type

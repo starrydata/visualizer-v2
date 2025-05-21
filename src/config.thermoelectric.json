@@ -1,8 +1,8 @@
 {
   "material_type": "thermoelectric",
   "axis_display": "y",
-  "date_from": "2023-01-01",
-  "date_to": "2025-01-01",
+  "date_from": "2025-05-21T00:00:00+09:00",
+  "date_to": "2025-01-01T23:59:59+09:00",
   "limit": 10,
   "graphs": [
     {
