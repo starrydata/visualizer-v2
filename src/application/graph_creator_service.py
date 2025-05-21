@@ -252,13 +252,13 @@ class StreamlitGraphCreator(GraphCreator):
 
         p = self._create_figure_base(graph, y_scale, x_scale, x_range, y_range)
 
-        p.circle(
+        base_renderer = p.circle(
             "x",
             "y",
             source=base_src,
             fill_color="blue",
             fill_alpha=1,
-            size=1,
+            size=2,
             line_width=0,
             line_color="#3288bd",
         )
@@ -272,7 +272,7 @@ class StreamlitGraphCreator(GraphCreator):
             line_width=0.5 #{"field": "widths"},
         )
 
-        p.circle(
+        highlight_renderer = p.circle(
             "x",
             "y",
             source=highlight_points_src,
@@ -284,20 +284,9 @@ class StreamlitGraphCreator(GraphCreator):
             line_width=0.2 #"line_size",
         )
 
-        # labels = LabelSet(
-        #     x="x_end",
-        #     y="y_end",
-        #     text="label",
-        #     source=highlight_lines_src,
-        #     x_offset=5,
-        #     y_offset=5,
-        #     text_font_size="8pt",
-        #     text_color="white",
-        #     background_fill_color="black",
-        #     border_line_color="black",
-        #     border_line_width=3,
-        # )
-        # p.add_layout(labels)
+        from bokeh.models import HoverTool
+        base_hover = HoverTool(tooltips=[("SID", "@SID")], renderers=[base_renderer, highlight_renderer], mode="mouse", point_policy="follow_mouse")
+        p.add_tools(base_hover)
 
         div, script = components(p)
         if axis_display == "y":
