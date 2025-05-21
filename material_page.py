@@ -3,14 +3,8 @@ import streamlit as st
 from application.graph_creator_service import StreamlitGraphCreator
 from application.graph_data_service import GraphDataService
 
-def main():
-    st.title("Nightmode Slideshow Graph Viewer")
-
-    st.sidebar.header("API Parameters")
-
-    material_type = st.sidebar.selectbox(
-        "Select Material Type", ["thermoelectric", "battery"], index=1
-    )
+def main(material_type: str):
+    st.title(f"{material_type.capitalize()} material data")
 
     limit = st.sidebar.number_input(
         "Limit", min_value=1, max_value=100, value=10, step=1
@@ -100,7 +94,3 @@ def main():
     st.subheader(f"Graph: {title}")
 
     st.bokeh_chart(figure, use_container_width=True)
-
-
-if __name__ == "__main__":
-    main()
