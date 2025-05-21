@@ -11,16 +11,25 @@ import sys
 
 
 
-def main(date_from=None, date_to=None, limit=None):
+def main():
     BASE_DATA_URI = os.environ.get("BASE_DATA_URI")
     HIGHLIGHT_DATA_URI = os.environ.get("HIGHLIGHT_DATA_URI")
 
     # コマンドライン引数または環境変数で材料種別を指定（デフォルトは thermoelectric）
     material_type = None
+    date_from_arg = None
+    date_to_arg = None
     if len(sys.argv) > 1:
         material_type = sys.argv[1].lower()
-    else:
-        material_type = os.environ.get("MATERIAL_TYPE", "thermoelectric").lower()
+        if len(sys.argv) > 2:
+            date_from_arg = sys.argv[2]
+        if len(sys.argv) > 3:
+            date_to_arg = sys.argv[3]
+    # 引数が足りていないエラーを出す
+    if material_type is None:
+        print("Usage: python slideshow_app.py <material_type> [date_from] [date_to]")
+        sys.exit(1)
+
 
     config_file_map = {
         "thermoelectric": "src/config.thermoelectric.json",
@@ -54,8 +63,8 @@ def main(date_from=None, date_to=None, limit=None):
             "property_y": cfg["prop_y"],
             "unit_x": unit_x,
             "unit_y": unit_y,
-            "date_from": config_data["date_from"],
-            "date_to": config_data["date_to"],
+            "date_from": date_from_arg if date_from_arg is not None else config_data["date_from"],
+            "date_to": date_to_arg if date_to_arg is not None else config_data["date_to"],
             "limit": config_data["limit"],
         }
         query_string = urllib.parse.urlencode(params)
@@ -71,7 +80,12 @@ def main(date_from=None, date_to=None, limit=None):
 
     material_type = config_data.get("material_type", material_type)
 
-    out_path, html_content = slideshow_service.generate_slideshow(graphs, material_type=material_type)
+    out_path, html_content = slideshow_service.generate_slideshow(
+        graphs,
+        material_type=material_type,
+        date_from=date_from_arg if date_from_arg is not None else config_data["date_from"],
+        date_to=date_to_arg if date_to_arg is not None else config_data["date_to"],
+    )
     print(f"Generated slideshow at: {out_path}")
 
 if __name__ == "__main__":
