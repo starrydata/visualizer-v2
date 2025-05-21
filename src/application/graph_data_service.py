@@ -21,11 +21,17 @@ class GraphDataService:
         return response.json()
 
     def fetch_highlight_data(self, prop_x: str, prop_y: str, unit_x: str, unit_y: str, date_from: str, date_to: str, limit: int) -> Dict:
-        highlight_path = (
-            f"{self.highlight_data_uri}/?property_x={prop_x}&property_y={prop_y}"
-            f"&unit_x={unit_x}&unit_y={unit_y}&date_from={date_from}&date_to={date_to}&limit={limit}"
-        )
-        response = requests.get(highlight_path)
+        url = f"{self.highlight_data_uri}/"
+        params = {
+            "property_x": prop_x,
+            "property_y": prop_y,
+            "unit_x": unit_x,
+            "unit_y": unit_y,
+            "date_from": date_from,
+            "date_to": date_to,
+            "limit": limit,
+        }
+        response = requests.get(url, params=params)
         response.raise_for_status()
         return response.json().get("data", {})
 

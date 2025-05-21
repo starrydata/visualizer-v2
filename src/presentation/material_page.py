@@ -1,7 +1,10 @@
 import os
 import streamlit as st
+from streamlit_javascript import st_javascript
 from application.graph_creator_service import StreamlitGraphCreator
 from application.graph_data_service import GraphDataService
+import datetime
+import pytz
 
 def main(material_type: str):
     st.title(f"{material_type.capitalize()} material data")
@@ -11,6 +14,27 @@ def main(material_type: str):
     )
     date_from = st.sidebar.date_input("From Date")
     date_to = st.sidebar.date_input("To Date")
+
+    # JavaScriptでブラウザのタイムゾーンを取得
+    user_timezone_str = st_javascript("Intl.DateTimeFormat().resolvedOptions().timeZone", key="timezone")
+    if not user_timezone_str:
+        user_timezone_str = "UTC"  # 取得できなければUTCをデフォルトに
+
+    user_timezone = pytz.timezone(user_timezone_str)
+
+    if date_from:
+        date_from_dt = datetime.datetime.combine(date_from, datetime.time(0, 0, 0))
+        date_from_dt = user_timezone.localize(date_from_dt)
+        date_from_str = date_from_dt.isoformat()
+    else:
+        date_from_str = None
+
+    if date_to:
+        date_to_dt = datetime.datetime.combine(date_to, datetime.time(23, 59, 59))
+        date_to_dt = user_timezone.localize(date_to_dt)
+        date_to_str = date_to_dt.isoformat()
+    else:
+        date_to_str = None
 
     graph_data_service = GraphDataService(
         base_data_uri=os.environ.get("BASE_DATA_URI", ""),
@@ -42,9 +66,6 @@ def main(material_type: str):
 
     x_scale = st.sidebar.selectbox("X Axis Scale", ["linear", "log"], index=0)
     y_scale = st.sidebar.selectbox("Y Axis Scale", ["linear", "log"], index=0)
-
-    date_from_str = date_from.isoformat() if date_from else None
-    date_to_str = date_to.isoformat() if date_to else None
 
     # Update config ranges
     for g in config_data.get("graphs", []):
