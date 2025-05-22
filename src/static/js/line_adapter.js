@@ -13,13 +13,18 @@ for (let i = 0; i < d.x.length; i++) {
 }
 
 // 更新日時から線幅の計算
-const ts = d.updated_at.map((t) => new Date(t).getTime());
+const ts = d.updated_at.map((t) => new Date(t).getTime() / 1000 / 60);
 const minT = Math.min(...ts);
 const maxT = Math.max(...ts);
 const widths = ts.map(t =>
   0.1 + (maxT > minT ? ((t - minT) / (maxT - minT)) * 0.5 : 0.1)
 );
-
+const alphas = ts.map(t => {
+  if (maxT <= minT) return 1;
+  const t_norm = (t - minT) / (maxT - minT) + 0.1; // 0.1を足すことで、最初のものが完全に透明にならないようにする
+  // 新しいものほど透明度が低くなる（目立つ）ように線形に変化
+  return t_norm;
+});
 // 全てまとめて返す
 return {
   // 元データ
@@ -30,5 +35,6 @@ return {
   y_end: y_end,
   label: label,
   // 線幅
-  widths: widths
+  widths: widths,
+  alphas: alphas
 };

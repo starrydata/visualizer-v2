@@ -93,9 +93,12 @@ class SlideshowGraphCreator(GraphCreator):
             y_offset=5,
             text_font_size="8pt",
             text_color="white",
+            text_alpha={"field": "alphas"},
             background_fill_color="black",
+            background_fill_alpha={"field": "alphas"},
             border_line_color="black",
             border_line_width=3,
+            border_line_alpha={"field": "alphas"},
         )
         p.add_layout(labels)
 
