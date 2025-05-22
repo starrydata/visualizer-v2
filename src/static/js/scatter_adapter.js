@@ -16,7 +16,7 @@ for (let i = 0; i < d.x.length; i++) {
 }
 const mi = Math.min(...ts),
   ma = Math.max(...ts);
-ts.forEach((t) => sizef.push(ma > mi ? 2 + ((t - mi) / (ma - mi)) * 4 : 2));
+ts.forEach((t) => sizef.push(ma > mi ? 2 + ((t - mi) / (ma - mi)) * 8 : 2));
 ts.forEach((t) =>
   line_sizef.push(ma > mi ? 0.1 + ((t - mi) / (ma - mi)) * 0.4 : 0.1)
 );
