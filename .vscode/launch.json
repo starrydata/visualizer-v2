@@ -11,20 +11,41 @@
             // src/app.pyを実行したい
             "program": "${workspaceFolder}/src/slideshow_app.py",
             // 引数にbatteryを渡す
-            "args": ["battery", "2025-05-21T00:00:00+09:00", "2025-05-21T23:59:59+09:00"],
+            "args": ["battery", "2025-05-22T00:00:00+09:00", "2025-05-22T23:59:59+09:00"],
             "console": "integratedTerminal",
             "python": "${workspaceFolder}/.venv/bin/python"
         },
         {
-            "name": "thermoelectric",
+            "name": "NIMS openhouse 2025 production",
             "type": "debugpy",
             "request": "launch",
             // src/app.pyを実行したい
             "program": "${workspaceFolder}/src/slideshow_app.py",
             // 引数にbatteryを渡す
-            "args": ["thermoelectric"],
+            "args": ["thermoelectric", "2025-05-22T00:00:00+09:00", "2025-05-22T23:59:59+09:00"],
             "console": "integratedTerminal",
-            "python": "${workspaceFolder}/.venv/bin/python"
+            "python": "${workspaceFolder}/.venv/bin/python",
+            "env": {
+                "BASE_DATA_URI": "https://starrydata.github.io/cleansing-dataset/v1",
+                "HIGHLIGHT_DATA_URI": "https://www.starrydata2.org/paperlist/xy_data_api",
+                "APP_ENV": "production",
+            }
+        },
+        {
+            "name": "NIMS openhouse 2025 local",
+            "type": "debugpy",
+            "request": "launch",
+            // src/app.pyを実行したい
+            "program": "${workspaceFolder}/src/slideshow_app.py",
+            // 引数にbatteryを渡す
+            "args": ["thermoelectric", "2021-05-22T00:00:00+09:00", "2025-05-22T23:59:59+09:00"],
+            "console": "integratedTerminal",
+            "python": "${workspaceFolder}/.venv/bin/python",
+            "env": {
+                "BASE_DATA_URI": "https://starrydata.github.io/cleansing-dataset/v1",
+                "HIGHLIGHT_DATA_URI": "http://127.0.0.1:8000/paperlist/xy_data_api",
+                "APP_ENV": "local",
+            }
         },
         // stremaliteのデバッグ用
         {

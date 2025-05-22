@@ -45,6 +45,13 @@ class SlideshowGenerationService:
             out = f"./dist/{safe_material_type}_slideshow_{date_from_str}.html"
         else:
             out = f"./dist/{safe_material_type}_slideshow_{date_from_str}_{date_to_str}.html"
+        # APP_ENVがlocalの場合はdist/local/に保存
+        if os.environ.get("APP_ENV") == "local":
+            # directoryがない場合は作成
+            if not os.path.exists("./dist/local"):
+                os.makedirs("./dist/local")
+            out = f"./dist/local/{safe_material_type}_slideshow_{date_from_str}_{date_to_str}.html"
+
         os.makedirs(os.path.dirname(out), exist_ok=True)
         with open(out, "w", encoding="utf-8") as f:
             f.write(html)

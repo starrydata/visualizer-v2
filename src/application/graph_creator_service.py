@@ -184,6 +184,12 @@ class SlideshowGraphCreator(GraphCreator):
     def save_graph_html(self, div: str, script: str, prop_x: str, prop_y: str, output_dir: str = "./dist/graphs") -> str:
         safe_x_name = prop_x.replace(" ", "_")
         safe_y_name = prop_y.replace(" ", "_")
+        # APP_ENVがstagingの場合は、output_dirを/dist/stating/graphsに変更
+        if os.getenv("APP_ENV") == "local":
+            output_dir = "./dist/local/graphs"
+        # directoryがない場合は作成
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
         single_out = f"{output_dir}/{safe_x_name}_{safe_y_name}.html"
 
         single_html = f"""
