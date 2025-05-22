@@ -1,7 +1,7 @@
 import os
 import streamlit as st
 from streamlit_javascript import st_javascript
-from application.graph_creator_service import StreamlitGraphCreator
+from application.streamlit_graph_creator_service import StreamlitGraphCreator
 from application.graph_data_service import GraphDataService
 import datetime
 import pytz

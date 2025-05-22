@@ -2,7 +2,7 @@ import json
 import os
 import requests
 import urllib.parse
-from application.graph_creator_service import SlideshowGraphCreator
+from application.slideshow_graph_creator_service import SlideshowGraphCreator
 from application.slideshow_generation_service import SlideshowGenerationService
 from domain.slideshow import Slideshow
 from bokeh.resources import CDN
