@@ -17,7 +17,7 @@ const ts = d.updated_at.map((t) => new Date(t).getTime());
 const minT = Math.min(...ts);
 const maxT = Math.max(...ts);
 const widths = ts.map(t =>
-  0.1 + (maxT > minT ? ((t - minT) / (maxT - minT)) * 0.2 : 0.1)
+  0.1 + (maxT > minT ? ((t - minT) / (maxT - minT)) * 0.5 : 0.1)
 );
 
 // 全てまとめて返す
