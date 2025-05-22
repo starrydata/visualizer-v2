@@ -29,7 +29,7 @@
       "prop_y": "Electrical resistivity",
       "unit_y": "Ω·m",
       "x_range": [-5, 1150],
-      "y_range": [1e-6, 1e-2],
+      "y_range": [1e-6, 1e+4],
       "y_scale": "log"
     },
     {
@@ -38,8 +38,8 @@
       "prop_y": "Thermal conductivity",
       "unit_y": "W/(m·K)",
       "x_range": [-5, 1150],
-      "y_range": [0.5, 20],
-      "y_scale": "log"
+      "y_range": [0, 10],
+      "y_scale": "linear"
     },
     {
       "prop_x": "Temperature",
@@ -47,8 +47,8 @@
       "prop_y": "Power factor",
       "unit_y": "W/(m·K²)",
       "x_range": [-5, 1150],
-      "y_range": [0.0001, 0.01],
-      "y_scale": "log"
+      "y_range": [0, 0.01],
+      "y_scale": "linear"
     },
     {
       "prop_x": "Temperature",
