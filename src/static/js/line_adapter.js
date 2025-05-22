@@ -16,9 +16,12 @@ for (let i = 0; i < d.x.length; i++) {
 const ts = d.updated_at.map((t) => new Date(t).getTime() / 1000 / 60);
 const minT = Math.min(...ts);
 const maxT = Math.max(...ts);
-const widths = ts.map(t =>
-  0.1 + (maxT > minT ? ((t - minT) / (maxT - minT)) * 0.5 : 0.1)
-);
+const widths = ts.map(t => {
+  const normalized = maxT > minT ? (t - minT) / (maxT - minT) : 0;
+  const k = 3;
+  const exponential_normalized = maxT > minT ? (Math.exp(k * normalized) - 1) / (Math.exp(k) - 1) : 0;
+  return 0.1 + exponential_normalized * 0.5;
+});
 const alphas = ts.map(t => {
   if (maxT <= minT) return 1;
   const t_norm = (t - minT) / (maxT - minT) + 0.1; // 0.1を足すことで、最初のものが完全に透明にならないようにする
