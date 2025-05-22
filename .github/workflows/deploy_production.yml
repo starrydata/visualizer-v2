@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      BASE_DATA_URI: https://starrydata.github.io/cleansing-dataset/v1
+      HIGHLIGHT_DATA_URI: https://www.starrydata2.org/paperlist/xy_data_api
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -24,20 +27,31 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: '16'
 
-      - name: Install dependencies
-        run: npm install
+      # - name: Install dependencies
+      #   run: npm install
 
-      - name: Build static site
-        id: build
-        run: npm run build
-        env:
-          BASE_DATA_URI: https://starrydata.github.io/cleansing-dataset/v1
-          HIGHLIGHT_DATA_URI: https://www.starrydata2.org/paperlist/xy_data_api
+      # - name: Build static site
+      #   id: build
+      #   run: npm run build
+      #   env:
+      #     BASE_DATA_URI: https://starrydata.github.io/cleansing-dataset/v1
+      #     HIGHLIGHT_DATA_URI: https://www.starrydata2.org/paperlist/xy_data_api
+
+      - name: Build static html 2025/5/22
+        run: python src/slideshow_app.py "thermoelectric" "2025-05-22T00:00:00+09:00" "2025-05-22T23:59:59+09:00" "100"
+      - name: Build static html 2025/5/23
+        run: python src/slideshow_app.py "thermoelectric" "2025-05-23T00:00:00+09:00" "2025-05-23T23:59:59+09:00" "100"
+      - name: Build static html 2025/5/24
+        run: python src/slideshow_app.py "thermoelectric" "2025-05-24T00:00:00+09:00" "2025-05-24T23:59:59+09:00" "100"
+      - name: Build static html 2025/5/25
+        run: python src/slideshow_app.py "thermoelectric" "2025-05-25T00:00:00+09:00" "2025-05-25T23:59:59+09:00" "100"
+      - name: Build static html 2015 - 2025
+        run: python src/slideshow_app.py "thermoelectric" "2015-05-25T00:00:00+09:00" "2025-05-25T23:59:59+09:00" "100"
 
       - name: Upload static files as artifact
         id: deployment
