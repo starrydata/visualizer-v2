@@ -38,7 +38,7 @@
             // src/app.pyを実行したい
             "program": "${workspaceFolder}/src/slideshow_app.py",
             // 引数にbatteryを渡す
-            "args": ["thermoelectric", "2021-05-22T00:00:00+09:00", "2025-05-22T23:59:59+09:00"],
+            "args": ["thermoelectric", "2021-05-22T00:00:00+09:00", "2025-05-22T23:59:59+09:00", "100"],
             "console": "integratedTerminal",
             "python": "${workspaceFolder}/.venv/bin/python",
             "env": {

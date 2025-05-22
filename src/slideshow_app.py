@@ -19,15 +19,19 @@ def main():
     material_type = None
     date_from_arg = None
     date_to_arg = None
+    highlight_limit_arg = None
     if len(sys.argv) > 1:
         material_type = sys.argv[1].lower()
-        if len(sys.argv) > 2:
-            date_from_arg = sys.argv[2]
-        if len(sys.argv) > 3:
-            date_to_arg = sys.argv[3]
+    if len(sys.argv) > 2:
+        date_from_arg = sys.argv[2]
+    if len(sys.argv) > 3:
+        date_to_arg = sys.argv[3]
+    if len(sys.argv) > 4:
+        highlight_limit_arg = int(sys.argv[4])
+
     # 引数が足りていないエラーを出す
     if material_type is None:
-        print("Usage: python slideshow_app.py <material_type> [date_from] [date_to]")
+        print("Usage: python slideshow_app.py <material_type> [date_from] [date_to] [highlight_limit]")
         sys.exit(1)
 
 
@@ -50,6 +54,7 @@ def main():
     graphs = Slideshow([])
 
     for cfg in config_data["graphs"]:
+        print(f"Processing graph: {cfg['prop_x']} vs {cfg['prop_y']}")
         json_path = f"{BASE_DATA_URI}/{cfg['prop_x']}-{cfg['prop_y']}.json"
         # JSONを取得してunit_x, unit_yを抽出
         response = requests.get(json_path)
@@ -65,7 +70,7 @@ def main():
             "unit_y": unit_y,
             "date_from": date_from_arg if date_from_arg is not None else config_data["date_from"],
             "date_to": date_to_arg if date_to_arg is not None else config_data["date_to"],
-            "limit": config_data["limit"],
+            "limit": highlight_limit_arg if highlight_limit_arg is not None else config_data["limit"],
         }
         query_string = urllib.parse.urlencode(params)
         highlight_path = f"{HIGHLIGHT_DATA_URI}/?{query_string}"
@@ -76,7 +81,7 @@ def main():
         graphs.add_graph(div, script, title)
 
         # グラフHTMLファイルの生成をサービスに移行
-        single_out = graph_service.save_graph_html(div, script, cfg["prop_x"], cfg["prop_y"])
+        # single_out = graph_service.save_graph_html(div, script, cfg["prop_x"], cfg["prop_y"])
 
     material_type = config_data.get("material_type", material_type)
 
