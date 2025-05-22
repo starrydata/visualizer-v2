@@ -131,7 +131,7 @@ class SlideshowGraphCreator(GraphCreator):
             "x",
             "y",
             source=base_src,
-            fill_color="blue",
+            fill_color="#9BB0FF",
             fill_alpha=1,
             size=1,
             line_width=0,
@@ -201,7 +201,6 @@ class SlideshowGraphCreator(GraphCreator):
         </body>
         </html>
         """
-        import os
         os.makedirs(output_dir, exist_ok=True)
         with open(single_out, "w", encoding="utf-8") as f:
             f.write(single_html)
