@@ -31,7 +31,7 @@ def main():
 
     # 引数が足りていないエラーを出す
     if material_type is None:
-        print("Usage: python slideshow_app.py <material_type> [date_from] [date_to] [highlight_limit]")
+        print("Usage: python presentation/slideshow_app.py <material_type> [date_from] [date_to] [highlight_limit]")
         sys.exit(1)
 
 

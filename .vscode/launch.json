@@ -9,7 +9,7 @@
             "type": "debugpy",
             "request": "launch",
             // src/app.pyを実行したい
-            "program": "${workspaceFolder}/src/slideshow_app.py",
+            "program": "${workspaceFolder}/src/presentation/slideshow_app.py",
             // 引数にbatteryを渡す
             "args": ["battery", "2025-05-22T00:00:00+09:00", "2025-05-22T23:59:59+09:00"],
             "console": "integratedTerminal",
@@ -20,7 +20,7 @@
             "type": "debugpy",
             "request": "launch",
             // src/app.pyを実行したい
-            "program": "${workspaceFolder}/src/slideshow_app.py",
+            "program": "${workspaceFolder}/src/presentation/slideshow_app.py",
             // 引数にbatteryを渡す
             "args": ["thermoelectric", "2025-05-22T00:00:00+09:00", "2025-05-22T23:59:59+09:00"],
             "console": "integratedTerminal",
@@ -36,7 +36,7 @@
             "type": "debugpy",
             "request": "launch",
             // src/app.pyを実行したい
-            "program": "${workspaceFolder}/src/slideshow_app.py",
+            "program": "${workspaceFolder}/src/presentation/slideshow_app.py",
             // 引数にbatteryを渡す
             "args": ["thermoelectric", "2015-05-22T00:00:00+09:00", "2025-05-22T23:59:59+09:00", "100"],
             "console": "integratedTerminal",
