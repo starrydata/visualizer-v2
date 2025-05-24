@@ -1,11 +1,12 @@
 import pytest
 from domain.graph import Graph, GraphDataPoint
 from domain.slideshow import Slideshow
-from application.graph_creator_service import SlideshowGraphCreator
 from application.slideshow_generation_service import SlideshowGenerationService
 
 from unittest.mock import patch, Mock
 from bokeh.plotting import Figure
+
+from application.slideshow_graph_creator_service import SlideshowGraphCreator
 
 def test_graph_data_point():
     dp = GraphDataPoint(1.0, 2.0, 100)
@@ -49,7 +50,7 @@ def test_slideshow_add_and_getters():
     html_fragments = slideshow.get_html_fragments()
     assert html_fragments == ["<div><script>", "<div2><script2>"]
 
-@patch("application.graph_creator_service.requests.get")
+@patch("application.slideshow_graph_creator_service.requests.get")
 def test_graph_generation_service_create_graph(mock_get):
     service = SlideshowGraphCreator()
 
@@ -82,9 +83,9 @@ def test_graph_generation_service_create_graph(mock_get):
     assert isinstance(title, str)
     assert isinstance(figure, Figure)
 
-@patch("application.slideshow_generation_service.open", create=True)
+# @patch("application.slideshow_generation_service.open", create=True)
 @patch("application.slideshow_generation_service.os.makedirs")
-def test_slideshow_generation_service_generate_slideshow(mock_makedirs, mock_open):
+def test_slideshow_generation_service_generate_slideshow(mock_open):
     service = SlideshowGenerationService(template_path="src/templates/starrydata_slideshow.html")
 
     graphs = Slideshow([
@@ -101,8 +102,8 @@ def test_slideshow_generation_service_generate_slideshow(mock_makedirs, mock_ope
     """
     mock_open.return_value.__enter__.return_value = mock_file
 
-    out_path, html = service.generate_slideshow(graphs)
+    out_path, html = service.generate_slideshow(graphs, "thermoelectric", "2025-05-21T00:00:00+09:00", "2025-01-01T23:59:59+09:00")
 
-    assert out_path == "./dist/starrydata_slideshow.html"
+    assert out_path == "./dist/thermoelectric_slideshow_2025-05-21_2025-01-01.html"
     # htmlは文字列であることを確認
     assert isinstance(html, str)
