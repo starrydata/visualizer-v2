@@ -7,4 +7,5 @@ pyreverse:
 	 --output-directory class_diagram \
 	 --colorized \
 	 --ignore tests \
+	 --only-classnames \
 	 src
