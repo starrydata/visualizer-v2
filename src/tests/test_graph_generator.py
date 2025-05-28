@@ -1,5 +1,5 @@
 import pytest
-from domain.graph import Graph, GraphDataPoint
+from domain.graph import Graph, XYData
 from domain.slideshow import Slideshow
 from application.slideshow_generation_service import SlideshowGenerationService
 
@@ -9,7 +9,7 @@ from bokeh.plotting import Figure
 from application.slideshow_graph_creator_service import SlideshowGraphCreator
 
 def test_graph_data_point():
-    dp = GraphDataPoint(1.0, 2.0, 100)
+    dp = XYData(1.0, 2.0, 100)
     assert dp.x == 1.0
     assert dp.y == 2.0
     assert dp.sid == 100
@@ -20,7 +20,7 @@ def test_graph_validation():
         prop_y="Y",
         unit_x="units",
         unit_y="units",
-        data_points=[GraphDataPoint(1, 2, 3)],
+        xy_data=[XYData(1, 2, 3)],
         y_scale="linear",
         x_range=[0, 10],
         y_range=[0, 10],
@@ -32,7 +32,7 @@ def test_graph_validation():
         prop_y="Y",
         unit_x="units",
         unit_y="units",
-        data_points=[],
+        xy_data=[],
         y_scale="linear",
         x_range=[0, 10],
         y_range=[0, 10],

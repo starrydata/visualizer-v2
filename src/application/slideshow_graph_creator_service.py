@@ -27,8 +27,8 @@ class SlideshowGraphCreator(GraphCreator):
         content = self.fetch_json(json_path)
         graph, axis_display = self._load_config_and_create_graph(content, y_scale, x_range, y_range, x_scale, material_type)
 
-        data_points = graph.data_points
-        base_src = self._create_base_source(data_points)
+        xy_data = graph.xy_data
+        base_src = self._create_base_source(xy_data)
 
         scatter_adapter = CustomJS(code=self.scatter_js)
         scatter_src = AjaxDataSource(

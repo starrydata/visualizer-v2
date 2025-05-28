@@ -3,7 +3,7 @@ from typing import List, Tuple, Optional
 from bokeh.models import ColumnDataSource, Range1d
 from bokeh.plotting import figure
 
-from domain.graph import Graph, GraphDataPoint
+from domain.graph import Graph, XYData
 
 class GraphCreator(ABC):
     def _load_local_json(self, file_path: str) -> dict:
@@ -16,7 +16,7 @@ class GraphCreator(ABC):
         config = self._load_local_json(config_path)
         axis_display = config.get("axis_display", "y")
 
-        data_points = []
+        xy_data = []
         unit_x = data.get("unit_x", "")
         unit_y = data.get("unit_y", "")
 
@@ -26,14 +26,14 @@ class GraphCreator(ABC):
             for j in range(len(xs)):
                 x_val = xs[j]
                 y_val = ys[j]
-                data_points.append(GraphDataPoint(x_val, y_val, num_sid))
+                xy_data.append(XYData(x_val, y_val, num_sid))
 
         graph = Graph(
             prop_x=data.get("prop_x", ""),
             prop_y=data.get("prop_y", ""),
             unit_x=unit_x,
             unit_y=unit_y,
-            data_points=data_points,
+            xy_data=xy_data,
             y_scale=y_scale,
             x_range=x_range,
             y_range=y_range,
@@ -44,11 +44,11 @@ class GraphCreator(ABC):
 
         return graph, axis_display
 
-    def _create_base_source(self, data_points: List[GraphDataPoint]) -> ColumnDataSource:
+    def _create_base_source(self, xy_data: List[XYData]) -> ColumnDataSource:
         return ColumnDataSource(data=dict(
-            x=[dp.x for dp in data_points],
-            y=[dp.y for dp in data_points],
-            SID=[dp.sid for dp in data_points],
+            x=[dp.x for dp in xy_data],
+            y=[dp.y for dp in xy_data],
+            SID=[dp.sid for dp in xy_data],
         ))
 
     def _create_figure_base(self, graph: Graph, y_scale: str, x_scale: str, x_range: List[float], y_range: List[float]) -> figure:
