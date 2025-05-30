@@ -1,4 +1,4 @@
-.PHONY: pyreverse
+.PHONY: pyreverse coverage
 
 pyreverse:
 	pyreverse \
@@ -8,4 +8,8 @@ pyreverse:
 	 --colorized \
 	 --ignore tests \
 	 --only-classnames \
+	 --all-associated --all-ancestors \
 	 src
+
+coverage:
+	coverage run -m pytest && coverage report
