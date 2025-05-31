@@ -1,7 +1,7 @@
 import os
 
 import requests
-from domain.graph import DataPoint, DataPoints, GraphRepository
+from domain.graph import DataPoint, DataPoints, DataPointsSeries, GraphRepository
 from typing import List
 from domain.thermoelectric import THERMOELECTRIC_GRAPHS
 from domain.battery import BATTERY_GRAPHS
@@ -18,10 +18,12 @@ def get_graphs_by_material_type(material_type):
         raise ValueError(f"Unknown material_type: {material_type}")
 
 class GraphRepositoryApiStarrydata2(GraphRepository):
-    def get_graph_by_property(self, property_x, property_y):
-        return super().get_graph_by_property(property_x, property_y)
+    def get_graph_by_property(self, property_x: str, property_y: str) -> DataPointsSeries:
+        # API呼び出し・データ取得処理は省略（必要に応じて実装）
+        # ここでは空リストを返す例
+        return DataPointsSeries(data=[])
 
-    def get_graph_by_property_and_unit(self, property_x: str, property_y: str, unit_x: str, unit_y: str) -> List[DataPoints]:
+    def get_graph_by_property_and_unit(self, property_x: str, property_y: str, unit_x: str, unit_y: str) -> DataPointsSeries:
         """
         bulk data apiはJST前日0時のバックアップなので、
         最新データはJSTで前日0時以降のデータのみ取得すれば全件網羅できる。
@@ -64,20 +66,12 @@ class GraphRepositoryApiStarrydata2(GraphRepository):
         for x_list, y_list in zip(x_lists, y_lists):
             if x_list and y_list and len(x_list) == len(y_list):
                 points = [DataPoint(x=xi, y=yi) for xi, yi in zip(x_list, y_list)]
-                data_point_series.append(DataPoints(data_points=points))
+                data_point_series.append(DataPoints(data=points))
 
-        return data_point_series
+        return DataPointsSeries(data=data_point_series)
 
 class GraphRepositoryApiCleansingDataset(GraphRepository):
-    def get_graph_by_property(self, property_x: str, property_y: str) -> List[DataPoints]:
-        # target_material_graphs = get_graphs_by_material_type(material_type)
-        # target_graph = None
-        # for graph in target_material_graphs:
-        #     if graph.x_axis.property == property_x and graph.y_axis.property == property_y:
-        #         target_graph = graph
-        #         break
-        # if target_graph is None:
-        #     raise ValueError(f"Graph with properties {property_x} and {property_y} not found for material type {material_type}")
+    def get_graph_by_property(self, property_x: str, property_y: str) -> DataPointsSeries:
         host = os.environ.get("STARRYDATA_BULK_DATA_API")
         path = f"{host}/{property_x}-{property_y}.json"
         response = requests.get(path)
@@ -85,14 +79,13 @@ class GraphRepositoryApiCleansingDataset(GraphRepository):
         data = response.json().get("data", {})
         x_lists = data.get("x", [])
         y_lists = data.get("y", [])
-        # 各x, yリストのペアでDataPointsを作成
         data_point_series = []
         for x_list, y_list in zip(x_lists, y_lists):
             if x_list and y_list and len(x_list) == len(y_list):
                 points = [DataPoint(x=xi, y=yi) for xi, yi in zip(x_list, y_list)]
-                data_point_series.append(DataPoints(data_points=points))
-        return data_point_series
+                data_point_series.append(DataPoints(data=points))
+        return DataPointsSeries(data=data_point_series)
 
-    def get_graph_by_property_and_unit(self, property_x: str, property_y: str, unit_x: str, unit_y: str) -> List[DataPoints]:
+    def get_graph_by_property_and_unit(self, property_x: str, property_y: str, unit_x: str, unit_y: str) -> DataPointsSeries:
         # このAPIは未実装。例外を投げて明示する。
         raise NotImplementedError("get_graph_by_property_and_unit is not implemented for bulk data API.")

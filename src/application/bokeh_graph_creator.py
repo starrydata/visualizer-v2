@@ -44,7 +44,7 @@ class BokehGraphCreator():
 
     def create_bokeh_data_source(self, graph: Graph) -> ColumnDataSource:
         # 各データポイントをフラットなリストにまとめる
-        all_points = list(chain.from_iterable(series.data_points for series in graph.data_point_series))
+        all_points = list(chain.from_iterable(series.data for series in graph.data_point_series))
         data = {
             "x": [point.x for point in all_points],
             "y": [point.y for point in all_points],

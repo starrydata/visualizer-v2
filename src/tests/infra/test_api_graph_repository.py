@@ -40,23 +40,22 @@ def test_get_graph_by_property_and_unit_format(mock_get):
     mock_get.return_value = mock_response_property_and_unit()
     os.environ["STARRYDATA2_API_XY_DATA"] = "http://dummy"
     repo = GraphRepositoryApiStarrydata2()
-    # property_x, property_y, unit_x, unit_y のみ渡す
-    data_points_list = repo.get_graph_by_property_and_unit(
+    data_points_series = repo.get_graph_by_property_and_unit(
         "Temperature",
         "Seebeck coefficient",
         "K",
         "V/K"
     )
-    assert data_points_list is not None
-    assert len(data_points_list) == 2
-    assert len(data_points_list[0].data_points) == 1
-    assert data_points_list[0].data_points[0].x == 0
-    assert data_points_list[0].data_points[0].y == 0
-    assert len(data_points_list[1].data_points) == 2
-    assert data_points_list[1].data_points[0].x == 1
-    assert data_points_list[1].data_points[0].y == 3
-    assert data_points_list[1].data_points[1].x == 2
-    assert data_points_list[1].data_points[1].y == 4
+    assert data_points_series is not None
+    assert len(data_points_series.data) == 2
+    assert len(data_points_series.data[0].data) == 1
+    assert data_points_series.data[0].data[0].x == 0
+    assert data_points_series.data[0].data[0].y == 0
+    assert len(data_points_series.data[1].data) == 2
+    assert data_points_series.data[1].data[0].x == 1
+    assert data_points_series.data[1].data[0].y == 3
+    assert data_points_series.data[1].data[1].x == 2
+    assert data_points_series.data[1].data[1].y == 4
 
 @patch("infra.graph_repository.requests.get")
 def test_get_graph_by_property_format(mock_get):
@@ -64,10 +63,9 @@ def test_get_graph_by_property_format(mock_get):
     os.environ["STARRYDATA_BULK_DATA_API"] = "http://dummy"
     from infra.graph_repository import GraphRepositoryApiCleansingDataset
     repo = GraphRepositoryApiCleansingDataset()
-    # property_x, property_y のみ渡す
-    data_points_list = repo.get_graph_by_property("Temperature", "Seebeck coefficient")
-    assert data_points_list is not None
-    assert len(data_points_list) == 1
-    assert [p.x for p in data_points_list[0].data_points] == [10, 20]
-    assert [p.y for p in data_points_list[0].data_points] == [30, 40]
+    data_points_series = repo.get_graph_by_property("Temperature", "Seebeck coefficient")
+    assert data_points_series is not None
+    assert len(data_points_series.data) == 1
+    assert [p.x for p in data_points_series.data[0].data] == [10, 20]
+    assert [p.y for p in data_points_series.data[0].data] == [30, 40]
 
