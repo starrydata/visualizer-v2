@@ -2,8 +2,6 @@ from dataclasses import dataclass
 from typing import List, Dict, Any
 from enum import Enum
 from abc import ABC, abstractmethod
-from .material_type import MaterialType
-
 
 class AxisType(Enum):
     """軸のスケール種別を表す列挙型"""
