@@ -2,6 +2,7 @@ import os
 import datetime
 import requests
 from typing import Dict, List, Tuple
+from infra.graph_repository_factory import ApiHostName, GraphRepositoryFactory
 
 class GraphDataService:
     # def __init__(self, STARRYDATA_BULK_DATA_API: str, STARRYDATA2_API_XY_DATA: str):
@@ -68,3 +69,32 @@ class GraphDataService:
             widths.append(0.1 + ((t - mi_lines) / (ma_lines - mi_lines)) * 0.2 if ma_lines > mi_lines else 0.1)
 
         return highlight_points, highlight_lines, sizef_points, line_sizef_points, x_end, y_end, label, widths
+
+    def get_merged_graph_data(
+        self,
+        prop_x: str,
+        prop_y: str,
+        unit_x: str = "",
+        unit_y: str = "",
+    ):
+        """
+        repositoryを使ってbulk data（全件）と今日のデータ（date_from, date_toで絞る）を取得し、統合したGraphを返す
+        """
+        # Bulk data（全件）
+        repo_bulk = GraphRepositoryFactory.create(ApiHostName.CLEANSING_DATASET)
+        bulk_data_series = repo_bulk.get_graph_by_property(prop_x, prop_y)
+
+        # 今日のデータ（date_from, date_to, unit_x, unit_y指定）
+        repo_today = GraphRepositoryFactory.create(ApiHostName.STARRYDATA2)
+        today_data_series = repo_today.get_graph_by_property_and_unit(
+            property_x=prop_x,
+            property_y=prop_y,
+            unit_x=unit_x,
+            unit_y=unit_y,
+        )
+
+        # 統合する
+        merged_data_series = bulk_data_series.copy()
+        merged_data_series.extend(today_data_series)
+        return merged_data_series
+

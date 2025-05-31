@@ -45,27 +45,26 @@ class  DataPoints:
 
 @dataclass(frozen=False)
 class Graph():
-    x_axis: Axis
-    y_axis: Axis
+    x_axis: Axis | None
+    y_axis: Axis | None
     data_point_series: List[DataPoints]
 
 
 class GraphRepository(ABC):
     """グラフデータのリポジトリインターフェース"""
     @abstractmethod
-    def get_graph_by_property(self, material_type: MaterialType, property_x: str, property_y: str) -> Graph:
+    def get_graph_by_property(self, property_x: str, property_y: str) -> List[DataPoints]:
         """指定されたプロパティに基づいてグラフを取得する"""
         pass
 
     @abstractmethod
     def get_graph_by_property_and_unit(
         self,
-        material_type: MaterialType,
         property_x: str,
-        unit_x: str,
         property_y: str,
+        unit_x: str,
         unit_y: str
-    ) -> Graph:
+    ) -> List[DataPoints]:
         """指定されたプロパティと単位に基づいてグラフを取得する"""
         pass
 
