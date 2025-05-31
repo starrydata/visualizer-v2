@@ -1,0 +1,6 @@
+[tool.pylsp-mypy]
+enabled = true
+
+[tool.pyright]
+include = ["src"]
+exclude = ["**/__pycache__"]

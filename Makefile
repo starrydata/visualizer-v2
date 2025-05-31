@@ -1,6 +1,6 @@
-.PHONY: pyreverse coverage
+.PHONY: uml coverage
 
-pyreverse:
+uml:
 	pyreverse \
 	 -o png \
 	 --source-roots src \

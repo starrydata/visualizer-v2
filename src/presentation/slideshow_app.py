@@ -75,7 +75,7 @@ def main():
         query_string = urllib.parse.urlencode(params)
         highlight_path = f"{HIGHLIGHT_DATA_URI}/?{query_string}"
 
-        div, script, title, figure = graph_service.create_graph(
+        div, script, title, figure = graph_service.create_bokeh_graph(
             json_path, highlight_path, cfg["y_scale"], cfg["x_range"], cfg["y_range"], cfg.get("x_scale", "linear"), material_type=material_type
         )
         graphs.add_graph(div, script, title)

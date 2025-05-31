@@ -3,15 +3,20 @@ from typing import List, Tuple
 from bokeh.embed import components
 from bokeh.models import ColumnDataSource
 from bokeh.resources import CDN
+from bokeh.plotting import figure
 
-from application.graph_creator_service import GraphCreator
+from application.bokeh_graph_creator import BokehGraphCreator
+from domain.graph import Graph
 
-
-class StreamlitGraphCreator(GraphCreator):
+class StreamlitGraphCreator(BokehGraphCreator):
     def __init__(self):
         pass
 
-    def create_graph(self, base_data: dict, highlight_points: dict, highlight_lines: dict, sizef_points: List[float], line_sizef_points: List[float], x_end: List[float], y_end: List[float], label: List[str], widths: List[float], y_scale: str, x_range: List[float], y_range: List[float], x_scale: str = "linear", material_type: str = "thermoelectric") -> Tuple[str, str, str, object]:
+    def create_bokeh_graph(self, base_graph: Graph) -> figure:
+        return super().create_bokeh_figure(base_graph)
+
+
+    def create_bokeh_graph_hoge(self, base_graph: Graph) -> figure:
         graph, axis_display = self._load_config_and_create_graph(base_data, y_scale, x_range, y_range, x_scale, material_type)
 
         xy_data = graph.xy_data
@@ -55,7 +60,7 @@ class StreamlitGraphCreator(GraphCreator):
             widths=widths,
         ))
 
-        p = self._create_figure_base(graph, y_scale, x_scale, x_range, y_range)
+        p = self.create_bokeh_figure(graph, y_scale, x_scale, x_range, y_range)
 
         base_renderer = p.circle(
             "x",

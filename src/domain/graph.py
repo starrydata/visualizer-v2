@@ -1,46 +1,71 @@
+from dataclasses import dataclass
 from typing import List, Dict, Any
+from enum import Enum
+from abc import ABC, abstractmethod
+from .material_type import MaterialType
 
-class XYData:
-    def __init__(self, x: float, y: float, sid: int):
-        self.x = x
-        self.y = y
-        self.sid = sid
 
-class Graph:
-    def __init__(
+class AxisType(Enum):
+    """軸のスケール種別を表す列挙型"""
+    LINEAR = "linear"
+    LOGARITHMIC = "logarithmic"
+    # 例: SYMLOG = "symlog" など将来追加可能
+
+    def is_log(self) -> bool:
+        """対数軸かどうかを判定"""
+        return self == AxisType.LOGARITHMIC
+
+
+@dataclass
+class AxisRange:
+    min_value: float
+    max_value: float
+
+
+@dataclass(frozen=False)
+class Axis:
+    """グラフの軸を表すクラス"""
+    property: str
+    axis_type: AxisType
+    unit: str
+    axis_range: AxisRange
+
+
+@dataclass(frozen=True)
+class DataPoint:
+    x: float
+    y: float
+
+@dataclass(frozen=True)
+class  DataPoints:
+    data_points: List[DataPoint]
+
+
+
+
+@dataclass(frozen=False)
+class Graph():
+    x_axis: Axis
+    y_axis: Axis
+    data_point_series: List[DataPoints]
+
+
+class GraphRepository(ABC):
+    """グラフデータのリポジトリインターフェース"""
+    @abstractmethod
+    def get_graph_by_property(self, material_type: MaterialType, property_x: str, property_y: str) -> Graph:
+        """指定されたプロパティに基づいてグラフを取得する"""
+        pass
+
+    @abstractmethod
+    def get_graph_by_property_and_unit(
         self,
-        prop_x: str,
-        prop_y: str,
+        material_type: MaterialType,
+        property_x: str,
         unit_x: str,
-        unit_y: str,
-        xy_data: List[XYData],
-        y_scale: str,
-        x_range: List[float],
-        y_range: List[float],
-    ):
-        self.prop_x = prop_x
-        self.prop_y = prop_y
-        self.unit_x = unit_x
-        self.unit_y = unit_y
-        self.xy_data = xy_data
-        self.y_scale = y_scale
-        self.x_range = x_range
-        self.y_range = y_range
+        property_y: str,
+        unit_y: str
+    ) -> Graph:
+        """指定されたプロパティと単位に基づいてグラフを取得する"""
+        pass
 
-    def validate(self) -> bool:
-        # 例: データポイントが空でないことを検証
-        return len(self.xy_data) > 0
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "prop_x": self.prop_x,
-            "prop_y": self.prop_y,
-            "unit_x": self.unit_x,
-            "unit_y": self.unit_y,
-            "xy_data": [
-                {"x": dp.x, "y": dp.y, "sid": dp.sid} for dp in self.xy_data
-            ],
-            "y_scale": self.y_scale,
-            "x_range": self.x_range,
-            "y_range": self.y_range,
-        }
