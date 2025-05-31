@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from enum import Enum
 from abc import ABC, abstractmethod
 
@@ -33,6 +33,7 @@ class Axis:
 class DataPoint:
     x: float
     y: float
+    updated_at: str  # ISO8601文字列（必須）
 
 @dataclass(frozen=True)
 class  DataPoints:

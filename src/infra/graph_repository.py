@@ -50,12 +50,24 @@ class GraphRepositoryApiStarrydata2(GraphRepository):
         data = response.json().get("data", {})
         x_lists = data.get("x", [])
         y_lists = data.get("y", [])
+        updated_at_lists = data.get("updated_at", [])
 
-        # 正しい: 各x_list, y_listのペアごとにDataPointsを作成
+        from datetime import datetime, timezone
+        def now_iso():
+            return datetime.now(timezone.utc).isoformat()
+
         data_point_series = []
-        for x_list, y_list in zip(x_lists, y_lists):
+        for i, (x_list, y_list) in enumerate(zip(x_lists, y_lists)):
             if x_list and y_list and len(x_list) == len(y_list):
-                points = [DataPoint(x=xi, y=yi) for xi, yi in zip(x_list, y_list)]
+                if updated_at_lists and i < len(updated_at_lists):
+                    updated_at_val = updated_at_lists[i]
+                    if isinstance(updated_at_val, list):
+                        updated_ats = updated_at_val
+                    else:
+                        updated_ats = [updated_at_val] * len(x_list)
+                else:
+                    updated_ats = [now_iso()] * len(x_list)
+                points = [DataPoint(x=xi, y=yi, updated_at=updated_ats[j] if j < len(updated_ats) else now_iso()) for j, (xi, yi) in enumerate(zip(x_list, y_list))]
                 data_point_series.append(DataPoints(data=points))
 
         return DataPointsSeries(data=data_point_series)
@@ -69,10 +81,24 @@ class GraphRepositoryApiCleansingDataset(GraphRepository):
         data = response.json().get("data", {})
         x_lists = data.get("x", [])
         y_lists = data.get("y", [])
+        updated_at_lists = data.get("updated_at", [])
+
+        from datetime import datetime, timezone
+        def now_iso():
+            return datetime.now(timezone.utc).isoformat()
+
         data_point_series = []
-        for x_list, y_list in zip(x_lists, y_lists):
+        for i, (x_list, y_list) in enumerate(zip(x_lists, y_lists)):
             if x_list and y_list and len(x_list) == len(y_list):
-                points = [DataPoint(x=xi, y=yi) for xi, yi in zip(x_list, y_list)]
+                if updated_at_lists and i < len(updated_at_lists):
+                    updated_at_val = updated_at_lists[i]
+                    if isinstance(updated_at_val, list):
+                        updated_ats = updated_at_val
+                    else:
+                        updated_ats = [updated_at_val] * len(x_list)
+                else:
+                    updated_ats = [now_iso()] * len(x_list)
+                points = [DataPoint(x=xi, y=yi, updated_at=updated_ats[j] if j < len(updated_ats) else now_iso()) for j, (xi, yi) in enumerate(zip(x_list, y_list))]
                 data_point_series.append(DataPoints(data=points))
         return DataPointsSeries(data=data_point_series)
 

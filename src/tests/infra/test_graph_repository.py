@@ -62,3 +62,7 @@ def test_get_graph_by_property_empty_data(mock_get, mock_response):
     data_points_series = repo.get_graph_by_property("Temperature", "Seebeck coefficient")
     assert data_points_series is not None
     assert len(data_points_series.data) == 0
+
+def make_point(x, y, updated_at="2024-01-01T00:00:00Z"):
+    from src.domain.graph import DataPoint
+    return DataPoint(x, y, updated_at)
