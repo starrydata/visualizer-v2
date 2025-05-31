@@ -47,9 +47,9 @@ def main(material_type: MaterialType):
 
     # configファイルをPythonファイルから読み込む
     if material_type.value == MaterialType.THERMOELECTRIC.value:
-        from config.thermoelectric_graphs import THERMOELECTRIC_GRAPHS as CONFIG_GRAPHS
+        from domain.thermoelectric import THERMOELECTRIC_GRAPHS as CONFIG_GRAPHS
     elif material_type.value == MaterialType.BATTERY.value:
-        from config.battery_graphs import BATTERY_GRAPHS as CONFIG_GRAPHS
+        from domain.battery import BATTERY_GRAPHS as CONFIG_GRAPHS
     else:
         CONFIG_GRAPHS = []
 

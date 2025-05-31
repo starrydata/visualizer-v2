@@ -3,8 +3,8 @@ import os
 import requests
 from domain.graph import Axis, AxisRange, AxisType, DataPoint, DataPoints, Graph, GraphRepository
 from typing import List
-from config.thermoelectric_graphs import THERMOELECTRIC_GRAPHS
-from config.battery_graphs import BATTERY_GRAPHS
+from domain.thermoelectric import THERMOELECTRIC_GRAPHS
+from domain.battery import BATTERY_GRAPHS
 from domain.material_type import MaterialType
 
 # NOTE: Repositoryクラス本体に持つべきメソッドな気がするが、具象な実装をdomain layerに書くとloopのimportが発生したため、一旦ここに
