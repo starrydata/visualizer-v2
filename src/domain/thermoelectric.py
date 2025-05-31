@@ -15,7 +15,7 @@ THERMOELECTRIC_GRAPHS: List[Graph] = [
             unit="V/K",
             axis_range=AxisRange(min_value=-300, max_value=300)
         ),
-        data_points_series=[]
+        data=[]
     ),
     Graph(
         x_axis=Axis(
@@ -30,7 +30,7 @@ THERMOELECTRIC_GRAPHS: List[Graph] = [
             unit="S/m",
             axis_range=AxisRange(min_value=100, max_value=1000000)
         ),
-        data_points_series=[]
+        data=[]
     ),
     Graph(
         x_axis=Axis(
@@ -45,7 +45,7 @@ THERMOELECTRIC_GRAPHS: List[Graph] = [
             unit="Ω·m",
             axis_range=AxisRange(min_value=1e-6, max_value=1e+4)
         ),
-        data_points_series=[]
+        data=[]
     ),
     Graph(
         x_axis=Axis(
@@ -60,7 +60,7 @@ THERMOELECTRIC_GRAPHS: List[Graph] = [
             unit="W/(m·K)",
             axis_range=AxisRange(min_value=0, max_value=10)
         ),
-        data_points_series=[]
+        data=[]
     ),
     Graph(
         x_axis=Axis(
@@ -75,7 +75,7 @@ THERMOELECTRIC_GRAPHS: List[Graph] = [
             unit="W/(m·K²)",
             axis_range=AxisRange(min_value=0, max_value=0.01)
         ),
-        data_points_series=[]
+        data=[]
     ),
     Graph(
         x_axis=Axis(
@@ -90,6 +90,6 @@ THERMOELECTRIC_GRAPHS: List[Graph] = [
             unit="-",
             axis_range=AxisRange(min_value=0, max_value=1.5)
         ),
-        data_points_series=[]
+        data=[]
     ),
 ]

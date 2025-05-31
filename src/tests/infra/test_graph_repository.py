@@ -64,5 +64,5 @@ def test_get_graph_by_property_empty_data(mock_get, mock_response):
     assert len(data_points_series.data) == 0
 
 def make_point(x, y, updated_at="2024-01-01T00:00:00Z"):
-    from src.domain.graph import DataPoint
-    return DataPoint(x, y, updated_at)
+    from src.domain.graph import XYPoint
+    return XYPoint(x, y, updated_at)

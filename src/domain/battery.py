@@ -15,7 +15,7 @@ BATTERY_GRAPHS: List[Graph] = [
             unit="V",
             axis_range=AxisRange(min_value=0, max_value=5)
         ),
-        data_points_series=[]
+        data=[]
     ),
     Graph(
         x_axis=Axis(
@@ -30,7 +30,7 @@ BATTERY_GRAPHS: List[Graph] = [
             unit="V",
             axis_range=AxisRange(min_value=0, max_value=5)
         ),
-        data_points_series=[]
+        data=[]
     ),
     Graph(
         x_axis=Axis(
@@ -45,7 +45,7 @@ BATTERY_GRAPHS: List[Graph] = [
             unit="A*s/kg",
             axis_range=AxisRange(min_value=0, max_value=2000)
         ),
-        data_points_series=[]
+        data=[]
     ),
     Graph(
         x_axis=Axis(
@@ -60,7 +60,7 @@ BATTERY_GRAPHS: List[Graph] = [
             unit="A*s/kg",
             axis_range=AxisRange(min_value=0, max_value=2000)
         ),
-        data_points_series=[]
+        data=[]
     ),
     Graph(
         x_axis=Axis(
@@ -75,7 +75,7 @@ BATTERY_GRAPHS: List[Graph] = [
             unit="V",
             axis_range=AxisRange(min_value=-3, max_value=3)
         ),
-        data_points_series=[]
+        data=[]
     ),
     Graph(
         x_axis=Axis(
@@ -90,6 +90,6 @@ BATTERY_GRAPHS: List[Graph] = [
             unit="V",
             axis_range=AxisRange(min_value=-3, max_value=3)
         ),
-        data_points_series=[]
+        data=[]
     ),
 ]

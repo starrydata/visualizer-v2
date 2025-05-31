@@ -1,19 +1,19 @@
 import os
 
 import requests
-from domain.graph import DataPoint, DataPoints, DataPointsSeries, GraphRepository
+from domain.graph import XYPoint, XYPoints, XYSeries, GraphRepository
 from typing import List
 from domain.thermoelectric import THERMOELECTRIC_GRAPHS
 from domain.battery import BATTERY_GRAPHS
 
 
 class GraphRepositoryApiStarrydata2(GraphRepository):
-    def get_graph_by_property(self, property_x: str, property_y: str) -> DataPointsSeries:
+    def get_graph_by_property(self, property_x: str, property_y: str) -> XYSeries:
         # API呼び出し・データ取得処理は省略（必要に応じて実装）
         # ここでは空リストを返す例
-        return DataPointsSeries(data=[])
+        return XYSeries(data=[])
 
-    def get_graph_by_property_and_unit(self, property_x: str, property_y: str, unit_x: str, unit_y: str) -> DataPointsSeries:
+    def get_graph_by_property_and_unit(self, property_x: str, property_y: str, unit_x: str, unit_y: str) -> XYSeries:
         """
         bulk data apiはJST前日0時のバックアップなので、
         最新データはJSTで前日0時以降のデータのみ取得すれば全件網羅できる。
@@ -67,13 +67,13 @@ class GraphRepositoryApiStarrydata2(GraphRepository):
                         updated_ats = [updated_at_val] * len(x_list)
                 else:
                     updated_ats = [now_iso()] * len(x_list)
-                points = [DataPoint(x=xi, y=yi, updated_at=updated_ats[j] if j < len(updated_ats) else now_iso()) for j, (xi, yi) in enumerate(zip(x_list, y_list))]
-                data_point_series.append(DataPoints(data=points))
+                points = [XYPoint(x=xi, y=yi, updated_at=updated_ats[j] if j < len(updated_ats) else now_iso()) for j, (xi, yi) in enumerate(zip(x_list, y_list))]
+                data_point_series.append(XYPoints(data=points))
 
-        return DataPointsSeries(data=data_point_series)
+        return XYSeries(data=data_point_series)
 
 class GraphRepositoryApiCleansingDataset(GraphRepository):
-    def get_graph_by_property(self, property_x: str, property_y: str) -> DataPointsSeries:
+    def get_graph_by_property(self, property_x: str, property_y: str) -> XYSeries:
         host = os.environ.get("STARRYDATA_BULK_DATA_API")
         path = f"{host}/{property_x}-{property_y}.json"
         response = requests.get(path)
@@ -98,10 +98,10 @@ class GraphRepositoryApiCleansingDataset(GraphRepository):
                         updated_ats = [updated_at_val] * len(x_list)
                 else:
                     updated_ats = [now_iso()] * len(x_list)
-                points = [DataPoint(x=xi, y=yi, updated_at=updated_ats[j] if j < len(updated_ats) else now_iso()) for j, (xi, yi) in enumerate(zip(x_list, y_list))]
-                data_point_series.append(DataPoints(data=points))
-        return DataPointsSeries(data=data_point_series)
+                points = [XYPoint(x=xi, y=yi, updated_at=updated_ats[j] if j < len(updated_ats) else now_iso()) for j, (xi, yi) in enumerate(zip(x_list, y_list))]
+                data_point_series.append(XYPoints(data=points))
+        return XYSeries(data=data_point_series)
 
-    def get_graph_by_property_and_unit(self, property_x: str, property_y: str, unit_x: str, unit_y: str) -> DataPointsSeries:
+    def get_graph_by_property_and_unit(self, property_x: str, property_y: str, unit_x: str, unit_y: str) -> XYSeries:
         # このAPIは未実装。例外を投げて明示する。
         raise NotImplementedError("get_graph_by_property_and_unit is not implemented for bulk data API.")

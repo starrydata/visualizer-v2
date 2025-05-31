@@ -3,7 +3,7 @@ import datetime
 import requests
 from typing import Dict, List, Tuple
 from infra.graph_repository_factory import ApiHostName, GraphRepositoryFactory
-from src.domain.graph import DataPointsSeries
+from src.domain.graph import XYSeries
 
 class GraphDataService:
     # def __init__(self, STARRYDATA_BULK_DATA_API: str, STARRYDATA2_API_XY_DATA: str):
@@ -77,7 +77,7 @@ class GraphDataService:
         prop_y: str,
         unit_x: str = "",
         unit_y: str = "",
-    ) -> DataPointsSeries:
+    ) -> XYSeries:
         """
         repositoryを使ってbulk data（全件）と今日のデータ（date_from, date_toで絞る）を取得し、統合したGraphを返す
         """

@@ -30,31 +30,31 @@ class Axis:
 
 
 @dataclass(frozen=True)
-class DataPoint:
+class XYPoint:
     x: float
     y: float
     updated_at: str  # ISO8601文字列（必須）
 
 @dataclass(frozen=True)
-class  DataPoints:
-    data: List[DataPoint]
+class  XYPoints:
+    data: List[XYPoint]
 
 @dataclass(frozen=True)
-class DataPointsSeries:
-    data: List[DataPoints]
+class XYSeries:
+    data: List[XYPoints]
 
 
 @dataclass(frozen=False)
 class Graph():
     x_axis: Axis
     y_axis: Axis
-    data_points_series: List[DataPoints]
+    data: XYSeries
 
 
 class GraphRepository(ABC):
     """グラフデータのリポジトリインターフェース"""
     @abstractmethod
-    def get_graph_by_property(self, property_x: str, property_y: str) -> DataPointsSeries:
+    def get_graph_by_property(self, property_x: str, property_y: str) -> XYSeries:
         """指定されたプロパティに基づいてグラフを取得する"""
         pass
 
@@ -65,7 +65,7 @@ class GraphRepository(ABC):
         property_y: str,
         unit_x: str,
         unit_y: str
-    ) -> DataPointsSeries:
+    ) -> XYSeries:
         """指定されたプロパティと単位に基づいてグラフを取得する"""
         pass
 

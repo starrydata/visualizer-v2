@@ -1,5 +1,5 @@
 import pytest
-from src.domain.graph import Axis, AxisType, AxisRange, DataPoint, DataPoints, DataPointsSeries, Graph
+from src.domain.graph import Axis, AxisType, AxisRange, XYPoint, XYPoints, XYSeries, Graph
 
 
 def test_axis_range():
@@ -18,15 +18,15 @@ def test_axis():
 
 
 def test_data_point():
-    p = DataPoint(x=1.0, y=2.0, updated_at="2024-01-01T00:00:00Z")
+    p = XYPoint(x=1.0, y=2.0, updated_at="2024-01-01T00:00:00Z")
     assert p.x == 1.0
     assert p.y == 2.0
     assert p.updated_at == "2024-01-01T00:00:00Z"
 
 
 def test_data_points():
-    points = [DataPoint(1, 2, "2024-01-01T00:00:00Z"), DataPoint(3, 4, "2024-01-01T00:00:00Z")]
-    dp = DataPoints(points)
+    points = [XYPoint(1, 2, "2024-01-01T00:00:00Z"), XYPoint(3, 4, "2024-01-01T00:00:00Z")]
+    dp = XYPoints(points)
     assert len(dp.data) == 2
     assert dp.data[0].x == 1
     assert dp.data[1].y == 4
@@ -34,9 +34,9 @@ def test_data_points():
 
 
 def test_data_points_series():
-    points1 = DataPoints([DataPoint(1, 2, "2024-01-01T00:00:00Z")])
-    points2 = DataPoints([DataPoint(3, 4, "2024-01-01T00:00:00Z")])
-    series = DataPointsSeries([points1, points2])
+    points1 = XYPoints([XYPoint(1, 2, "2024-01-01T00:00:00Z")])
+    points2 = XYPoints([XYPoint(3, 4, "2024-01-01T00:00:00Z")])
+    series = XYSeries([points1, points2])
     assert len(series.data) == 2
     assert series.data[0].data[0].x == 1
     assert series.data[1].data[0].y == 4
@@ -46,10 +46,10 @@ def test_data_points_series():
 def test_graph():
     x_axis = Axis(property="x", axis_type=AxisType.LINEAR, unit="", axis_range=AxisRange(0, 1))
     y_axis = Axis(property="y", axis_type=AxisType.LOGARITHMIC, unit="", axis_range=AxisRange(0, 10))
-    data_points = [DataPoints([DataPoint(1, 2, "2024-01-01T00:00:00Z")])]
-    graph = Graph(x_axis=x_axis, y_axis=y_axis, data_points_series=data_points)
+    data_points = [XYPoints([XYPoint(1, 2, "2024-01-01T00:00:00Z")])]
+    graph = Graph(x_axis=x_axis, y_axis=y_axis, data=data_points)
     assert graph.x_axis.property == "x"
     assert graph.y_axis.axis_type == AxisType.LOGARITHMIC
-    assert len(graph.data_points_series) == 1
-    assert graph.data_points_series[0].data[0].y == 2
-    assert graph.data_points_series[0].data[0].updated_at == "2024-01-01T00:00:00Z"
+    assert len(graph.data) == 1
+    assert graph.data[0].data[0].y == 2
+    assert graph.data[0].data[0].updated_at == "2024-01-01T00:00:00Z"

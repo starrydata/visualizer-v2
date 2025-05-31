@@ -2,13 +2,13 @@ from bokeh.plotting import figure
 from bokeh.models import HoverTool, ColumnDataSource, Range1d
 
 from application.graph_data_service import GraphDataService
-from domain.graph import DataPointsSeries, Graph, Axis, AxisType, AxisRange
+from domain.graph import XYSeries, Graph, Axis, AxisType, AxisRange
 
 class BokehGraphCreator():
     def __init__(self, graph_data_service: GraphDataService):
         self.graph_data_service = graph_data_service
 
-    def get_data_point_series_with_axis(self, prop_x: str, prop_y: str, unit_x: str = "", unit_y: str = "") -> DataPointsSeries:
+    def get_data_point_series_with_axis(self, prop_x: str, prop_y: str, unit_x: str = "", unit_y: str = "") -> XYSeries:
         merged_data_series = self.graph_data_service.get_merged_graph_data(prop_x, prop_y, unit_x, unit_y)
         return merged_data_series
 
@@ -45,7 +45,7 @@ class BokehGraphCreator():
 
         return p
 
-    def create_bokeh_data_source(self, data_points_series: DataPointsSeries) -> ColumnDataSource:
+    def create_bokeh_data_source(self, data_points_series: XYSeries) -> ColumnDataSource:
         from itertools import chain
         all_points = list(chain.from_iterable(series.data for series in data_points_series.data))
         data = dict(
