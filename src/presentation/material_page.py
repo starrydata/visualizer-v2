@@ -1,15 +1,12 @@
 import os
 import streamlit as st
 from streamlit_javascript import st_javascript
-from application.streamlit_graph_creator_service import StreamlitGraphCreator
-from application.graph_data_service import GraphDataService
 import datetime
 import pytz
 from presentation.bokeh_graph_creator import BokehGraphCreator
 from streamlit_bokeh import streamlit_bokeh
 
 from domain.material_type import MaterialType
-from infra.graph_repository_factory import ApiHostName, GraphRepositoryFactory
 from domain.graph import Axis, AxisRange, AxisType
 
 def main(material_type: MaterialType):
@@ -42,12 +39,6 @@ def main(material_type: MaterialType):
     else:
         date_to_str = None
 
-    # graph_data_service = GraphDataService(
-    #     STARRYDATA_BULK_DATA_API=os.environ.get("STARRYDATA_BULK_DATA_API", ""),
-    #     STARRYDATA2_API_XY_DATA=os.environ.get("STARRYDATA2_API_XY_DATA", "")
-    # )
-
-
     # configファイルをPythonファイルから読み込む
     if material_type.value == MaterialType.THERMOELECTRIC.value:
         from domain.thermoelectric import THERMOELECTRIC_GRAPHS as CONFIG_GRAPHS
@@ -55,13 +46,6 @@ def main(material_type: MaterialType):
         from domain.battery import BATTERY_GRAPHS as CONFIG_GRAPHS
     else:
         CONFIG_GRAPHS = []
-
-    # graph_repository = GraphRepositoryFactory.create(ApiHostName.CLEANSING_DATASET)
-    # base_graph = graph_repository.get_graph_by_property(
-    #     material_type=material_type,
-    #     property_x=CONFIG_GRAPHS[0].x_axis.property,
-    #     property_y=CONFIG_GRAPHS[0].y_axis.property
-    # )
 
     graph_options = [(g.x_axis.property, g.y_axis.property) for g in CONFIG_GRAPHS]
 
@@ -85,7 +69,7 @@ def main(material_type: MaterialType):
     x_type = st.sidebar.selectbox("X Axis Scale", ["linear", "log"], index=0 if x_axis.axis_type.value=="linear" else 1)
     y_type = st.sidebar.selectbox("Y Axis Scale", ["linear", "log"], index=0 if y_axis.axis_type.value=="linear" else 1)
 
-    graph_creator = BokehGraphCreator(GraphDataService())
+    graph_creator = BokehGraphCreator()
     new_x_axis = Axis(
         property=prop_x,
         unit=x_axis.unit,
@@ -109,52 +93,7 @@ def main(material_type: MaterialType):
         y_axis=new_y_axis
     )
 
-    # graph_service = StreamlitGraphCreator()
-    # figure = graph_service.create_bokeh_graph(base_graph)
-    # base_data_source = graph_service.create_bokeh_data_source(base_graph)
-    # base_renderer = figure.circle(
-    #     "x",
-    #     "y",
-    #     source=base_data_source,
-    #     fill_color="blue",
-    #     fill_alpha=1,
-    #     size=2,
-    #     line_width=0,
-    #     line_color="#3288bd",
-    # )
-
-
-    # div, script, title, figure = graph_service.create_bokeh_graph(
-    #     base_data,
-    #     highlight_points,
-    #     highlight_lines,
-    #     sizef_points,
-    #     line_sizef_points,
-    #     x_end,
-    #     y_end,
-    #     label,
-    #     widths,
-    #     y_scale,
-    #     [x_min, x_max],
-    #     [y_min, y_max],
-    #     x_scale,
-    #     material_type=material_type,
-    # )
-
     st.subheader(f"Graph: {prop_x} vs {prop_y}")
-
-
-
-    # from bokeh.plotting import figure
-    # from bokeh.models import ColumnDataSource
-    # x = [1, 2, 3, 4, 5]
-    # y = [2, 4, 8, 16, 32]
-    # source = ColumnDataSource(data=dict(x=x, y=y))
-
-    # YOUR_BOKEH_FIGURE = figure(title="Simple Line Example",
-    #                     x_axis_label="x",
-    #                     y_axis_label="y")
-    # YOUR_BOKEH_FIGURE.scatter(x='x', y='y', source=source, legend_label="Trend", line_width=2)
 
 
 

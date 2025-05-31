@@ -5,7 +5,7 @@ from application.graph_data_service import GraphDataService
 from domain.graph import XYSeries, Graph, Axis, AxisType, AxisRange
 
 class BokehGraphCreator():
-    def __init__(self, graph_data_service: GraphDataService):
+    def __init__(self, graph_data_service: GraphDataService = GraphDataService()):
         self.graph_data_service = graph_data_service
 
     def get_data_point_series_with_axis(self, prop_x: str, prop_y: str, unit_x: str = "", unit_y: str = "") -> XYSeries:
