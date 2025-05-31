@@ -5,17 +5,7 @@ from domain.graph import DataPoint, DataPoints, DataPointsSeries, GraphRepositor
 from typing import List
 from domain.thermoelectric import THERMOELECTRIC_GRAPHS
 from domain.battery import BATTERY_GRAPHS
-from domain.material_type import MaterialType
 
-# NOTE: Repositoryクラス本体に持つべきメソッドな気がするが、具象な実装をdomain layerに書くとloopのimportが発生したため、一旦ここに
-def get_graphs_by_material_type(material_type):
-    # 文字列で渡ってきた場合はEnumに変換
-    if material_type.value == MaterialType.THERMOELECTRIC.value:
-        return THERMOELECTRIC_GRAPHS
-    elif material_type.value == MaterialType.BATTERY.value:
-        return BATTERY_GRAPHS
-    else:
-        raise ValueError(f"Unknown material_type: {material_type}")
 
 class GraphRepositoryApiStarrydata2(GraphRepository):
     def get_graph_by_property(self, property_x: str, property_y: str) -> DataPointsSeries:
