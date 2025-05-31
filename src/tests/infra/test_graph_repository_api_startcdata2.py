@@ -27,15 +27,15 @@ def test_get_graph_by_property_and_unit_format(mock_get):
     mock_get.return_value = mock_response()
     os.environ["STARRYDATA2_API_XY_DATA"] = "http://dummy"
     repo = GraphRepositoryApiStarrydata2()
-    data_points_series = repo.get_graph_by_property_and_unit(
+    xy_series = repo.get_graph_by_property_and_unit(
         "Temperature",
         "Seebeck coefficient",
         "K",
         "V/K"
     )
-    assert data_points_series is not None
-    assert len(data_points_series.data) == 2
-    assert [p.x for p in data_points_series.data[0].data] == [0]
-    assert [p.y for p in data_points_series.data[0].data] == [0]
-    assert [p.x for p in data_points_series.data[1].data] == [1, 2]
-    assert [p.y for p in data_points_series.data[1].data] == [3, 4]
+    assert xy_series is not None
+    assert len(xy_series.data) == 2
+    assert [p.x for p in xy_series.data[0].data] == [0]
+    assert [p.y for p in xy_series.data[0].data] == [0]
+    assert [p.x for p in xy_series.data[1].data] == [1, 2]
+    assert [p.y for p in xy_series.data[1].data] == [3, 4]

@@ -1,5 +1,5 @@
 import pytest
-from src.domain.graph import Axis, AxisType, AxisRange, XYPoint, XYPoints, XYSeries, Graph
+from domain.graph import Axis, AxisType, AxisRange, XYPoint, XYPoints, XYSeries, Graph
 
 
 def test_axis_range():
@@ -33,7 +33,7 @@ def test_data_points():
     assert dp.data[0].updated_at == "2024-01-01T00:00:00Z"
 
 
-def test_data_points_series():
+def test_xy_series():
     points1 = XYPoints([XYPoint(1, 2, "2024-01-01T00:00:00Z")])
     points2 = XYPoints([XYPoint(3, 4, "2024-01-01T00:00:00Z")])
     series = XYSeries([points1, points2])

@@ -30,8 +30,8 @@ class BokehGraphCreator():
             y_axis_label=f"{y_axis.property} ({y_axis.unit})",
         )
 
-        data_points_series = self.get_data_point_series_with_axis(x_axis.property, y_axis.property, x_axis.unit, y_axis.unit)
-        column_data_source = self.create_bokeh_data_source(data_points_series)
+        xy_series = self.get_data_point_series_with_axis(x_axis.property, y_axis.property, x_axis.unit, y_axis.unit)
+        column_data_source = self.create_bokeh_data_source(xy_series)
         renderer = p.scatter(
             "x",
             "y",
@@ -45,9 +45,9 @@ class BokehGraphCreator():
 
         return p
 
-    def create_bokeh_data_source(self, data_points_series: XYSeries) -> ColumnDataSource:
+    def create_bokeh_data_source(self, xy_series: XYSeries) -> ColumnDataSource:
         from itertools import chain
-        all_points = list(chain.from_iterable(series.data for series in data_points_series.data))
+        all_points = list(chain.from_iterable(series.data for series in xy_series.data))
         data = dict(
             x=[point.x for point in all_points],
             y=[point.y for point in all_points],

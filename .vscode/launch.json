@@ -63,6 +63,23 @@
                 "PYTHONPATH": "${workspaceFolder}/src/",
             },
             "python": "${workspaceFolder}/.venv/bin/python"
-        }
+        },
+        // pytest用
+        {
+            "name": "pytest",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "src/tests/presentation/test_bokeh_graph_creator.py",
+                "-v"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src/"
+            },
+            "python": "${workspaceFolder}/.venv/bin/python"
+        },
     ]
 }
