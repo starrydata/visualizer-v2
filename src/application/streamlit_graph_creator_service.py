@@ -5,7 +5,7 @@ from bokeh.models import ColumnDataSource
 from bokeh.resources import CDN
 from bokeh.plotting import figure
 
-from application.bokeh_graph_creator import BokehGraphCreator
+from src.presentation.bokeh_graph_creator import BokehGraphCreator
 from domain.graph import Graph
 
 class StreamlitGraphCreator(BokehGraphCreator):

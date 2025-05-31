@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 class AxisType(Enum):
     """軸のスケール種別を表す列挙型"""
     LINEAR = "linear"
-    LOGARITHMIC = "logarithmic"
+    LOGARITHMIC = "log"
     # 例: SYMLOG = "symlog" など将来追加可能
 
     def is_log(self) -> bool:
@@ -45,8 +45,8 @@ class DataPointsSeries:
 
 @dataclass(frozen=False)
 class Graph():
-    x_axis: Axis | None
-    y_axis: Axis | None
+    x_axis: Axis
+    y_axis: Axis
     data_point_series: List[DataPoints]
 
 

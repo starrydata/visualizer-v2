@@ -6,7 +6,7 @@ from bokeh.embed import components
 from bokeh.models import CustomJS, AjaxDataSource, LabelSet
 from bokeh.resources import CDN
 
-from application.bokeh_graph_creator import BokehGraphCreator
+from src.presentation.bokeh_graph_creator import BokehGraphCreator
 
 
 class SlideshowGraphCreator(BokehGraphCreator):
