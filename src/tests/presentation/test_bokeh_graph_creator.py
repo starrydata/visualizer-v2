@@ -40,7 +40,6 @@ def test_create_bokeh_figure_properties(graph_creator, simple_graph):
     assert isinstance(fig.yaxis[0], LinearAxis)
 
 def test_create_bokeh_data_source(graph_creator, simple_graph):
-    print(simple_graph.data)
     source = graph_creator.create_bokeh_data_source(simple_graph.data)
     assert "x" in source.data
     assert "y" in source.data
