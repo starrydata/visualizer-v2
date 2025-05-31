@@ -48,7 +48,7 @@ class DataPointsSeries:
 class Graph():
     x_axis: Axis
     y_axis: Axis
-    data_point_series: List[DataPoints]
+    data_points_series: List[DataPoints]
 
 
 class GraphRepository(ABC):

@@ -2,7 +2,7 @@ import pytest
 from presentation.bokeh_graph_creator import BokehGraphCreator
 from bokeh.plotting import figure
 from bokeh.models import ColumnDataSource, LinearAxis
-from domain.graph import Graph, Axis, AxisType, AxisRange, DataPoint, DataPoints
+from domain.graph import DataPointsSeries, Graph, Axis, AxisType, AxisRange, DataPoint, DataPoints
 from unittest.mock import Mock
 
 @pytest.fixture
@@ -19,9 +19,9 @@ def graph_creator(mock_graph_data_service):
 def simple_graph():
     x_axis = Axis(property="x", axis_type=AxisType.LINEAR, unit="", axis_range=AxisRange(1, 3))
     y_axis = Axis(property="y", axis_type=AxisType.LINEAR, unit="", axis_range=AxisRange(4, 6))
-    data_points = [DataPoint(1, 4, "2024-01-01T00:00:00Z"), DataPoint(2, 5, "2024-01-01T00:00:00Z"), DataPoint(3, 6, "2024-01-01T00:00:00Z")]
-    data_point_series = [DataPoints(data_points)]
-    return Graph(x_axis=x_axis, y_axis=y_axis, data_point_series=data_point_series)
+    data_points = DataPoints(data=[DataPoint(1, 4, "2024-01-01T00:00:00Z"), DataPoint(2, 5, "2024-01-01T00:00:00Z"), DataPoint(3, 6, "2024-01-01T00:00:00Z")])
+    data_point_series = DataPointsSeries(data=[DataPoints(data=data_points.data)])
+    return Graph(x_axis=x_axis, y_axis=y_axis, data_points_series=data_point_series.data)
 
 def test_create_bokeh_figure(graph_creator, simple_graph):
     fig = graph_creator.create_bokeh_figure(simple_graph.x_axis, simple_graph.y_axis)

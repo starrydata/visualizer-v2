@@ -47,9 +47,9 @@ def test_graph():
     x_axis = Axis(property="x", axis_type=AxisType.LINEAR, unit="", axis_range=AxisRange(0, 1))
     y_axis = Axis(property="y", axis_type=AxisType.LOGARITHMIC, unit="", axis_range=AxisRange(0, 10))
     data_points = [DataPoints([DataPoint(1, 2, "2024-01-01T00:00:00Z")])]
-    graph = Graph(x_axis=x_axis, y_axis=y_axis, data_point_series=data_points)
+    graph = Graph(x_axis=x_axis, y_axis=y_axis, data_points_series=data_points)
     assert graph.x_axis.property == "x"
     assert graph.y_axis.axis_type == AxisType.LOGARITHMIC
-    assert len(graph.data_point_series) == 1
-    assert graph.data_point_series[0].data[0].y == 2
-    assert graph.data_point_series[0].data[0].updated_at == "2024-01-01T00:00:00Z"
+    assert len(graph.data_points_series) == 1
+    assert graph.data_points_series[0].data[0].y == 2
+    assert graph.data_points_series[0].data[0].updated_at == "2024-01-01T00:00:00Z"

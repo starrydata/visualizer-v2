@@ -5,9 +5,12 @@ from application.streamlit_graph_creator_service import StreamlitGraphCreator
 from application.graph_data_service import GraphDataService
 import datetime
 import pytz
+from presentation.bokeh_graph_creator import BokehGraphCreator
+from streamlit_bokeh import streamlit_bokeh
 
 from domain.material_type import MaterialType
 from infra.graph_repository_factory import ApiHostName, GraphRepositoryFactory
+from domain.graph import Axis, AxisRange, AxisType
 
 def main(material_type: MaterialType):
     st.title(f"{material_type.value.capitalize()} material data")
@@ -53,12 +56,12 @@ def main(material_type: MaterialType):
     else:
         CONFIG_GRAPHS = []
 
-    graph_repository = GraphRepositoryFactory.create(ApiHostName.CLEANSING_DATASET)
-    base_graph = graph_repository.get_graph_by_property(
-        material_type=material_type,
-        property_x=CONFIG_GRAPHS[0].x_axis.property,
-        property_y=CONFIG_GRAPHS[0].y_axis.property
-    )
+    # graph_repository = GraphRepositoryFactory.create(ApiHostName.CLEANSING_DATASET)
+    # base_graph = graph_repository.get_graph_by_property(
+    #     material_type=material_type,
+    #     property_x=CONFIG_GRAPHS[0].x_axis.property,
+    #     property_y=CONFIG_GRAPHS[0].y_axis.property
+    # )
 
     graph_options = [(g.x_axis.property, g.y_axis.property) for g in CONFIG_GRAPHS]
 
@@ -68,45 +71,57 @@ def main(material_type: MaterialType):
 
     prop_x, prop_y = selected_graph
 
-    selected_graph_config = next(
-        (g for g in CONFIG_GRAPHS if g.x_axis.property == prop_x and g.y_axis.property == prop_y),
-        None
+    config = next(
+        (g for g in CONFIG_GRAPHS if g.x_axis.property == prop_x and g.y_axis.property == prop_y)
+    )
+    x_axis = config.x_axis
+    y_axis = config.y_axis
+
+    x_min = st.sidebar.number_input("X Axis Min", value=x_axis.axis_range.min_value, key=f"x_min_{prop_x}_{prop_y}")
+    x_max = st.sidebar.number_input("X Axis Max", value=x_axis.axis_range.max_value, key=f"x_max_{prop_x}_{prop_y}")
+    y_min = st.sidebar.number_input("Y Axis Min", value=y_axis.axis_range.min_value, key=f"y_min_{prop_x}_{prop_y}")
+    y_max = st.sidebar.number_input("Y Axis Max", value=y_axis.axis_range.max_value, key=f"y_max_{prop_x}_{prop_y}")
+
+    x_type = st.sidebar.selectbox("X Axis Scale", ["linear", "log"], index=0 if x_axis.axis_type.value=="linear" else 1)
+    y_type = st.sidebar.selectbox("Y Axis Scale", ["linear", "log"], index=0 if y_axis.axis_type.value=="linear" else 1)
+
+    graph_creator = BokehGraphCreator(GraphDataService())
+    new_x_axis = Axis(
+        property=prop_x,
+        unit=x_axis.unit,
+        axis_type=AxisType(x_type),
+        axis_range=AxisRange(
+            min_value=x_min,
+            max_value=x_max
+        )
+    )
+    new_y_axis = Axis(
+        property=prop_y,
+        unit=y_axis.unit,
+        axis_type=AxisType(y_type),
+        axis_range=AxisRange(
+            min_value=y_min,
+            max_value=y_max
+        )
+    )
+    bokeh_figure = graph_creator.create_bokeh_figure(
+        x_axis=new_x_axis,
+        y_axis=new_y_axis
     )
 
-    # config(Python)からデフォルト値を取得
-    default_x_range = selected_graph_config.x_axis.axis_range.min_value, selected_graph_config.x_axis.axis_range.max_value
-    default_y_range = selected_graph_config.y_axis.axis_range.min_value, selected_graph_config.y_axis.axis_range.max_value
-    default_x_scale = selected_graph_config.x_axis.axis_type.value
-    default_y_scale = selected_graph_config.y_axis.axis_type.value
-
-    x_min = st.sidebar.number_input("X Axis Min", value=default_x_range[0], key=f"x_min_{prop_x}_{prop_y}")
-    x_max = st.sidebar.number_input("X Axis Max", value=default_x_range[1], key=f"x_max_{prop_x}_{prop_y}")
-    y_min = st.sidebar.number_input("Y Axis Min", value=default_y_range[0], key=f"y_min_{prop_x}_{prop_y}")
-    y_max = st.sidebar.number_input("Y Axis Max", value=default_y_range[1], key=f"y_max_{prop_x}_{prop_y}")
-
-    x_scale = st.sidebar.selectbox("X Axis Scale", ["linear", "log"], index=0 if default_x_scale=="linear" else 1)
-    y_scale = st.sidebar.selectbox("Y Axis Scale", ["linear", "log"], index=0 if default_y_scale=="linear" else 1)
-
-    # Update config ranges
-    # for g in CONFIG_GRAPHS:
-    #     if g.get("prop_x") == prop_x and g.get("prop_y") == prop_y:
-    #         g["x_range"] = [x_min, x_max]
-    #         g["y_range"] = [y_min, y_max]
-    #         break
-
-    graph_service = StreamlitGraphCreator()
-    figure = graph_service.create_bokeh_graph(base_graph)
-    base_data_source = graph_service.create_bokeh_data_source(base_graph)
-    base_renderer = figure.circle(
-        "x",
-        "y",
-        source=base_data_source,
-        fill_color="blue",
-        fill_alpha=1,
-        size=2,
-        line_width=0,
-        line_color="#3288bd",
-    )
+    # graph_service = StreamlitGraphCreator()
+    # figure = graph_service.create_bokeh_graph(base_graph)
+    # base_data_source = graph_service.create_bokeh_data_source(base_graph)
+    # base_renderer = figure.circle(
+    #     "x",
+    #     "y",
+    #     source=base_data_source,
+    #     fill_color="blue",
+    #     fill_alpha=1,
+    #     size=2,
+    #     line_width=0,
+    #     line_color="#3288bd",
+    # )
 
 
     # div, script, title, figure = graph_service.create_bokeh_graph(
@@ -128,4 +143,19 @@ def main(material_type: MaterialType):
 
     st.subheader(f"Graph: {prop_x} vs {prop_y}")
 
-    st.bokeh_chart(figure, use_container_width=True)
+
+
+    # from bokeh.plotting import figure
+    # from bokeh.models import ColumnDataSource
+    # x = [1, 2, 3, 4, 5]
+    # y = [2, 4, 8, 16, 32]
+    # source = ColumnDataSource(data=dict(x=x, y=y))
+
+    # YOUR_BOKEH_FIGURE = figure(title="Simple Line Example",
+    #                     x_axis_label="x",
+    #                     y_axis_label="y")
+    # YOUR_BOKEH_FIGURE.scatter(x='x', y='y', source=source, legend_label="Trend", line_width=2)
+
+
+
+    streamlit_bokeh(bokeh_figure, use_container_width=True, theme="streamlit", key="my_unique_key")
