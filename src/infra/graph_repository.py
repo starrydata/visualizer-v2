@@ -30,7 +30,7 @@ class GraphRepositoryApiStarrydata2(GraphRepository):
                 break
         if target_graph is None:
             raise ValueError(f"Graph with properties {property_x} and {property_y} not found for material type {material_type}")
-        host = os.environ.get("HIGHLIGHT_DATA_URI")
+        host = os.environ.get("STARRYDATA2_API_XY_DATA")
         params = {
             "property_x": property_x,
             "property_y": property_y,
@@ -65,7 +65,7 @@ class GraphRepositoryApiCleansingDataset(GraphRepository):
                 break
         if target_graph is None:
             raise ValueError(f"Graph with properties {property_x} and {property_y} not found for material type {material_type}")
-        host = os.environ.get("BASE_DATA_URI")
+        host = os.environ.get("STARRYDATA_BULK_DATA_API")
         path = f"{host}/{property_x}-{property_y}.json"
         response = requests.get(path)
         response.raise_for_status()

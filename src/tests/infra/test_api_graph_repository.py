@@ -38,7 +38,7 @@ def mock_response_property():
 @patch("infra.graph_repository.requests.get")
 def test_get_graph_by_property_and_unit_format(mock_get):
     mock_get.return_value = mock_response_property_and_unit()
-    os.environ["HIGHLIGHT_DATA_URI"] = "http://dummy"
+    os.environ["STARRYDATA2_API_XY_DATA"] = "http://dummy"
     repo = GraphRepositoryApiStarrydata2()
     graph = repo.get_graph_by_property_and_unit(
         MaterialType.THERMOELECTRIC,
@@ -64,7 +64,7 @@ def test_get_graph_by_property_and_unit_format(mock_get):
 @patch("infra.graph_repository.requests.get")
 def test_get_graph_by_property_format(mock_get):
     mock_get.return_value = mock_response_property()
-    os.environ["BASE_DATA_URI"] = "http://dummy"
+    os.environ["STARRYDATA_BULK_DATA_API"] = "http://dummy"
     repo = GraphRepositoryApiStarrydata2()
     graph = repo.get_graph_by_property(MaterialType.THERMOELECTRIC, "Temperature", "Seebeck coefficient")
     assert graph is None

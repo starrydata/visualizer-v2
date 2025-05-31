@@ -40,8 +40,8 @@ def main(material_type: MaterialType):
         date_to_str = None
 
     # graph_data_service = GraphDataService(
-    #     base_data_uri=os.environ.get("BASE_DATA_URI", ""),
-    #     highlight_data_uri=os.environ.get("HIGHLIGHT_DATA_URI", "")
+    #     STARRYDATA_BULK_DATA_API=os.environ.get("STARRYDATA_BULK_DATA_API", ""),
+    #     STARRYDATA2_API_XY_DATA=os.environ.get("STARRYDATA2_API_XY_DATA", "")
     # )
 
 

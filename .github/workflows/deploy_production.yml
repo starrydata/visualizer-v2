@@ -36,34 +36,34 @@ jobs:
       #   id: build
       #   run: npm run build
       #   env:
-      #     BASE_DATA_URI: https://starrydata.github.io/cleansing-dataset/v1
-      #     HIGHLIGHT_DATA_URI: https://www.starrydata2.org/paperlist/xy_data_api
+      #     STARRYDATA_BULK_DATA_API: https://starrydata.github.io/bulk-data-api/v1/
+      #     STARRYDATA2_API_XY_DATA: https://www.starrydata2.org/paperlist/xy_data_api
 
       - name: Build static html 2025/5/22
         run: python src/presentation/slideshow_app.py "thermoelectric" "2025-05-22T00:00:00+09:00" "2025-05-22T23:59:59+09:00" "100"
         env:
-          BASE_DATA_URI: https://starrydata.github.io/cleansing-dataset/v1
-          HIGHLIGHT_DATA_URI: https://www.starrydata2.org/paperlist/xy_data_api
+          STARRYDATA_BULK_DATA_API: https://starrydata.github.io/bulk-data-api/v1/
+          STARRYDATA2_API_XY_DATA: https://www.starrydata2.org/paperlist/xy_data_api
       - name: Build static html 2025/5/23
         run: python src/presentation/slideshow_app.py "thermoelectric" "2025-05-23T00:00:00+09:00" "2025-05-23T23:59:59+09:00" "100"
         env:
-          BASE_DATA_URI: https://starrydata.github.io/cleansing-dataset/v1
-          HIGHLIGHT_DATA_URI: https://www.starrydata2.org/paperlist/xy_data_api
+          STARRYDATA_BULK_DATA_API: https://starrydata.github.io/bulk-data-api/v1/
+          STARRYDATA2_API_XY_DATA: https://www.starrydata2.org/paperlist/xy_data_api
       - name: Build static html 2025/5/24
         run: python src/presentation/slideshow_app.py "thermoelectric" "2025-05-24T00:00:00+09:00" "2025-05-24T23:59:59+09:00" "100"
         env:
-          BASE_DATA_URI: https://starrydata.github.io/cleansing-dataset/v1
-          HIGHLIGHT_DATA_URI: https://www.starrydata2.org/paperlist/xy_data_api
+          STARRYDATA_BULK_DATA_API: https://starrydata.github.io/bulk-data-api/v1/
+          STARRYDATA2_API_XY_DATA: https://www.starrydata2.org/paperlist/xy_data_api
       - name: Build static html 2025/5/25
         run: python src/presentation/slideshow_app.py "thermoelectric" "2025-05-25T00:00:00+09:00" "2025-05-25T23:59:59+09:00" "100"
         env:
-          BASE_DATA_URI: https://starrydata.github.io/cleansing-dataset/v1
-          HIGHLIGHT_DATA_URI: https://www.starrydata2.org/paperlist/xy_data_api
+          STARRYDATA_BULK_DATA_API: https://starrydata.github.io/bulk-data-api/v1/
+          STARRYDATA2_API_XY_DATA: https://www.starrydata2.org/paperlist/xy_data_api
       - name: Build static html 2015 - 2025
         run: python src/presentation/slideshow_app.py "thermoelectric" "2015-05-25T00:00:00+09:00" "2025-05-25T23:59:59+09:00" "100"
         env:
-          BASE_DATA_URI: https://starrydata.github.io/cleansing-dataset/v1
-          HIGHLIGHT_DATA_URI: https://www.starrydata2.org/paperlist/xy_data_api
+          STARRYDATA_BULK_DATA_API: https://starrydata.github.io/bulk-data-api/v1/
+          STARRYDATA2_API_XY_DATA: https://www.starrydata2.org/paperlist/xy_data_api
 
       - name: Upload static files as artifact
         id: deployment

@@ -26,8 +26,8 @@
             "console": "integratedTerminal",
             "python": "${workspaceFolder}/.venv/bin/python",
             "env": {
-                "BASE_DATA_URI": "https://starrydata.github.io/cleansing-dataset/v1",
-                "HIGHLIGHT_DATA_URI": "https://www.starrydata2.org/paperlist/xy_data_api",
+                "STARRYDATA_BULK_DATA_API": "https://starrydata.github.io/bulk-data-api/v1/",
+                "STARRYDATA2_API_XY_DATA": "https://www.starrydata2.org/paperlist/xy_data_api",
                 "APP_ENV": "production",
             }
         },
@@ -42,8 +42,8 @@
             "console": "integratedTerminal",
             "python": "${workspaceFolder}/.venv/bin/python",
             "env": {
-                "BASE_DATA_URI": "https://starrydata.github.io/cleansing-dataset/v1",
-                "HIGHLIGHT_DATA_URI": "http://127.0.0.1:8000/paperlist/xy_data_api",
+                "STARRYDATA_BULK_DATA_API": "https://starrydata.github.io/bulk-data-api/v1/",
+                "STARRYDATA2_API_XY_DATA": "http://127.0.0.1:8000/paperlist/xy_data_api",
                 "APP_ENV": "local",
             }
         },
@@ -58,8 +58,8 @@
                 "${workspaceFolder}/streamlit_app.py",
             ],
             "env": {
-                "BASE_DATA_URI": "https://starrydata.github.io/cleansing-dataset/v1",
-                "HIGHLIGHT_DATA_URI": "https://www.starrydata2.org/paperlist/xy_data_api",
+                "STARRYDATA_BULK_DATA_API": "https://starrydata.github.io/bulk-data-api/v1/",
+                "STARRYDATA2_API_XY_DATA": "https://www.starrydata2.org/paperlist/xy_data_api",
                 "PYTHONPATH": "${workspaceFolder}/src/",
             },
             "python": "${workspaceFolder}/.venv/bin/python"

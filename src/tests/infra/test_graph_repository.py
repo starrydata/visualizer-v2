@@ -21,7 +21,7 @@ def mock_response():
 @patch("infra.graph_repository.requests.get")
 def test_get_graph_by_property_response_format(mock_get, mock_response):
     mock_get.return_value = mock_response
-    os.environ["BASE_DATA_URI"] = "http://dummy"
+    os.environ["STARRYDATA_BULK_DATA_API"] = "http://dummy"
     repo = GraphRepositoryFactory.create(ApiHostName.CLEANSING_DATASET)
     graph = repo.get_graph_by_property(MaterialType.THERMOELECTRIC, "Temperature", "Seebeck coefficient")
     assert graph is not None
@@ -36,7 +36,7 @@ def test_get_graph_by_property_response_format(mock_get, mock_response):
 @patch("infra.graph_repository.requests.get")
 def test_get_graph_by_property_not_found(mock_get, mock_response):
     mock_get.return_value = mock_response
-    os.environ["BASE_DATA_URI"] = "http://dummy"
+    os.environ["STARRYDATA_BULK_DATA_API"] = "http://dummy"
     repo = GraphRepositoryFactory.create(ApiHostName.CLEANSING_DATASET)
     with pytest.raises(ValueError) as excinfo:
         repo.get_graph_by_property(MaterialType.THERMOELECTRIC, "NotExist", "Seebeck coefficient")
@@ -45,7 +45,7 @@ def test_get_graph_by_property_not_found(mock_get, mock_response):
 @patch("infra.graph_repository.requests.get")
 def test_get_graph_by_property_invalid_material_type(mock_get, mock_response):
     mock_get.return_value = mock_response
-    os.environ["BASE_DATA_URI"] = "http://dummy"
+    os.environ["STARRYDATA_BULK_DATA_API"] = "http://dummy"
     repo = GraphRepositoryFactory.create(ApiHostName.CLEANSING_DATASET)
     class DummyMaterialType:
         pass
@@ -61,7 +61,7 @@ def test_get_graph_by_property_empty_data(mock_get, mock_response):
         def json(self):
             return {"data": {"x": [], "y": []}}
     mock_get.return_value = EmptyMockResponse()
-    os.environ["BASE_DATA_URI"] = "http://dummy"
+    os.environ["STARRYDATA_BULK_DATA_API"] = "http://dummy"
     repo = GraphRepositoryFactory.create(ApiHostName.CLEANSING_DATASET)
     graph = repo.get_graph_by_property(MaterialType.THERMOELECTRIC, "Temperature", "Seebeck coefficient")
     assert graph is not None

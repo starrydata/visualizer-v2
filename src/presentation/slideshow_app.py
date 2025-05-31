@@ -12,8 +12,8 @@ import sys
 
 
 def main():
-    BASE_DATA_URI = os.environ.get("BASE_DATA_URI")
-    HIGHLIGHT_DATA_URI = os.environ.get("HIGHLIGHT_DATA_URI")
+    STARRYDATA_BULK_DATA_API = os.environ.get("STARRYDATA_BULK_DATA_API")
+    STARRYDATA2_API_XY_DATA = os.environ.get("STARRYDATA2_API_XY_DATA")
 
     # コマンドライン引数または環境変数で材料種別を指定（デフォルトは thermoelectric）
     material_type = None
@@ -55,7 +55,7 @@ def main():
 
     for cfg in config_data["graphs"]:
         print(f"Processing graph: {cfg['prop_x']} vs {cfg['prop_y']}")
-        json_path = f"{BASE_DATA_URI}/{cfg['prop_x']}-{cfg['prop_y']}.json"
+        json_path = f"{STARRYDATA_BULK_DATA_API}/{cfg['prop_x']}-{cfg['prop_y']}.json"
         # JSONを取得してunit_x, unit_yを抽出
         response = requests.get(json_path)
         response.raise_for_status()
@@ -73,7 +73,7 @@ def main():
             "limit": highlight_limit_arg if highlight_limit_arg is not None else config_data["limit"],
         }
         query_string = urllib.parse.urlencode(params)
-        highlight_path = f"{HIGHLIGHT_DATA_URI}/?{query_string}"
+        highlight_path = f"{STARRYDATA2_API_XY_DATA}/?{query_string}"
 
         div, script, title, figure = graph_service.create_bokeh_graph(
             json_path, highlight_path, cfg["y_scale"], cfg["x_range"], cfg["y_range"], cfg.get("x_scale", "linear"), material_type=material_type

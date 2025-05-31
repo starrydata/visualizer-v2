@@ -4,9 +4,9 @@ import requests
 from typing import Dict, List, Tuple
 
 class GraphDataService:
-    # def __init__(self, base_data_uri: str, highlight_data_uri: str):
-    #     self.base_data_uri = base_data_uri
-    #     self.highlight_data_uri = highlight_data_uri
+    # def __init__(self, STARRYDATA_BULK_DATA_API: str, STARRYDATA2_API_XY_DATA: str):
+    #     self.STARRYDATA_BULK_DATA_API = STARRYDATA_BULK_DATA_API
+    #     self.STARRYDATA2_API_XY_DATA = STARRYDATA2_API_XY_DATA
 
     # def load_config(self, material_type: str) -> Dict:
     #     config_path = os.path.join(os.path.dirname(__file__), f"../config.{material_type}.json")
@@ -15,7 +15,7 @@ class GraphDataService:
     #         return json.load(f)
 
     # def fetch_base_data(self, prop_x: str, prop_y: str) -> Dict:
-    #     json_path = f"{self.base_data_uri}/{prop_x}-{prop_y}.json"
+    #     json_path = f"{self.STARRYDATA_BULK_DATA_API}/{prop_x}-{prop_y}.json"
     #     response = requests.get(json_path)
     #     response.raise_for_status()
     #     return response.json()
