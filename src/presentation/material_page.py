@@ -8,13 +8,11 @@ from streamlit_bokeh import streamlit_bokeh
 
 from domain.material_type import MaterialType
 from domain.graph import Axis, AxisRange, AxisType
+from domain.graph_config_factory import get_graph_configs
 
 def main(material_type: MaterialType):
     st.title(f"{material_type.value.capitalize()} material data")
 
-    limit = st.sidebar.number_input(
-        "Limit", min_value=1, max_value=100, value=10, step=1
-    )
     date_from = st.sidebar.date_input("From Date")
     date_to = st.sidebar.date_input("To Date")
 
@@ -28,24 +26,13 @@ def main(material_type: MaterialType):
     if date_from:
         date_from_dt = datetime.datetime.combine(date_from, datetime.time(0, 0, 0))
         date_from_dt = user_timezone.localize(date_from_dt)
-        date_from_str = date_from_dt.isoformat()
-    else:
-        date_from_str = None
 
     if date_to:
         date_to_dt = datetime.datetime.combine(date_to, datetime.time(23, 59, 59))
         date_to_dt = user_timezone.localize(date_to_dt)
-        date_to_str = date_to_dt.isoformat()
-    else:
-        date_to_str = None
 
     # configファイルをPythonファイルから読み込む
-    if material_type.value == MaterialType.THERMOELECTRIC.value:
-        from domain.thermoelectric import THERMOELECTRIC_GRAPHS as CONFIG_GRAPHS
-    elif material_type.value == MaterialType.BATTERY.value:
-        from domain.battery import BATTERY_GRAPHS as CONFIG_GRAPHS
-    else:
-        CONFIG_GRAPHS = []
+    CONFIG_GRAPHS = get_graph_configs(material_type)
 
     graph_options = [(g.x_axis.property, g.y_axis.property) for g in CONFIG_GRAPHS]
 
