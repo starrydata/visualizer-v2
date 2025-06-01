@@ -28,7 +28,7 @@
             "request": "launch",
             "module": "pytest",
             "args": [
-                "src/tests/presentation/test_bokeh_graph_creator.py",
+                "src",
                 "-v"
             ],
             "console": "integratedTerminal",
