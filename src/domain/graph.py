@@ -39,6 +39,9 @@ class  XYPoints:
     data: List[XYPoint]
     updated_at: str  # ISO8601文字列（必須）
     sid: str         # 識別子（必須）
+    figure_id: str   # 追加: 系列ごとのfigure_id
+    sample_id: str   # 追加: 系列ごとのsample_id
+    composition: str # 追加: 系列ごとのcomposition
 
 @dataclass(frozen=True)
 class XYSeries:

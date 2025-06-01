@@ -26,21 +26,26 @@ def test_data_point():
 
 def test_data_points():
     points = [XYPoint(1, 2), XYPoint(3, 4)]
-    dp = make_xy_points(points)
+    dp = make_xy_points(points, figure_id="fig-1", sample_id="sample-1", composition="comp-1")
     assert len(dp.data) == 2
     assert dp.data[0].x == 1
     assert dp.data[1].y == 4
     assert dp.updated_at == "2024-01-01T00:00:00Z"
+    assert dp.figure_id == "fig-1"
+    assert dp.sample_id == "sample-1"
+    assert dp.composition == "comp-1"
 
 
 def test_xy_series():
-    points1 = make_xy_points([XYPoint(1, 2)])
-    points2 = make_xy_points([XYPoint(3, 4)])
+    points1 = make_xy_points([XYPoint(1, 2)], figure_id="fig-1", sample_id="sample-1", composition="comp-1")
+    points2 = make_xy_points([XYPoint(3, 4)], figure_id="fig-2", sample_id="sample-2", composition="comp-2")
     series = XYSeries([points1, points2])
     assert len(series.data) == 2
     assert series.data[0].data[0].x == 1
     assert series.data[1].data[0].y == 4
     assert series.data[0].updated_at == "2024-01-01T00:00:00Z"
+    assert series.data[0].figure_id == "fig-1"
+    assert series.data[1].figure_id == "fig-2"
 
 
 def test_graph():

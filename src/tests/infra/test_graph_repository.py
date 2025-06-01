@@ -91,6 +91,14 @@ def test_get_graph_by_property_and_unit_format(mock_get):
     assert xy_series.data[1].data[0].y == 3
     assert xy_series.data[1].data[1].x == 2
     assert xy_series.data[1].data[1].y == 4
+    assert xy_series.data[0].sid == "sid1"
+    assert xy_series.data[0].figure_id == "fig1"
+    assert xy_series.data[0].sample_id == "sample1"
+    assert xy_series.data[0].composition == "comp1"
+    assert xy_series.data[1].sid == "sid2"
+    assert xy_series.data[1].figure_id == "fig2"
+    assert xy_series.data[1].sample_id == "sample2"
+    assert xy_series.data[1].composition == "comp2"
 
 @patch("infra.graph_repository.requests.get")
 def test_get_graph_by_property_and_unit_missing_updated_at_raises(mock_get):

@@ -10,12 +10,12 @@ def make_point(x, y):
 @pytest.fixture
 def mock_bulk_data_series():
     # bulk側のDataPointsSeries
-    return make_xy_series([make_xy_points([make_point(1, 2), make_point(3, 4)], updated_at="2024-01-01T00:00:00Z")])
+    return make_xy_series([make_xy_points([make_point(1, 2), make_point(3, 4)], updated_at="2024-01-01T00:00:00Z", figure_id="fig-1", sample_id="sample-1", composition="comp-1")])
 
 @pytest.fixture
 def mock_today_data_series():
     # today側のDataPointsSeries
-    return make_xy_series([make_xy_points([make_point(5, 6)], updated_at="2024-01-02T00:00:00Z")])
+    return make_xy_series([make_xy_points([make_point(5, 6)], updated_at="2024-01-02T00:00:00Z", figure_id="fig-2", sample_id="sample-2", composition="comp-2")])
 
 @patch("infra.graph_repository_factory.GraphRepositoryFactory.create")
 def test_get_merged_graph_data(mock_factory, mock_bulk_data_series, mock_today_data_series):
