@@ -3,7 +3,7 @@ from presentation.bokeh_graph_creator import BokehGraphCreator
 from bokeh.plotting import figure
 from bokeh.models import ColumnDataSource, LinearAxis
 from domain.graph import Axis, AxisType, AxisRange, XYPoint, XYPoints
-from application.graph_data_service import XYPointsDTO, XYPointsListDTO
+from application.graph_data_service import XYPointsDTO, XYSeriesDTO
 from unittest.mock import Mock
 
 @pytest.fixture
@@ -18,7 +18,7 @@ def y_axis():
 def simple_dto():
     xy_points = XYPoints([XYPoint(1, 4), XYPoint(2, 5), XYPoint(3, 6)], updated_at="2024-01-01T00:00:00Z")
     dto = XYPointsDTO(data=xy_points.data, is_highlighted=False)
-    dto_list = XYPointsListDTO(data=[dto, dto, dto])  # Mocking multiple series for simplicity
+    dto_list = XYSeriesDTO(data=[dto, dto, dto])  # Mocking multiple series for simplicity
     return dto_list
 
 @pytest.fixture

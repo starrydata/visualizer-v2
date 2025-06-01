@@ -2,7 +2,7 @@ import pytest
 from bokeh.plotting import figure
 from domain.graph import Axis, AxisType, AxisRange, XYPoint, XYPoints, DateHighlightCondition
 from presentation.bokeh_graph_creator import BokehGraphCreator
-from application.graph_data_service import GraphDataService, XYPointsDTO, XYPointsListDTO
+from application.graph_data_service import GraphDataService, XYPointsDTO, XYSeriesDTO
 from unittest.mock import MagicMock
 
 @pytest.fixture
@@ -25,7 +25,7 @@ def test_create_bokeh_figure_basic(bokeh_graph_creator, mock_graph_data_service,
     # モックデータ（DTO方式）
     points = XYPoints([XYPoint(1, 2), XYPoint(3, 4)], updated_at="2024-01-01T00:00:00Z")
     dto = XYPointsDTO(data=points.data, is_highlighted=False)
-    dto_list = XYPointsListDTO(data=[dto])
+    dto_list = XYSeriesDTO(data=[dto])
     mock_graph_data_service.get_merged_graph_data.return_value = dto_list
     fig = bokeh_graph_creator.create_bokeh_figure(x_axis, y_axis)
     assert isinstance(fig, figure)
@@ -49,7 +49,7 @@ def test_create_bokeh_figure_with_highlight(bokeh_graph_creator, mock_graph_data
     points2 = XYPoints([XYPoint(3, 4)], updated_at="2024-01-03T00:00:00Z")  # 非ハイライト
     dto1 = XYPointsDTO(data=points1.data, is_highlighted=True)
     dto2 = XYPointsDTO(data=points2.data, is_highlighted=False)
-    dto_list = XYPointsListDTO(data=[dto1, dto2])
+    dto_list = XYSeriesDTO(data=[dto1, dto2])
     mock_graph_data_service.get_merged_graph_data.return_value = dto_list
     fig = bokeh_graph_creator.create_bokeh_figure(x_axis, y_axis, highlight_condition=highlight_condition)
     assert isinstance(fig, figure)

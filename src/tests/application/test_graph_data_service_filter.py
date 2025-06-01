@@ -1,6 +1,6 @@
 import pytest
 from src.domain.graph import XYPoint, XYPoints, XYSeries, DateHighlightCondition, HighlightCondition
-from src.application.graph_data_service import GraphDataService, XYPointsDTO, XYPointsListDTO
+from src.application.graph_data_service import GraphDataService, XYPointsDTO, XYSeriesDTO
 
 class DummyHighlightCondition(HighlightCondition):
     def is_match_points(self, points: XYPoints) -> bool:
@@ -15,7 +15,7 @@ def test_filter_and_sort_by_highlight():
     series = XYSeries([points1, points2, points3])
     service = GraphDataService()
     cond = DummyHighlightCondition()
-    result: XYPointsListDTO = service.filter_and_sort_by_highlight_dto(series, cond)
+    result: XYSeriesDTO = service.filter_and_sort_by_highlight_dto(series, cond)
     # ハイライト対象(points2)がラストに来ていること
     assert result.data[2].data == points2.data
     assert result.data[2].is_highlighted is True
@@ -29,7 +29,7 @@ def test_filter_and_sort_by_highlight_all():
     series = XYSeries([points1, points2])
     service = GraphDataService()
     cond = DummyHighlightCondition()
-    result: XYPointsListDTO = service.filter_and_sort_by_highlight_dto(series, cond)
+    result: XYSeriesDTO = service.filter_and_sort_by_highlight_dto(series, cond)
     assert [dto.data for dto in result.data] == [points1.data, points2.data]
     assert all(dto.is_highlighted for dto in result.data)
 
@@ -40,6 +40,6 @@ def test_filter_and_sort_by_highlight_none():
     series = XYSeries([points1, points2])
     service = GraphDataService()
     cond = DummyHighlightCondition()
-    result: XYPointsListDTO = service.filter_and_sort_by_highlight_dto(series, cond)
+    result: XYSeriesDTO = service.filter_and_sort_by_highlight_dto(series, cond)
     assert [dto.data for dto in result.data] == [points1.data, points2.data]
     assert all(dto.is_highlighted is False for dto in result.data)

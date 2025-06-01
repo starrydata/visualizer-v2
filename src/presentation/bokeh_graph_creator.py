@@ -1,14 +1,14 @@
 from bokeh.plotting import figure
 from bokeh.models import HoverTool, ColumnDataSource, Range1d
 
-from application.graph_data_service import GraphDataService, XYPointsListDTO, XYPointsDTO
+from application.graph_data_service import GraphDataService, XYSeriesDTO, XYPointsDTO
 from domain.graph import Graph, Axis, AxisType, AxisRange
 
 class BokehGraphCreator():
     def __init__(self, graph_data_service: GraphDataService = GraphDataService()):
         self.graph_data_service = graph_data_service
 
-    def get_data_point_series_with_axis(self, prop_x: str, prop_y: str, unit_x: str = "", unit_y: str = "") -> XYPointsListDTO:
+    def get_data_point_series_with_axis(self, prop_x: str, prop_y: str, unit_x: str = "", unit_y: str = "") -> XYSeriesDTO:
         merged_data_dto = self.graph_data_service.get_merged_graph_data(prop_x, prop_y, unit_x, unit_y)
         return merged_data_dto
 
@@ -32,12 +32,12 @@ class BokehGraphCreator():
 
         # highlight_conditionがあれば渡す
         if highlight_condition is not None:
-            xy_points_list_dto = self.graph_data_service.get_merged_graph_data(
+            xy_series_dto = self.graph_data_service.get_merged_graph_data(
                 x_axis.property, y_axis.property, x_axis.unit, y_axis.unit, highlight_condition=highlight_condition
             )
         else:
-            xy_points_list_dto = self.get_data_point_series_with_axis(x_axis.property, y_axis.property, x_axis.unit, y_axis.unit)
-        column_data_source = self.create_bokeh_data_source(xy_points_list_dto)
+            xy_series_dto = self.get_data_point_series_with_axis(x_axis.property, y_axis.property, x_axis.unit, y_axis.unit)
+        column_data_source = self.create_bokeh_data_source(xy_series_dto)
         renderer = p.scatter(
             "x",
             "y",
@@ -51,12 +51,12 @@ class BokehGraphCreator():
         p.add_tools(hover)
         return p
 
-    def create_bokeh_data_source(self, xy_points_list_dto: XYPointsListDTO) -> ColumnDataSource:
+    def create_bokeh_data_source(self, xy_series_dto: XYSeriesDTO) -> ColumnDataSource:
         from itertools import chain
         # XYPointsDTOごとにis_highlightedを展開
         all_points = []
         color = []
-        for dto in xy_points_list_dto.data:
+        for dto in xy_series_dto.data:
             all_points.extend(dto.data)
             color.extend(["red" if dto.is_highlighted else "gray"] * len(dto.data))
         data = dict(

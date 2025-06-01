@@ -13,7 +13,7 @@ class XYPointsDTO:
     is_highlighted: bool = False
 
 @dataclass
-class XYPointsListDTO:
+class XYSeriesDTO:
     data: List[XYPointsDTO]
 
 class GraphDataService:
@@ -82,7 +82,7 @@ class GraphDataService:
 
         return highlight_points, highlight_lines, sizef_points, line_sizef_points, x_end, y_end, label, widths
 
-    def filter_and_sort_by_highlight_dto(self, xy_series: XYSeries, highlight_condition: HighlightCondition) -> XYPointsListDTO:
+    def filter_and_sort_by_highlight_dto(self, xy_series: XYSeries, highlight_condition: HighlightCondition) -> XYSeriesDTO:
         """
         ハイライト条件でXYPointsを2分割し、各XYPointsDTOにis_highlighted属性を付与し、ハイライト対象を末尾に並べる（非ハイライト→ハイライトの順）
         """
@@ -95,7 +95,7 @@ class GraphDataService:
                 highlighted.append(dto)
             else:
                 non_highlighted.append(dto)
-        return XYPointsListDTO(data=non_highlighted + highlighted)
+        return XYSeriesDTO(data=non_highlighted + highlighted)
 
     def get_merged_graph_data(
         self,
@@ -104,7 +104,7 @@ class GraphDataService:
         unit_x: str = "",
         unit_y: str = "",
         highlight_condition: Optional[HighlightCondition] = None,
-    ) -> XYPointsListDTO:
+    ) -> XYSeriesDTO:
         """
         repositoryを使ってbulk data（全件）と今日のデータ（date_from, date_toで絞る）を取得し、DTOで返す
         highlight_conditionが指定されていれば、ハイライト対象を先頭に並べる
@@ -132,5 +132,5 @@ class GraphDataService:
         dtos = []
         for points in bulk_data_series.data:
             dtos.append(XYPointsDTO(data=points.data, is_highlighted=False))
-        return XYPointsListDTO(data=dtos)
+        return XYSeriesDTO(data=dtos)
 
