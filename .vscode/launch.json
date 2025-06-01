@@ -4,49 +4,6 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        {
-            "name": "battery",
-            "type": "debugpy",
-            "request": "launch",
-            // src/app.pyを実行したい
-            "program": "${workspaceFolder}/src/presentation/slideshow_app.py",
-            // 引数にbatteryを渡す
-            "args": ["battery", "2025-05-22T00:00:00+09:00", "2025-05-22T23:59:59+09:00"],
-            "console": "integratedTerminal",
-            "python": "${workspaceFolder}/.venv/bin/python"
-        },
-        {
-            "name": "NIMS openhouse 2025 production",
-            "type": "debugpy",
-            "request": "launch",
-            // src/app.pyを実行したい
-            "program": "${workspaceFolder}/src/presentation/slideshow_app.py",
-            // 引数にbatteryを渡す
-            "args": ["thermoelectric", "2025-05-22T00:00:00+09:00", "2025-05-22T23:59:59+09:00"],
-            "console": "integratedTerminal",
-            "python": "${workspaceFolder}/.venv/bin/python",
-            "env": {
-                "STARRYDATA_BULK_DATA_API": "https://starrydata.github.io/bulk-data-api/v1/",
-                "STARRYDATA2_API_XY_DATA": "https://www.starrydata2.org/paperlist/xy_data_api",
-                "APP_ENV": "production",
-            }
-        },
-        {
-            "name": "NIMS openhouse 2025 local",
-            "type": "debugpy",
-            "request": "launch",
-            // src/app.pyを実行したい
-            "program": "${workspaceFolder}/src/presentation/slideshow_app.py",
-            // 引数にbatteryを渡す
-            "args": ["thermoelectric", "2015-05-22T00:00:00+09:00", "2025-05-22T23:59:59+09:00", "100"],
-            "console": "integratedTerminal",
-            "python": "${workspaceFolder}/.venv/bin/python",
-            "env": {
-                "STARRYDATA_BULK_DATA_API": "https://starrydata.github.io/bulk-data-api/v1/",
-                "STARRYDATA2_API_XY_DATA": "http://127.0.0.1:8000/paperlist/xy_data_api",
-                "APP_ENV": "local",
-            }
-        },
         // stremaliteのデバッグ用
         {
             "name": "streamlit",
