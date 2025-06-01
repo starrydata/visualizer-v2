@@ -2,9 +2,6 @@ import os
 
 import requests
 from domain.graph import XYPoint, XYPoints, XYSeries, GraphRepository
-from typing import List
-from domain.thermoelectric import THERMOELECTRIC_GRAPHS
-from domain.battery import BATTERY_GRAPHS
 
 
 class GraphRepositoryApiStarrydata2(GraphRepository):
