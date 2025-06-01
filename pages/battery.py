@@ -1,9 +1,9 @@
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../src'))
-from src.domain.material_type import MaterialType
+from domain.material_type import MaterialType
 import streamlit as st
-import src.presentation.material_page as material_page
+import presentation.material_page as material_page
 
 def main():
     material_page.main(MaterialType.BATTERY)
