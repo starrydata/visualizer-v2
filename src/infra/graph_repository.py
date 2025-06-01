@@ -41,16 +41,16 @@ class GraphRepositoryApiStarrydata2(GraphRepository):
         y_lists = data.get("y", [])
         updated_at_lists = data.get("updated_at", [])
 
-        data_point_series = []
+        xy_series = []
         for i, (x_list, y_list) in enumerate(zip(x_lists, y_lists)):
             if x_list and y_list and len(x_list) == len(y_list):
                 if not (updated_at_lists and i < len(updated_at_lists)):
                     raise ValueError("updated_at is required for each data series, but missing at index {}".format(i))
                 updated_at = updated_at_lists[i]
                 points = [XYPoint(x=xi, y=yi) for xi, yi in zip(x_list, y_list)]
-                data_point_series.append(XYPoints(data=points, updated_at=updated_at, sid=f"sid_{i}"))
+                xy_series.append(XYPoints(data=points, updated_at=updated_at, sid=f"sid_{i}"))
 
-        return XYSeries(data=data_point_series)
+        return XYSeries(data=xy_series)
 
 class GraphRepositoryApiCleansingDataset(GraphRepository):
     def get_graph_by_property(self, property_x: str, property_y: str) -> XYSeries:
@@ -63,15 +63,15 @@ class GraphRepositoryApiCleansingDataset(GraphRepository):
         y_lists = data.get("y", [])
         updated_at_lists = data.get("updated_at", [])
 
-        data_point_series = []
+        xy_series = []
         for i, (x_list, y_list) in enumerate(zip(x_lists, y_lists)):
             if x_list and y_list and len(x_list) == len(y_list):
                 if not (updated_at_lists and i < len(updated_at_lists)):
                     raise ValueError("updated_at is required for each data series, but missing at index {}".format(i))
                 updated_at = updated_at_lists[i]
                 points = [XYPoint(x=xi, y=yi) for xi, yi in zip(x_list, y_list)]
-                data_point_series.append(XYPoints(data=points, updated_at=updated_at, sid=f"sid_{i}"))
-        return XYSeries(data=data_point_series)
+                xy_series.append(XYPoints(data=points, updated_at=updated_at, sid=f"sid_{i}"))
+        return XYSeries(data=xy_series)
 
     def get_graph_by_property_and_unit(self, property_x: str, property_y: str, unit_x: str, unit_y: str) -> XYSeries:
         # このAPIは未実装。例外を投げて明示する。

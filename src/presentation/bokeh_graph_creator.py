@@ -8,7 +8,7 @@ class BokehGraphCreator():
     def __init__(self, graph_data_service: GraphDataService = GraphDataService()):
         self.graph_data_service = graph_data_service
 
-    def get_data_point_series_with_axis(self, prop_x: str, prop_y: str, unit_x: str = "", unit_y: str = "") -> XYSeriesDTO:
+    def get_xy_series_with_axis(self, prop_x: str, prop_y: str, unit_x: str = "", unit_y: str = "") -> XYSeriesDTO:
         merged_data_dto = self.graph_data_service.get_merged_graph_data(prop_x, prop_y, unit_x, unit_y)
         return merged_data_dto
 
@@ -36,7 +36,7 @@ class BokehGraphCreator():
                 x_axis.property, y_axis.property, x_axis.unit, y_axis.unit, highlight_condition=highlight_condition
             )
         else:
-            xy_series_dto = self.get_data_point_series_with_axis(x_axis.property, y_axis.property, x_axis.unit, y_axis.unit)
+            xy_series_dto = self.get_xy_series_with_axis(x_axis.property, y_axis.property, x_axis.unit, y_axis.unit)
         column_data_source = self.create_bokeh_data_source(xy_series_dto)
         renderer = p.scatter(
             "x",
