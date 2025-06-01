@@ -1,4 +1,5 @@
-bokeh==2.4.3
+bokeh==3.7.3
+streamlit-bokeh==3.7.2
 requests>=2.32.3
 streamlit>=1.45.1
 numpy>=1.24,<1.25
