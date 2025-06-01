@@ -24,14 +24,6 @@ class GraphRepositoryApiStarrydata2(GraphRepository):
         date_from_dt = (now - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
         date_from = date_from_dt.isoformat()
         date_to = now.isoformat()
-        # target_material_graphs = get_graphs_by_material_type(material_type)
-        # target_graph = None
-        # for graph in target_material_graphs:
-        #     if graph.x_axis.property == property_x and graph.y_axis.property == property_y:
-        #         target_graph = graph
-        #         break
-        # if target_graph is None:
-        #     raise ValueError(f"Graph with properties {property_x} and {property_y} not found for material type {material_type}")
         host = os.environ.get("STARRYDATA2_API_XY_DATA")
         params = {
             "property_x": property_x,
@@ -49,23 +41,14 @@ class GraphRepositoryApiStarrydata2(GraphRepository):
         y_lists = data.get("y", [])
         updated_at_lists = data.get("updated_at", [])
 
-        from datetime import datetime, timezone
-        def now_iso():
-            return datetime.now(timezone.utc).isoformat()
-
         data_point_series = []
         for i, (x_list, y_list) in enumerate(zip(x_lists, y_lists)):
             if x_list and y_list and len(x_list) == len(y_list):
-                if updated_at_lists and i < len(updated_at_lists):
-                    updated_at_val = updated_at_lists[i]
-                    if isinstance(updated_at_val, list):
-                        updated_ats = updated_at_val
-                    else:
-                        updated_ats = [updated_at_val] * len(x_list)
-                else:
-                    updated_ats = [now_iso()] * len(x_list)
-                points = [XYPoint(x=xi, y=yi) for j, (xi, yi) in enumerate(zip(x_list, y_list))]
-                data_point_series.append(XYPoints(data=points, updated_at=updated_ats[0] if updated_ats else now_iso(), sid=f"sid_{i}"))
+                if not (updated_at_lists and i < len(updated_at_lists)):
+                    raise ValueError("updated_at is required for each data series, but missing at index {}".format(i))
+                updated_at = updated_at_lists[i]
+                points = [XYPoint(x=xi, y=yi) for xi, yi in zip(x_list, y_list)]
+                data_point_series.append(XYPoints(data=points, updated_at=updated_at, sid=f"sid_{i}"))
 
         return XYSeries(data=data_point_series)
 
@@ -80,23 +63,14 @@ class GraphRepositoryApiCleansingDataset(GraphRepository):
         y_lists = data.get("y", [])
         updated_at_lists = data.get("updated_at", [])
 
-        from datetime import datetime, timezone
-        def now_iso():
-            return datetime.now(timezone.utc).isoformat()
-
         data_point_series = []
         for i, (x_list, y_list) in enumerate(zip(x_lists, y_lists)):
             if x_list and y_list and len(x_list) == len(y_list):
-                if updated_at_lists and i < len(updated_at_lists):
-                    updated_at_val = updated_at_lists[i]
-                    if isinstance(updated_at_val, list):
-                        updated_ats = updated_at_val
-                    else:
-                        updated_ats = [updated_at_val] * len(x_list)
-                else:
-                    updated_ats = [now_iso()] * len(x_list)
-                points = [XYPoint(x=xi, y=yi) for j, (xi, yi) in enumerate(zip(x_list, y_list))]
-                data_point_series.append(XYPoints(data=points, updated_at=updated_ats[0] if updated_ats else now_iso(), sid=f"sid_{i}"))
+                if not (updated_at_lists and i < len(updated_at_lists)):
+                    raise ValueError("updated_at is required for each data series, but missing at index {}".format(i))
+                updated_at = updated_at_lists[i]
+                points = [XYPoint(x=xi, y=yi) for xi, yi in zip(x_list, y_list)]
+                data_point_series.append(XYPoints(data=points, updated_at=updated_at, sid=f"sid_{i}"))
         return XYSeries(data=data_point_series)
 
     def get_graph_by_property_and_unit(self, property_x: str, property_y: str, unit_x: str, unit_y: str) -> XYSeries:
