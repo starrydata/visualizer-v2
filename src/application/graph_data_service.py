@@ -10,7 +10,11 @@ from src.domain.graph import HighlightCondition
 @dataclass
 class XYPointsDTO:
     data: List[XYPoint]
-    is_highlighted: bool = False
+    is_highlighted: bool
+    sid: str
+    figure_id: str
+    sample_id: str
+    composition: str
 
 @dataclass
 class XYSeriesDTO:
@@ -25,7 +29,14 @@ class GraphDataService:
         non_highlighted = []
         for points in xy_series.data:
             is_highlight = highlight_condition.is_match_points(points)
-            dto = XYPointsDTO(data=points.data, is_highlighted=is_highlight)
+            dto = XYPointsDTO(
+                data=points.data,
+                is_highlighted=is_highlight,
+                sid=points.sid,
+                figure_id=points.figure_id,
+                sample_id=points.sample_id,
+                composition=points.composition
+            )
             if is_highlight:
                 highlighted.append(dto)
             else:
@@ -66,6 +77,13 @@ class GraphDataService:
         # ハイライトなしの場合もDTO化
         dtos = []
         for points in bulk_data_series.data:
-            dtos.append(XYPointsDTO(data=points.data, is_highlighted=False))
+            dtos.append(XYPointsDTO(
+                data=points.data,
+                is_highlighted=False,
+                sid=points.sid,
+                figure_id=points.figure_id,
+                sample_id=points.sample_id,
+                composition=points.composition
+            ))
         return XYSeriesDTO(data=dtos)
 

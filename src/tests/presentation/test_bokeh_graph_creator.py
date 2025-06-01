@@ -18,7 +18,14 @@ def y_axis():
 @pytest.fixture
 def simple_dto():
     xy_points = make_xy_points([XYPoint(1, 4), XYPoint(2, 5), XYPoint(3, 6)], updated_at="2024-01-01T00:00:00Z", figure_id="fig-1", sample_id="sample-1", composition="comp-1")
-    dto = XYPointsDTO(data=xy_points.data, is_highlighted=False)
+    dto = XYPointsDTO(
+        data=xy_points.data,
+        is_highlighted=False,
+        sid=xy_points.sid,
+        figure_id=xy_points.figure_id,
+        sample_id=xy_points.sample_id,
+        composition=xy_points.composition
+    )
     dto_list = XYSeriesDTO(data=[dto, dto, dto])  # Mocking multiple series for simplicity
     return dto_list
 

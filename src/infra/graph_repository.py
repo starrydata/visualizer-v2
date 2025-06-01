@@ -50,9 +50,9 @@ class GraphRepositoryApiStarrydata2(GraphRepository):
                 if not (updated_at_lists and i < len(updated_at_lists)):
                     raise ValueError("updated_at is required for each data series, but missing at index {}".format(i))
                 updated_at = updated_at_lists[i]
-                figure_id = api_data.figure_id[i] if api_data.figure_id and i < len(api_data.figure_id) else "fig-{}".format(i)
-                sample_id = api_data.sample_id[i] if api_data.sample_id and i < len(api_data.sample_id) else "sample-{}".format(i)
-                composition = api_data.composition[i] if api_data.composition and i < len(api_data.composition) else "comp-{}".format(i)
+                figure_id = api_data.figure_id[i]
+                sample_id = api_data.sample_id[i]
+                composition = api_data.composition[i]
                 points = [XYPoint(x=xi, y=yi) for xi, yi in zip(x_list, y_list)]
                 xy_series.append(XYPoints(data=points, updated_at=updated_at, sid=sid_lists[i], figure_id=figure_id, sample_id=sample_id, composition=composition))
         return XYSeries(data=xy_series)
@@ -76,8 +76,11 @@ class GraphRepositoryApiCleansingDataset(GraphRepository):
                 if not (updated_at_lists and i < len(updated_at_lists)):
                     raise ValueError("updated_at is required for each data series, but missing at index {}".format(i))
                 updated_at = updated_at_lists[i]
+                figure_id = api_data.figure_id[i]
+                sample_id = api_data.sample_id[i]
+                composition = api_data.composition[i]
                 points = [XYPoint(x=xi, y=yi) for xi, yi in zip(x_list, y_list)]
-                xy_series.append(XYPoints(data=points, updated_at=updated_at, sid=sid_lists[i]))
+                xy_series.append(XYPoints(data=points, updated_at=updated_at, sid=sid_lists[i], figure_id=figure_id, sample_id=sample_id, composition=composition))
         return XYSeries(data=xy_series)
 
     def get_graph_by_property_and_unit(self, property_x: str, property_y: str, unit_x: str, unit_y: str) -> XYSeries:

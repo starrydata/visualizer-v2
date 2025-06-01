@@ -59,10 +59,14 @@ class BokehGraphCreator():
         for dto in xy_series_dto.data:
             all_points.extend(dto.data)
             color.extend(["red" if dto.is_highlighted else "gray"] * len(dto.data))
+        # SIDを各点に割り当てる
+        sid_list = []
+        for dto in xy_series_dto.data:
+            sid_list.extend([dto.sid] * len(dto.data))
         data = dict(
             x=[point.x for point in all_points],
             y=[point.y for point in all_points],
-            SID=["" for _ in all_points],
+            SID=sid_list,
             color=color,
         )
         return ColumnDataSource(data=data)

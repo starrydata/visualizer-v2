@@ -25,7 +25,7 @@ def test_create_bokeh_figure_basic(bokeh_graph_creator, mock_graph_data_service,
     x_axis, y_axis = axes
     # モックデータ（DTO方式）
     points = make_xy_points([XYPoint(1, 2), XYPoint(3, 4)], updated_at="2024-01-01T00:00:00Z", sid="test-sid", figure_id="fig-1", sample_id="sample-1", composition="comp-1")
-    dto = XYPointsDTO(data=points.data, is_highlighted=False)
+    dto = XYPointsDTO(data=points.data, is_highlighted=False, sid=points.sid, figure_id=points.figure_id, sample_id=points.sample_id, composition=points.composition)
     dto_list = XYSeriesDTO(data=[dto])
     mock_graph_data_service.get_merged_graph_data.return_value = dto_list
     fig = bokeh_graph_creator.create_bokeh_figure(x_axis, y_axis)
@@ -49,9 +49,9 @@ def test_create_bokeh_figure_with_highlight(bokeh_graph_creator, mock_graph_data
     points1 = make_xy_points([XYPoint(1, 2)], updated_at="2024-01-01T00:00:00Z", sid="test-sid", figure_id="fig-1", sample_id="sample-1", composition="comp-1")  # ハイライト
     points2 = make_xy_points([XYPoint(3, 4)], updated_at="2024-01-02T00:00:00Z", figure_id="fig-2", sample_id="sample-2", composition="comp-2")  # 非ハイライト
     points3 = make_xy_points([XYPoint(5, 6)], updated_at="2024-01-03T00:00:00Z", figure_id="fig-3", sample_id="sample-3", composition="comp-3")
-    dto1 = XYPointsDTO(data=points1.data, is_highlighted=True)
-    dto2 = XYPointsDTO(data=points2.data, is_highlighted=False)
-    dto3 = XYPointsDTO(data=points3.data, is_highlighted=False)
+    dto1 = XYPointsDTO(data=points1.data, is_highlighted=True, sid=points1.sid, figure_id=points1.figure_id, sample_id=points1.sample_id, composition=points1.composition)
+    dto2 = XYPointsDTO(data=points2.data, is_highlighted=False, sid=points2.sid, figure_id=points2.figure_id, sample_id=points2.sample_id, composition=points2.composition)
+    dto3 = XYPointsDTO(data=points3.data, is_highlighted=False, sid=points3.sid, figure_id=points3.figure_id, sample_id=points3.sample_id, composition=points3.composition)
     dto_list = XYSeriesDTO(data=[dto1, dto2, dto3])
     mock_graph_data_service.get_merged_graph_data.return_value = dto_list
     fig = bokeh_graph_creator.create_bokeh_figure(x_axis, y_axis, highlight_condition=highlight_condition)
