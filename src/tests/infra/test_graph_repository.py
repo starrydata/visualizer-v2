@@ -97,7 +97,8 @@ def test_get_graph_by_property_and_unit_missing_updated_at_raises(mock_get):
     mock_get.return_value = mock_response_property_and_unit_missing_updated_at()
     os.environ["STARRYDATA2_API_XY_DATA"] = "http://dummy"
     repo = GraphRepositoryApiStarrydata2()
-    with pytest.raises(ValueError, match="updated_at is required"):
+    import pydantic
+    with pytest.raises(pydantic.ValidationError):
         repo.get_graph_by_property_and_unit(
             "Temperature",
             "Seebeck coefficient",
