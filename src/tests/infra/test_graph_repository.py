@@ -63,6 +63,6 @@ def test_get_graph_by_property_empty_data(mock_get, mock_response):
     assert xy_series is not None
     assert len(xy_series.data) == 0
 
-def make_point(x, y, updated_at="2024-01-01T00:00:00Z"):
+def make_point(x, y):
     from src.domain.graph import XYPoint
-    return XYPoint(x, y, updated_at)
+    return XYPoint(x, y)

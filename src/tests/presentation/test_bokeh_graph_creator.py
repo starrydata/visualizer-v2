@@ -9,7 +9,7 @@ from unittest.mock import Mock
 def simple_graph():
     x_axis = Axis(property="x", axis_type=AxisType.LINEAR, unit="", axis_range=AxisRange(1, 3))
     y_axis = Axis(property="y", axis_type=AxisType.LINEAR, unit="", axis_range=AxisRange(4, 6))
-    xy_points = XYPoints([XYPoint(1, 4, "2024-01-01T00:00:00Z"), XYPoint(2, 5, "2024-01-01T00:00:00Z"), XYPoint(3, 6, "2024-01-01T00:00:00Z")])
+    xy_points = XYPoints([XYPoint(1, 4), XYPoint(2, 5), XYPoint(3, 6)], updated_at="2024-01-01T00:00:00Z")
     xy_series = XYSeries([xy_points, xy_points, xy_points])  # Mocking multiple series for simplicity
     return Graph(x_axis=x_axis, y_axis=y_axis, data=xy_series)
 

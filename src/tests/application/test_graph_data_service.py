@@ -3,19 +3,19 @@ from application.graph_data_service import GraphDataService
 from unittest.mock import patch, MagicMock
 from domain.graph import XYPoints, XYSeries, XYPoint
 
-def make_point(x, y, updated_at="2024-01-01T00:00:00Z"):
+def make_point(x, y):
     from domain.graph import XYPoint
-    return XYPoint(x, y, updated_at)
+    return XYPoint(x, y)
 
 @pytest.fixture
 def mock_bulk_data_series():
     # bulk側のDataPointsSeries
-    return XYSeries(data=[XYPoints([make_point(1, 2), make_point(3, 4)])])
+    return XYSeries(data=[XYPoints([make_point(1, 2), make_point(3, 4)], updated_at="2024-01-01T00:00:00Z")])
 
 @pytest.fixture
 def mock_today_data_series():
     # today側のDataPointsSeries
-    return XYSeries(data=[XYPoints([make_point(5, 6)])])
+    return XYSeries(data=[XYPoints([make_point(5, 6)], updated_at="2024-01-02T00:00:00Z")])
 
 @patch("infra.graph_repository_factory.GraphRepositoryFactory.create")
 def test_get_merged_graph_data(mock_factory, mock_bulk_data_series, mock_today_data_series):

@@ -71,5 +71,5 @@ def test_get_graph_by_property_format(mock_get):
 
 def make_point(x, y, updated_at="2024-01-01T00:00:00Z"):
     from src.domain.graph import XYPoint
-    return XYPoint(x, y, updated_at)
+    return XYPoint(x, y)
 

@@ -33,11 +33,11 @@ class Axis:
 class XYPoint:
     x: float
     y: float
-    updated_at: str  # ISO8601文字列（必須）
 
 @dataclass(frozen=True)
 class  XYPoints:
     data: List[XYPoint]
+    updated_at: str  # ISO8601文字列（必須）
 
 @dataclass(frozen=True)
 class XYSeries:

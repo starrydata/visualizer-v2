@@ -64,8 +64,8 @@ class GraphRepositoryApiStarrydata2(GraphRepository):
                         updated_ats = [updated_at_val] * len(x_list)
                 else:
                     updated_ats = [now_iso()] * len(x_list)
-                points = [XYPoint(x=xi, y=yi, updated_at=updated_ats[j] if j < len(updated_ats) else now_iso()) for j, (xi, yi) in enumerate(zip(x_list, y_list))]
-                data_point_series.append(XYPoints(data=points))
+                points = [XYPoint(x=xi, y=yi) for j, (xi, yi) in enumerate(zip(x_list, y_list))]
+                data_point_series.append(XYPoints(data=points, updated_at=updated_ats[0] if updated_ats else now_iso()))
 
         return XYSeries(data=data_point_series)
 
@@ -95,8 +95,8 @@ class GraphRepositoryApiCleansingDataset(GraphRepository):
                         updated_ats = [updated_at_val] * len(x_list)
                 else:
                     updated_ats = [now_iso()] * len(x_list)
-                points = [XYPoint(x=xi, y=yi, updated_at=updated_ats[j] if j < len(updated_ats) else now_iso()) for j, (xi, yi) in enumerate(zip(x_list, y_list))]
-                data_point_series.append(XYPoints(data=points))
+                points = [XYPoint(x=xi, y=yi) for j, (xi, yi) in enumerate(zip(x_list, y_list))]
+                data_point_series.append(XYPoints(data=points, updated_at=updated_ats[0] if updated_ats else now_iso()))
         return XYSeries(data=data_point_series)
 
     def get_graph_by_property_and_unit(self, property_x: str, property_y: str, unit_x: str, unit_y: str) -> XYSeries:
