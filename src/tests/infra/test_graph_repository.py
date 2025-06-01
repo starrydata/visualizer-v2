@@ -2,6 +2,7 @@ import os
 import pytest
 from unittest.mock import patch
 from infra.graph_repository_factory import GraphRepositoryFactory, ApiHostName
+from src.domain.graph import XYPoint
 
 @pytest.fixture
 def mock_response():
@@ -46,13 +47,13 @@ def test_get_graph_by_property_invalid_material_type(mock_get, mock_response):
     mock_get.return_value = mock_response
     os.environ["STARRYDATA_BULK_DATA_API"] = "http://dummy"
     # material_typeは不要になったのでテスト不要
-    assert True
 
 @patch("infra.graph_repository.requests.get")
 def test_get_graph_by_property_empty_data(mock_get, mock_response):
     class EmptyMockResponse:
         def raise_for_status(self):
-            pass  # intentionally empty for test
+            # This is a mock method for testing, so it does nothing
+            pass
         def json(self):
             return {"data": {"x": [], "y": []}}
     mock_get.return_value = EmptyMockResponse()
@@ -62,7 +63,3 @@ def test_get_graph_by_property_empty_data(mock_get, mock_response):
     xy_series = repo.get_graph_by_property("Temperature", "Seebeck coefficient")
     assert xy_series is not None
     assert len(xy_series.data) == 0
-
-def make_point(x, y):
-    from src.domain.graph import XYPoint
-    return XYPoint(x, y)

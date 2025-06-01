@@ -1,6 +1,7 @@
 import pytest
 from src.domain.graph import XYPoint, XYPoints, XYSeries, DateHighlightCondition, HighlightCondition
 from src.application.graph_data_service import GraphDataService, XYPointsDTO, XYSeriesDTO
+from src.tests.domain.graph_mock_factory import make_xy_points
 
 class DummyHighlightCondition(HighlightCondition):
     def is_match_points(self, points: XYPoints) -> bool:
@@ -9,9 +10,9 @@ class DummyHighlightCondition(HighlightCondition):
 
 def test_filter_and_sort_by_highlight():
     # 3つのXYPoints: 1つだけハイライト対象
-    points1 = XYPoints([XYPoint(1, 2)], updated_at="2024-01-01T00:00:00Z")
-    points2 = XYPoints([XYPoint(3, 4)], updated_at="2024-01-02T00:00:00Z")  # ハイライト対象
-    points3 = XYPoints([XYPoint(5, 6)], updated_at="2024-01-03T00:00:00Z")
+    points1 = make_xy_points([XYPoint(1, 2)], updated_at="2024-01-01T00:00:00Z")
+    points2 = make_xy_points([XYPoint(3, 4)], updated_at="2024-01-02T00:00:00Z")  # ハイライト対象
+    points3 = make_xy_points([XYPoint(5, 6)], updated_at="2024-01-03T00:00:00Z")
     series = XYSeries([points1, points2, points3])
     service = GraphDataService()
     cond = DummyHighlightCondition()
@@ -24,8 +25,8 @@ def test_filter_and_sort_by_highlight():
 
 def test_filter_and_sort_by_highlight_all():
     # 全てハイライト対象
-    points1 = XYPoints([XYPoint(1, 2)], updated_at="2024-01-02T00:00:00Z")
-    points2 = XYPoints([XYPoint(3, 4)], updated_at="2024-01-02T12:00:00Z")
+    points1 = make_xy_points([XYPoint(1, 2)], updated_at="2024-01-02T00:00:00Z")
+    points2 = make_xy_points([XYPoint(3, 4)], updated_at="2024-01-02T12:00:00Z")
     series = XYSeries([points1, points2])
     service = GraphDataService()
     cond = DummyHighlightCondition()
@@ -35,8 +36,8 @@ def test_filter_and_sort_by_highlight_all():
 
 def test_filter_and_sort_by_highlight_none():
     # 全て非ハイライト
-    points1 = XYPoints([XYPoint(1, 2)], updated_at="2024-01-01T00:00:00Z")
-    points2 = XYPoints([XYPoint(3, 4)], updated_at="2024-01-03T00:00:00Z")
+    points1 = make_xy_points([XYPoint(1, 2)], updated_at="2024-01-01T00:00:00Z")
+    points2 = make_xy_points([XYPoint(3, 4)], updated_at="2024-01-03T00:00:00Z")
     series = XYSeries([points1, points2])
     service = GraphDataService()
     cond = DummyHighlightCondition()

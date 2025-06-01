@@ -38,6 +38,7 @@ class XYPoint:
 class  XYPoints:
     data: List[XYPoint]
     updated_at: str  # ISO8601文字列（必須）
+    sid: str         # 識別子（必須）
 
 @dataclass(frozen=True)
 class XYSeries:
@@ -92,16 +93,16 @@ class DateHighlightCondition(HighlightCondition):
         point_date = points.updated_at[:10]
         return self.date_from <= point_date <= self.date_to
 
+@dataclass(frozen=True)
+class SIDHighlightCondition(HighlightCondition):
+    sid: str
+    def is_match_points(self, points: XYPoints) -> bool:
+        return getattr(points, "sid", None) == self.sid
+
 # 今後の拡張例:
 # @dataclass(frozen=True)
 # class CompositionHighlightCondition(HighlightCondition):
 #     composition: str
 #     def is_match(self, point: XYPoint) -> bool:
 #         return getattr(point, "composition", None) == self.composition
-#
-# @dataclass(frozen=True)
-# class SIDHighlightCondition(HighlightCondition):
-#     sid: str
-#     def is_match(self, point: XYPoint) -> bool:
-#         return getattr(point, "sid", None) == self.sid
 

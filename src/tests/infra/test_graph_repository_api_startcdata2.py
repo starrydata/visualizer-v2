@@ -3,10 +3,13 @@ import pytest
 from unittest.mock import patch, MagicMock
 from domain.material_type import MaterialType
 from infra.graph_repository import GraphRepositoryApiStarrydata2
+from src.tests.domain.graph_mock_factory import make_xy_points
+from src.domain.graph import XYPoint
 
 def mock_response():
     class MockResponse:
         def raise_for_status(self):
+            # This is a mock method for testing, so it does nothing
             pass
         def json(self):
             return {

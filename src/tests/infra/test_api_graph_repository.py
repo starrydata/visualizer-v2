@@ -3,10 +3,13 @@ import pytest
 from unittest.mock import patch
 from domain.material_type import MaterialType
 from infra.graph_repository import GraphRepositoryApiStarrydata2
+from src.tests.domain.graph_mock_factory import make_xy_points
+from src.domain.graph import XYPoint
 
 def mock_response_property_and_unit():
     class MockResponse:
         def raise_for_status(self):
+            # This is a mock method for testing, so it does nothing
             pass
         def json(self):
             return {
@@ -25,6 +28,7 @@ def mock_response_property_and_unit():
 def mock_response_property():
     class MockResponse:
         def raise_for_status(self):
+            # This is a mock method for testing, so it does nothing
             pass
         def json(self):
             return {
@@ -70,6 +74,5 @@ def test_get_graph_by_property_format(mock_get):
     assert [p.y for p in xy_series.data[0].data] == [30, 40]
 
 def make_point(x, y, updated_at="2024-01-01T00:00:00Z"):
-    from src.domain.graph import XYPoint
-    return XYPoint(x, y)
+    pass  # Unused, removed
 

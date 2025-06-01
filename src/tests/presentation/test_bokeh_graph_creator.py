@@ -5,6 +5,7 @@ from bokeh.models import ColumnDataSource, LinearAxis
 from domain.graph import Axis, AxisType, AxisRange, XYPoint, XYPoints
 from application.graph_data_service import XYPointsDTO, XYSeriesDTO
 from unittest.mock import Mock
+from src.tests.domain.graph_mock_factory import make_xy_points
 
 @pytest.fixture
 def x_axis():
@@ -16,7 +17,7 @@ def y_axis():
 
 @pytest.fixture
 def simple_dto():
-    xy_points = XYPoints([XYPoint(1, 4), XYPoint(2, 5), XYPoint(3, 6)], updated_at="2024-01-01T00:00:00Z")
+    xy_points = make_xy_points([XYPoint(1, 4), XYPoint(2, 5), XYPoint(3, 6)], updated_at="2024-01-01T00:00:00Z")
     dto = XYPointsDTO(data=xy_points.data, is_highlighted=False)
     dto_list = XYSeriesDTO(data=[dto, dto, dto])  # Mocking multiple series for simplicity
     return dto_list

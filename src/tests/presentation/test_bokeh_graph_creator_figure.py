@@ -4,6 +4,7 @@ from domain.graph import Axis, AxisType, AxisRange, XYPoint, XYPoints, DateHighl
 from presentation.bokeh_graph_creator import BokehGraphCreator
 from application.graph_data_service import GraphDataService, XYPointsDTO, XYSeriesDTO
 from unittest.mock import MagicMock
+from src.tests.domain.graph_mock_factory import make_xy_points
 
 @pytest.fixture
 def mock_graph_data_service():
@@ -23,7 +24,7 @@ def axes():
 def test_create_bokeh_figure_basic(bokeh_graph_creator, mock_graph_data_service, axes):
     x_axis, y_axis = axes
     # モックデータ（DTO方式）
-    points = XYPoints([XYPoint(1, 2), XYPoint(3, 4)], updated_at="2024-01-01T00:00:00Z")
+    points = make_xy_points([XYPoint(1, 2), XYPoint(3, 4)], updated_at="2024-01-01T00:00:00Z", sid="test-sid")
     dto = XYPointsDTO(data=points.data, is_highlighted=False)
     dto_list = XYSeriesDTO(data=[dto])
     mock_graph_data_service.get_merged_graph_data.return_value = dto_list
@@ -45,11 +46,13 @@ def test_create_bokeh_figure_with_highlight(bokeh_graph_creator, mock_graph_data
     # ハイライト条件
     highlight_condition = DateHighlightCondition(date_from="2024-01-01", date_to="2024-01-02")
     # モックデータ（DTO方式）
-    points1 = XYPoints([XYPoint(1, 2)], updated_at="2024-01-01T00:00:00Z")  # ハイライト
-    points2 = XYPoints([XYPoint(3, 4)], updated_at="2024-01-03T00:00:00Z")  # 非ハイライト
+    points1 = make_xy_points([XYPoint(1, 2)], updated_at="2024-01-01T00:00:00Z", sid="test-sid")  # ハイライト
+    points2 = make_xy_points([XYPoint(3, 4)], updated_at="2024-01-02T00:00:00Z")  # 非ハイライト
+    points3 = make_xy_points([XYPoint(5, 6)], updated_at="2024-01-03T00:00:00Z")
     dto1 = XYPointsDTO(data=points1.data, is_highlighted=True)
     dto2 = XYPointsDTO(data=points2.data, is_highlighted=False)
-    dto_list = XYSeriesDTO(data=[dto1, dto2])
+    dto3 = XYPointsDTO(data=points3.data, is_highlighted=False)
+    dto_list = XYSeriesDTO(data=[dto1, dto2, dto3])
     mock_graph_data_service.get_merged_graph_data.return_value = dto_list
     fig = bokeh_graph_creator.create_bokeh_figure(x_axis, y_axis, highlight_condition=highlight_condition)
     assert isinstance(fig, figure)
