@@ -12,6 +12,7 @@ def test_get_graph_configs_battery():
     result = get_graph_configs(MaterialType.BATTERY)
     assert result == BATTERY_GRAPHS
 
-def test_get_graph_configs_unknown():
-    with pytest.raises(ValueError):
-        get_graph_configs(object()) # type: ignore
+def test_get_graph_configs_unknown_typeerror():
+    with pytest.raises(TypeError):
+        get_graph_configs(object())  # type: ignore
+

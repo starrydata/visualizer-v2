@@ -1,5 +1,5 @@
 import pytest
-from domain.graph import Axis, AxisType, AxisRange, XYPoint, XYPoints, XYSeries, Graph
+from domain.graph import Axis, AxisType, AxisRange, XYPoint, XYPoints, XYSeries, Graph, DateHighlightCondition
 
 
 def test_axis_range():
@@ -55,3 +55,21 @@ def test_graph():
     assert graph.data.data[0].updated_at == "2024-01-01T00:00:00Z"
 
 
+def test_date_highlight_condition_in_range():
+    cond = DateHighlightCondition(date_from="2024-01-01", date_to="2024-01-31")
+    points = XYPoints([XYPoint(x=1.0, y=2.0)], updated_at="2024-01-15T12:00:00Z")
+    assert cond.is_match_points(points)
+
+
+def test_date_highlight_condition_out_of_range():
+    cond = DateHighlightCondition(date_from="2024-01-01", date_to="2024-01-31")
+    points = XYPoints([XYPoint(x=1.0, y=2.0)], updated_at="2024-02-01T00:00:00Z")
+    assert not cond.is_match_points(points)
+
+
+def test_date_highlight_condition_on_boundary():
+    cond = DateHighlightCondition(date_from="2024-01-01", date_to="2024-01-31")
+    points_from = XYPoints([XYPoint(x=1.0, y=2.0)], updated_at="2024-01-01T00:00:00Z")
+    points_to = XYPoints([XYPoint(x=1.0, y=2.0)], updated_at="2024-01-31T23:59:59Z")
+    assert cond.is_match_points(points_from)
+    assert cond.is_match_points(points_to)

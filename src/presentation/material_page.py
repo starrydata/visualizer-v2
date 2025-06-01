@@ -9,6 +9,7 @@ from streamlit_bokeh import streamlit_bokeh
 from domain.material_type import MaterialType
 from domain.graph import Axis, AxisRange, AxisType
 from domain.graph_config_factory import get_graph_configs
+from domain.graph import DateHighlightCondition
 
 def main(material_type: MaterialType):
     st.title(f"{material_type.value.capitalize()} material data")
@@ -75,9 +76,14 @@ def main(material_type: MaterialType):
             max_value=y_max
         )
     )
+    highlight_condition = None
+    if date_from and date_to:
+        highlight_condition = DateHighlightCondition(date_from=str(date_from), date_to=str(date_to))
+
     bokeh_figure = graph_creator.create_bokeh_figure(
         x_axis=new_x_axis,
-        y_axis=new_y_axis
+        y_axis=new_y_axis,
+        highlight_condition=highlight_condition
     )
 
     st.subheader(f"Graph: {prop_x} vs {prop_y}")

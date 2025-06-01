@@ -3,9 +3,9 @@ from domain.thermoelectric import THERMOELECTRIC_GRAPHS
 from domain.battery import BATTERY_GRAPHS
 
 def get_graph_configs(material_type: MaterialType):
-    if material_type == MaterialType.THERMOELECTRIC:
+    if not isinstance(material_type, MaterialType):
+        raise TypeError("material_type must be an instance of MaterialType Enum")
+    if material_type.value == MaterialType.THERMOELECTRIC.value:
         return THERMOELECTRIC_GRAPHS
-    elif material_type == MaterialType.BATTERY:
+    elif material_type.value == MaterialType.BATTERY.value:
         return BATTERY_GRAPHS
-    else:
-        raise ValueError(f"Unknown material type: {material_type}")

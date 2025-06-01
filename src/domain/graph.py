@@ -69,3 +69,39 @@ class GraphRepository(ABC):
         """指定されたプロパティと単位に基づいてグラフを取得する"""
         pass
 
+class HighlightCondition(ABC):
+    """データ点のハイライト条件の抽象基底クラス"""
+    def is_match_points(self, points):
+        """
+        ダミー実装（後方互換性のため）
+        """
+        raise NotImplementedError("Use is_match_points for batch operations.")
+
+@dataclass(frozen=True)
+class DateHighlightCondition(HighlightCondition):
+    date_from: str  # ISO8601形式の日付（YYYY-MM-DD）
+    date_to: str    # ISO8601形式の日付（YYYY-MM-DD）
+
+    def is_match_points(self, points: XYPoints) -> bool:
+        """
+        XYPoints（データ点のまとまり）がハイライト対象か判定。
+        XYPointsのupdated_atを使う。
+        """
+        if not hasattr(points, 'updated_at') or not points.updated_at:
+            return False
+        point_date = points.updated_at[:10]
+        return self.date_from <= point_date <= self.date_to
+
+# 今後の拡張例:
+# @dataclass(frozen=True)
+# class CompositionHighlightCondition(HighlightCondition):
+#     composition: str
+#     def is_match(self, point: XYPoint) -> bool:
+#         return getattr(point, "composition", None) == self.composition
+#
+# @dataclass(frozen=True)
+# class SIDHighlightCondition(HighlightCondition):
+#     sid: str
+#     def is_match(self, point: XYPoint) -> bool:
+#         return getattr(point, "sid", None) == self.sid
+
