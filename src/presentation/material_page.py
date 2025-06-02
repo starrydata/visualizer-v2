@@ -12,10 +12,16 @@ from domain.graph_config_factory import get_graph_configs
 from domain.graph import DateHighlightCondition
 
 def main(material_type: MaterialType):
-    st.title(f"{material_type.value.capitalize()} material data")
+    st.title(f"{material_type.value.capitalize()} Material Data")
 
-    date_from = st.sidebar.date_input("From Date")
-    date_to = st.sidebar.date_input("To Date")
+    # --- Highlight Section (Streamlit native UI only) ---
+    with st.expander("Highlight", expanded=True):
+        col1, col2 = st.columns(2)
+        with col1:
+            date_from = st.date_input("From", key="main_date_from")
+        with col2:
+            date_to = st.date_input("To", key="main_date_to")
+        # (Add more highlight conditions here in the future)
 
     # JavaScriptでブラウザのタイムゾーンを取得
     user_timezone_str = st_javascript("Intl.DateTimeFormat().resolvedOptions().timeZone", key="timezone")
