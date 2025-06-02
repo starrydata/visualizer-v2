@@ -6,7 +6,7 @@ BATTERY_GRAPHS: List[Graph] = [
         x_axis=Axis(
             property="Discharge capacity",
             axis_type=AxisType.LINEAR,
-            unit="A*s/kg",
+            unit="mA*h/g",
             axis_range=AxisRange(min_value=0, max_value=2000)
         ),
         y_axis=Axis(
@@ -21,7 +21,7 @@ BATTERY_GRAPHS: List[Graph] = [
         x_axis=Axis(
             property="Charge capacity",
             axis_type=AxisType.LINEAR,
-            unit="A*s/kg",
+            unit="mA*h/g",
             axis_range=AxisRange(min_value=0, max_value=2000)
         ),
         y_axis=Axis(
@@ -36,13 +36,13 @@ BATTERY_GRAPHS: List[Graph] = [
         x_axis=Axis(
             property="Cycle number",
             axis_type=AxisType.LINEAR,
-            unit="1",
+            unit="-",
             axis_range=AxisRange(min_value=1, max_value=2000)
         ),
         y_axis=Axis(
             property="Discharge capacity",
             axis_type=AxisType.LINEAR,
-            unit="A*s/kg",
+            unit="mA*h/g",
             axis_range=AxisRange(min_value=0, max_value=2000)
         ),
         data=[]
@@ -57,7 +57,7 @@ BATTERY_GRAPHS: List[Graph] = [
         y_axis=Axis(
             property="Discharge capacity",
             axis_type=AxisType.LINEAR,
-            unit="A*s/kg",
+            unit="mA*h/g",
             axis_range=AxisRange(min_value=0, max_value=2000)
         ),
         data=[]
