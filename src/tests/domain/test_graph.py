@@ -60,7 +60,6 @@ def test_graph():
     assert graph.data.data[0].data[0].y == 2
     assert graph.data.data[0].updated_at == "2024-01-01T00:00:00Z"
 
-
 def test_date_highlight_condition_in_range():
     cond = DateHighlightCondition(date_from="2024-01-01", date_to="2024-01-31")
     points = make_xy_points([XYPoint(x=1.0, y=2.0)], updated_at="2024-01-15T12:00:00Z")
@@ -79,6 +78,20 @@ def test_date_highlight_condition_on_boundary():
     points_to = make_xy_points([XYPoint(x=1.0, y=2.0)], updated_at="2024-01-31T23:59:59Z")
     assert cond.is_match_points(points_from)
     assert cond.is_match_points(points_to)
+
+def test_date_highlight_condition_microseconds():
+    points = XYPoints(
+        data=[
+            XYPoint(x=1.01057, y=240.082),
+        ],
+        updated_at='2025-06-02T04:50:51.331000',
+        sid='49993',
+        figure_id='57222',
+        sample_id='86360',
+        composition=None
+    )
+    cond = DateHighlightCondition(date_from="2025-06-02T00:00:00+0900", date_to="2025-06-02T23:59:59+0900")
+    assert cond.is_match_points(points) == True
 
 
 def test_xy_points_with_sid():

@@ -43,6 +43,39 @@ class GraphDataService:
                 non_highlighted.append(dto)
         return XYSeriesDTO(data=non_highlighted + highlighted)
 
+    def _convert_utc_to_jst(self, updated_at: str) -> str:
+        from datetime import datetime, timezone, timedelta
+        import re
+        # Z→+00:00
+        s = updated_at
+        if s.endswith('Z'):
+            s = s[:-1] + '+00:00'
+        if not re.search(r'[+-]\d{2}:\d{2}$', s):
+            dt = datetime.fromisoformat(s)
+            dt = dt.replace(tzinfo=timezone.utc)
+        else:
+            dt = datetime.fromisoformat(s)
+        # JSTに変換
+        jst = dt.astimezone(timezone(timedelta(hours=9)))
+        # 2025-06-02T23:59:59+0900 の形式で返す
+        return jst.strftime('%Y-%m-%dT%H:%M:%S%z')
+
+    def _replace_points_with_jst(self, points_list):
+        from src.domain.graph import XYPoints
+        new_list = []
+        for points in points_list:
+            new_list.append(
+                XYPoints(
+                    data=points.data,
+                    updated_at=self._convert_utc_to_jst(points.updated_at),
+                    sid=points.sid,
+                    figure_id=points.figure_id,
+                    sample_id=points.sample_id,
+                    composition=points.composition if points.composition is not None else ""
+                )
+            )
+        return new_list
+
     def get_merged_graph_data(
         self,
         prop_x: str,
@@ -51,15 +84,9 @@ class GraphDataService:
         unit_y: str = "",
         highlight_condition: Optional[HighlightCondition] = None,
     ) -> XYSeriesDTO:
-        """
-        repositoryを使ってbulk data（全件）と今日のデータ（date_from, date_toで絞る）を取得し、DTOで返す
-        highlight_conditionが指定されていれば、ハイライト対象を先頭に並べる
-        """
-        # Bulk data（全件）
         repo_bulk = GraphRepositoryFactory.create(ApiHostName.CLEANSING_DATASET)
         bulk_data_series = repo_bulk.get_graph_by_property(prop_x, prop_y)
-
-        # 今日のデータ（date_from, date_to, unit_x, unit_y指定）
+        # bulk側はJST変換不要
         repo_today = GraphRepositoryFactory.create(ApiHostName.STARRYDATA2)
         today_data_series = repo_today.get_graph_by_property_and_unit(
             property_x=prop_x,
@@ -67,14 +94,11 @@ class GraphDataService:
             unit_x=unit_x,
             unit_y=unit_y,
         )
-
-        # 統合する
+        # today側のみJST変換
+        today_data_series = XYSeries(data=self._replace_points_with_jst(today_data_series.data))
         bulk_data_series.data.extend(today_data_series.data)
-
-        # ハイライト条件で並び替え・DTO化
         if highlight_condition is not None:
             return self.filter_and_sort_by_highlight_dto(bulk_data_series, highlight_condition)
-        # ハイライトなしの場合もDTO化
         dtos = []
         for points in bulk_data_series.data:
             dtos.append(XYPointsDTO(
@@ -83,7 +107,7 @@ class GraphDataService:
                 sid=points.sid,
                 figure_id=points.figure_id,
                 sample_id=points.sample_id,
-                composition=points.composition
+                composition=points.composition if points.composition is not None else ""
             ))
         return XYSeriesDTO(data=dtos)
 
