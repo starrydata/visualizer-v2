@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 
 # XYApiResponseは下記APIレスポンス仕様を参考にしています：
@@ -11,7 +11,7 @@ class XYApiResponse(BaseModel):
     SID: List[str]
     figure_id: List[str]
     sample_id: List[str]
-    composition: List[str]
+    composition: List[Optional[str]]
 
 class Starrydata2ApiClient:
     def __init__(self, host: str):

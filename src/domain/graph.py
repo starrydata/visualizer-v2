@@ -41,7 +41,7 @@ class  XYPoints:
     sid: str         # 識別子（必須）
     figure_id: str   # 追加: 系列ごとのfigure_id
     sample_id: str   # 追加: 系列ごとのsample_id
-    composition: str # 追加: 系列ごとのcomposition
+    composition: Optional[str] # 追加: 系列ごとのcomposition（nullableに変更）
 
 @dataclass(frozen=True)
 class XYSeries:
