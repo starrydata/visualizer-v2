@@ -12,8 +12,6 @@ from domain.graph_config_factory import get_graph_configs
 from domain.graph import DateHighlightCondition
 
 def main(material_type: MaterialType):
-    st.title(f"{material_type.value.capitalize()} Material Data")
-
     # --- Highlight Section (Streamlit native UI only) ---
     with st.expander("Highlight", expanded=True):
         col1, col2 = st.columns(2)
@@ -91,8 +89,6 @@ def main(material_type: MaterialType):
         y_axis=new_y_axis,
         highlight_condition=highlight_condition
     )
-
-    st.subheader(f"Graph: {prop_x} vs {prop_y}")
 
 
 
