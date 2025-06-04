@@ -12,6 +12,15 @@ from domain.graph_config_factory import get_graph_configs
 from domain.graph import DateHighlightCondition
 
 def main(material_type: MaterialType):
+    # configファイルをPythonファイルから読み込む
+    CONFIG_GRAPHS = get_graph_configs(material_type)
+
+    # Select Graphを中央に配置
+    selected_graph = st.selectbox(
+        "Select Graph", [(g.x_axis.property, g.y_axis.property) for g in CONFIG_GRAPHS],
+        index=0, format_func=lambda x: f"{x[0]} - {x[1]}", key="select_graph"
+    )
+
     # --- Highlight Section (Streamlit native UI only) ---
     with st.expander("Highlight", expanded=True):
         col1, col2 = st.columns(2)
@@ -35,16 +44,6 @@ def main(material_type: MaterialType):
     if date_to:
         date_to_dt = datetime.datetime.combine(date_to, datetime.time(23, 59, 59))
         date_to_dt = user_timezone.localize(date_to_dt)
-
-    # configファイルをPythonファイルから読み込む
-    CONFIG_GRAPHS = get_graph_configs(material_type)
-
-    graph_options = [(g.x_axis.property, g.y_axis.property) for g in CONFIG_GRAPHS]
-
-    selected_graph = st.sidebar.selectbox(
-        "Select Graph", graph_options, index=0, format_func=lambda x: f"{x[0]} - {x[1]}", key="select_graph"
-    )
-
     prop_x, prop_y = selected_graph
 
     config = next(
@@ -89,7 +88,5 @@ def main(material_type: MaterialType):
         y_axis=new_y_axis,
         highlight_condition=highlight_condition
     )
-
-
 
     streamlit_bokeh(bokeh_figure, use_container_width=True, theme="streamlit", key="my_unique_key")
