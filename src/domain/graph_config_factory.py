@@ -7,5 +7,8 @@ def get_graph_configs(material_type: MaterialType):
         raise TypeError("material_type must be an instance of MaterialType Enum")
     if material_type == MaterialType.THERMOELECTRIC:
         return THERMOELECTRIC_GRAPHS
+    if material_type == MaterialType.MAGNETIC:
+        from domain.magnetic import MAGNETIC_GRAPHS
+        return MAGNETIC_GRAPHS
     elif material_type == MaterialType.BATTERY:
         return BATTERY_GRAPHS
