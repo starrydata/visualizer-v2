@@ -20,13 +20,13 @@ MAGNETIC_GRAPHS: List[Graph] = [
             property="Magnetic field",
             axis_type=AxisType.LINEAR,
             unit="T",
-            axis_range=AxisRange(min_value=-5.0, max_value=5.0)
+            axis_range=AxisRange(min_value=-0.5, max_value=0.5)
         ),
         y_axis=Axis(
             property="Magnetization",
             axis_type=AxisType.LINEAR,
             unit="T",
-            axis_range=AxisRange(min_value=-5.0, max_value=5.0)
+            axis_range=AxisRange(min_value=-1.0, max_value=1.0)
         ),
         data=empty_xy_series
     ),
@@ -35,13 +35,13 @@ MAGNETIC_GRAPHS: List[Graph] = [
             property="Magnetic field",
             axis_type=AxisType.LINEAR,
             unit="T",
-            axis_range=AxisRange(min_value=-0.5, max_value=0.5)
+            axis_range=AxisRange(min_value=-0.1, max_value=0.1)
         ),
         y_axis=Axis(
             property="magnetization_per_volume",
             axis_type=AxisType.LINEAR,
             unit="A/m",
-            axis_range=AxisRange(min_value=-20.0, max_value=20.0)
+            axis_range=AxisRange(min_value=-0.5, max_value=0.5)
         ),
         data=empty_xy_series
     ),
@@ -50,13 +50,13 @@ MAGNETIC_GRAPHS: List[Graph] = [
             property="Magnetic field",
             axis_type=AxisType.LINEAR,
             unit="T",
-            axis_range=AxisRange(min_value=-50.0, max_value=50.0)
+            axis_range=AxisRange(min_value=-5.0, max_value=5.0)
         ),
         y_axis=Axis(
             property="magnetization_per_weight",
             axis_type=AxisType.LINEAR,
             unit="emu/g",
-            axis_range=AxisRange(min_value=-300.0, max_value=300.0)
+            axis_range=AxisRange(min_value=-100.0, max_value=100.0)
         ),
         data=empty_xy_series
     ),
@@ -65,13 +65,13 @@ MAGNETIC_GRAPHS: List[Graph] = [
             property="Magnetic field strength (H)",
             axis_type=AxisType.LINEAR,
             unit="A/m",
-            axis_range=AxisRange(min_value=-1500.0, max_value=1500.0)
+            axis_range=AxisRange(min_value=-100.0, max_value=100.0)
         ),
         y_axis=Axis(
             property="Magnetization",
             axis_type=AxisType.LINEAR,
             unit="T",
-            axis_range=AxisRange(min_value=-2.0, max_value=2.0)
+            axis_range=AxisRange(min_value=-1.0, max_value=1.0)
         ),
         data=empty_xy_series
     ),
@@ -80,7 +80,7 @@ MAGNETIC_GRAPHS: List[Graph] = [
             property="Magnetic field strength (H)",
             axis_type=AxisType.LINEAR,
             unit="A/m",
-            axis_range=AxisRange(min_value=-20000.0, max_value=20000.0)
+            axis_range=AxisRange(min_value=-10000.0, max_value=10000.0)
         ),
         y_axis=Axis(
             property="magnetization_per_volume",
@@ -116,11 +116,10 @@ MAGNETIC_GRAPHS: List[Graph] = [
             property="Magnetization",
             axis_type=AxisType.LINEAR,
             unit="T",
-            axis_range=AxisRange(min_value=0.0, max_value=1.0)
+            axis_range=AxisRange(min_value=0.0, max_value=2.0)
         ),
         data=empty_xy_series
     ),
-
     Graph(
         x_axis=Axis(
             property="Temperature",
